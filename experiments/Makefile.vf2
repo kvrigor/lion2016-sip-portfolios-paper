@@ -1,0 +1,18 @@
+SHELL := /bin/bash
+INSTANCES := $(shell cut -d' ' -f1 instances.txt)
+TIMEOUT := 1000
+ALGORITHMS := vf2
+RESULTS := results
+
+all : $(foreach i, $(INSTANCES), $(foreach a, $(ALGORITHMS), $(RESULTS)/$(a)/$i.out ))
+
+dir-% :
+	mkdir -p $(RESULTS) $(RESULTS)/$*
+
+define ALGORITHM_template =
+$(RESULTS)/$(1)/%.out : | dir-$(1)
+	../vflib/solve_vf $$(shell grep "^`basename $$*` " < instances.txt | cut -d' ' -f2-3 ) $$(TIMEOUT) > >(tee $$@ )
+endef
+
+$(foreach a,$(ALGORITHMS),$(eval $(call ALGORITHM_template,$(a))))
+
