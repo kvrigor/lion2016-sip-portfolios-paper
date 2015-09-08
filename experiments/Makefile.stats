@@ -9,7 +9,7 @@ RESULTS := results
 
 SUMMARIES = $(foreach i, $(INSTANCES), $(RESULTS)/stats/$i.summary)
 SATS = $(foreach i, $(INSTANCES), $(RESULTS)/stats/$i.sat)
-RUNTIMES = $(foreach i, $(INSTANCES), $(foreach a, $(ALL_ALGORITHMS), $(RESULTS)/stats/$i.runtime.$a ))
+RUNTIMES = $(foreach i, $(INSTANCES), $(foreach a, $(ALL_ALGORITHMS) vbs, $(RESULTS)/stats/$i.runtime.$a ))
 
 all : $(SUMMARIES) $(SATS) $(RUNTIMES)
 
@@ -78,4 +78,7 @@ $(RESULTS)/stats/%.runtime.$(1) : | dir-stats
 endef
 
 $(foreach a,$(LAD_ALGORITHMS),$(eval $(call LAD_ALGORITHM_template,$(a))))
+
+$(RESULTS)/stats/%.runtime.vbs : $(foreach a,$(ALL_ALGORITHMS),$(RESULTS)/stats/%.runtime.$(a) ) | dir-stats
+	cat $(foreach a,$(ALL_ALGORITHMS),$(RESULTS)/stats/$*.runtime.$(a) ) | sed -e 's,1e8,100000000,' | sort -n | head -n1 > $@
 
