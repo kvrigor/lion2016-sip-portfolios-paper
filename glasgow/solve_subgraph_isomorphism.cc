@@ -85,6 +85,7 @@ auto main(int argc, char * argv[]) -> int
         std::make_pair( std::string{ "glasgow1" },          glasgow_1_subgraph_isomorphism ),
         std::make_pair( std::string{ "glasgow2" },          glasgow_2_subgraph_isomorphism ),
         std::make_pair( std::string{ "glasgow3" },          glasgow_3_subgraph_isomorphism ),
+        std::make_pair( std::string{ "glasgow4" },          glasgow_4_subgraph_isomorphism ),
     };
 
     try {

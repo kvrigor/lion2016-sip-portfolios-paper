@@ -10,5 +10,6 @@
 auto glasgow_1_subgraph_isomorphism(const std::pair<Graph, Graph> & graphs, const Params & params) -> Result;
 auto glasgow_2_subgraph_isomorphism(const std::pair<Graph, Graph> & graphs, const Params & params) -> Result;
 auto glasgow_3_subgraph_isomorphism(const std::pair<Graph, Graph> & graphs, const Params & params) -> Result;
+auto glasgow_4_subgraph_isomorphism(const std::pair<Graph, Graph> & graphs, const Params & params) -> Result;
 
 #endif
