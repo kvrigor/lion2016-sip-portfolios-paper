@@ -556,7 +556,7 @@ auto glasgow_2_subgraph_isomorphism(const std::pair<Graph, Graph> & graphs, cons
 {
     if (graphs.first.size() > graphs.second.size())
         return Result{ };
-    return select_graph_size<Apply<SequentialSubgraphIsomorphism, 2, 3>::template Type, Result>(
+    return select_graph_size<Apply<SequentialSubgraphIsomorphism, 3, 2>::template Type, Result>(
             AllGraphSizes(), graphs.second, graphs.first, params);
 }
 
