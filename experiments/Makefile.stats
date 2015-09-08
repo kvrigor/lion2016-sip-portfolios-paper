@@ -1,0 +1,81 @@
+SHELL := /bin/bash
+INSTANCES := $(shell cut -d' ' -f1 instances.txt)
+GLASGOW_ALGORITHMS := glasgow1 glasgow2 glasgow3
+LAD_ALGORITHMS := lad
+VF2_ALGORITHMS := vf2
+ALL_ALGORITHMS := $(GLASGOW_ALGORITHMS) $(LAD_ALGORITHMS) $(VF2_ALGORITHMS)
+STACK_SPACE := 10485760
+RESULTS := results
+
+SUMMARIES = $(foreach i, $(INSTANCES), $(RESULTS)/stats/$i.summary)
+SATS = $(foreach i, $(INSTANCES), $(RESULTS)/stats/$i.sat)
+RUNTIMES = $(foreach i, $(INSTANCES), $(foreach a, $(ALL_ALGORITHMS), $(RESULTS)/stats/$i.runtime.$a ))
+
+all : $(SUMMARIES) $(SATS) $(RUNTIMES)
+
+dir-% :
+	mkdir -p $(RESULTS) $(RESULTS)/$*
+
+$(RESULTS)/stats/%.summary : | dir-stats
+	{ for a in $(GLASGOW_ALGORITHMS) ; do \
+	  if grep -q aborted $(RESULTS)/$$a/$*.out ; then echo -n 'X' ; \
+	  elif grep -q false $(RESULTS)/$$a/$*.out ; then echo -n '0' ; \
+	  elif grep -q true $(RESULTS)/$$a/$*.out ; then echo -n '1' ; \
+	  else echo -n 'F' ; fi ; done ; \
+	  for a in $(LAD_ALGORITHMS) ; do \
+	  if grep -q 'exceeded' $(RESULTS)/$$a/$*.out ; then echo -n 'X' ; \
+	  elif grep -q '1 solutions' $(RESULTS)/$$a/$*.out ; then echo -n '1' ; \
+	  elif grep -q '0 solutions' $(RESULTS)/$$a/$*.out ; then echo -n '0' ; \
+	  else echo -n 'F' ; fi ; done ; \
+	  for a in $(VF2_ALGORITHMS) ; do \
+	  if grep -q aborted $(RESULTS)/$$a/$*.out ; then echo -n 'X' ; \
+	  elif grep -q false $(RESULTS)/$$a/$*.out ; then echo -n '0' ; \
+	  elif grep -q true $(RESULTS)/$$a/$*.out ; then echo -n '1' ; \
+	  else echo -n 'F' ; fi ; done ; \
+	} | tee $@
+
+$(RESULTS)/stats/%.sat : $(RESULTS)/stats/%.summary
+	if grep -q F $< ; then \
+	    echo "Failure in $<" ; exit 1 ; \
+	elif grep -q 0 $< && grep -q 1 $< ; then \
+	    echo "Mismatch on $<" ; exit 1 ; \
+	elif grep -q 0 $< ; then \
+	    echo 0 > $@ ; \
+	elif grep -q 1 $< ; then \
+	    echo 1 > $@ ; \
+	elif grep -q X $< ; then \
+	    echo X > $@ ; \
+	else \
+	    echo "Unknown on $<" ; exit 1 ; \
+	fi
+
+define GLASGOW_ALGORITHM_template
+$(RESULTS)/stats/%.runtime.$(1) : | dir-stats
+	if grep -q aborted $(RESULTS)/$(1)/$$*.out ; then echo '1e8' > $$@ ; \
+	else sed -n -e '3p' $(RESULTS)/$(1)/$$*.out | cut -d' ' -f1 > $$@ ; \
+	fi
+	test -s $$@
+endef
+
+$(foreach a,$(GLASGOW_ALGORITHMS),$(eval $(call GLASGOW_ALGORITHM_template,$(a))))
+
+define VF2_ALGORITHM_template
+$(RESULTS)/stats/%.runtime.$(1) : | dir-stats
+	if grep -q aborted $(RESULTS)/$(1)/$$*.out ; then echo '1e8' > $$@ ; \
+	else sed -n -e '3p' $(RESULTS)/$(1)/$$*.out | cut -d' ' -f1 > $$@ ; \
+	fi
+	test -s $$@
+endef
+
+$(foreach a,$(VF2_ALGORITHMS),$(eval $(call VF2_ALGORITHM_template,$(a))))
+
+define LAD_ALGORITHM_template
+$(RESULTS)/stats/%.runtime.$(1) : | dir-stats
+	if grep -q 'exceeded' $(RESULTS)/$(1)/$$*.out ; then echo '1e8' > $$@ ; \
+	else sed -n -e '/^Run completed:/s/^.* 0*\([0-9]*\)\.\([0-9][0-9][0-9]\)[0-9]* seconds$$$$/\1\2/p' $(RESULTS)/$(1)/$$*.out > $$@ ; \
+	fi
+	test -s $$@
+endef
+
+$(foreach a,$(LAD_ALGORITHMS),$(eval $(call LAD_ALGORITHM_template,$(a))))
+

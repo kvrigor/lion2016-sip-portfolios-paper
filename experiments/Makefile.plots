@@ -1,0 +1,17 @@
+SHELL := /bin/bash
+GLASGOW_ALGORITHMS := glasgow1 glasgow2 glasgow3
+LAD_ALGORITHMS := lad
+VF2_ALGORITHMS := vf2
+ALL_ALGORITHMS := $(LAD_ALGORITHMS) $(VF2_ALGORITHMS) $(GLASGOW_ALGORITHMS)
+RESULTS := results
+
+all : $(RESULTS)/runtimes.data
+
+$(RESULTS)/runtimes.data :
+	{ \
+	    echo instance family sat $(ALL_ALGORITHMS) ; \
+	    cat instances.txt | while read i p t f ; do \
+	        echo $$i $$f $$(cat $(RESULTS)/stats/$$i.sat ) $$(for a in $(ALL_ALGORITHMS) ; do cat $(RESULTS)/stats/$$i.runtime.$$a ; done ) ; \
+	    done ; \
+	} | tee $@
+
