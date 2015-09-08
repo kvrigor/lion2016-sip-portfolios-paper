@@ -1,5 +1,7 @@
 SHELL := /bin/bash
-INSTANCES := $(shell cut -d' ' -f1 instances.txt)
+FILTER := -1
+MODULUS := 1
+INSTANCES := $(shell cut -d' ' -f1 instances.txt | if [[ $(FILTER) == -1 ]] ; then cat ; else awk "(NR % $(MODULUS)) == ($(FILTER) % $(MODULUS))" ; fi)
 TIMEOUT := 1000
 ALGORITHMS := glasgow1 glasgow2 glasgow3
 STACK_SPACE := 10485760
