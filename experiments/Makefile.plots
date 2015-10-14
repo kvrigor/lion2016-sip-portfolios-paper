@@ -1,11 +1,11 @@
 SHELL := /bin/bash
-GLASGOW_ALGORITHMS := glasgow1 glasgow2 glasgow3
-LAD_ALGORITHMS := lad
+GLASGOW_ALGORITHMS := glasgow1 glasgow2 glasgow3 glasgow4
+LAD_ALGORITHMS := lad supplementallad
 VF2_ALGORITHMS := vf2
 ALL_ALGORITHMS := vbs $(LAD_ALGORITHMS) $(VF2_ALGORITHMS) $(GLASGOW_ALGORITHMS)
 RESULTS := results
 
-all : $(RESULTS)/runtimes.data
+all : $(RESULTS)/runtimes.data $(RESULTS)/cheap-features.data
 
 $(RESULTS)/runtimes.data :
 	{ \
@@ -15,3 +15,10 @@ $(RESULTS)/runtimes.data :
 	    done ; \
 	} | tee $@
 
+$(RESULTS)/cheap-features.data :
+	{ \
+	    echo instance family pattern-nvertices pattern-nedges pattern-nloops pattern-meandeg pattern-maxdeg pattern-density target-nvertices target-nedges target-nloops target-meandeg target-maxdeg target-density ; \
+	    cat instances.txt | while read i p t f ; do \
+	        echo $$i $$f $$(~/phd/parasols/build/gpgnode-01/about_graph --format lad $$p ) $$(~/phd/parasols/build/gpgnode-01/about_graph --format lad $$t ) ; \
+	    done ; \
+	} | tee $@

@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 INSTANCES := $(shell cut -d' ' -f1 instances.txt)
-GLASGOW_ALGORITHMS := glasgow1 glasgow2 glasgow3
-LAD_ALGORITHMS := lad
+GLASGOW_ALGORITHMS := glasgow1 glasgow2 glasgow3 glasgow4
+LAD_ALGORITHMS := lad supplementallad
 VF2_ALGORITHMS := vf2
 ALL_ALGORITHMS := $(GLASGOW_ALGORITHMS) $(LAD_ALGORITHMS) $(VF2_ALGORITHMS)
 STACK_SPACE := 10485760
