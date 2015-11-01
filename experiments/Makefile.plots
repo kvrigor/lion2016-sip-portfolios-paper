@@ -5,7 +5,7 @@ VF2_ALGORITHMS := vf2
 ALL_ALGORITHMS := vbs $(LAD_ALGORITHMS) $(VF2_ALGORITHMS) $(GLASGOW_ALGORITHMS)
 RESULTS := results
 
-all : $(RESULTS)/runtimes.data $(RESULTS)/cheap-features.data
+all : $(RESULTS)/runtimes.data $(RESULTS)/cheap-features.data $(RESULTS)/distance-features.data
 
 $(RESULTS)/runtimes.data :
 	{ \
@@ -17,8 +17,20 @@ $(RESULTS)/runtimes.data :
 
 $(RESULTS)/cheap-features.data :
 	{ \
-	    echo instance family pattern-nvertices pattern-nedges pattern-nloops pattern-meandeg pattern-maxdeg pattern-density target-nvertices target-nedges target-nloops target-meandeg target-maxdeg target-density ; \
+	    echo instance family \
+	        $$(../graph_stats/graph_stats $$(head -n1 instances.txt | cut -d' ' -f2 ) | cut -d= -f1 | sed -e 's,^,pattern-,') \
+	        $$(../graph_stats/graph_stats $$(head -n1 instances.txt | cut -d' ' -f3 ) | cut -d= -f1 | sed -e 's,^,target-,') ; \
 	    cat instances.txt | while read i p t f ; do \
-	        echo $$i $$f $$(~/phd/parasols/build/gpgnode-01/about_graph --format lad $$p ) $$(~/phd/parasols/build/gpgnode-01/about_graph --format lad $$t ) ; \
+	        echo $$i $$f $$(../graph_stats/graph_stats $$p | cut -d= -f2 ) $$(../graph_stats/graph_stats $$t | cut -d= -f2  ) ; \
+	    done ; \
+	} | tee $@
+
+$(RESULTS)/distance-features.data :
+	{ \
+	    echo instance family \
+	        $$(../graph_stats/graph_stats --distances $$(head -n1 instances.txt | cut -d' ' -f2 ) | grep 'distance\|connected\|time' | cut -d= -f1 | sed -e 's,^,pattern-,') \
+	        $$(../graph_stats/graph_stats --distances $$(head -n1 instances.txt | cut -d' ' -f3 ) | grep 'distance\|connected\|time' | cut -d= -f1 | sed -e 's,^,target-,') ; \
+	    cat instances.txt | while read i p t f ; do \
+	        echo $$i $$f $$(../graph_stats/graph_stats --distances $$p | grep 'distance\|connected\|time' | cut -d= -f2 ) $$(../graph_stats/graph_stats --distances $$t | grep 'distance\|connected\|time' | cut -d= -f2  ) ; \
 	    done ; \
 	} | tee $@
