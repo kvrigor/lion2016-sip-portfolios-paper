@@ -12,12 +12,15 @@ all : $(foreach i, $(INSTANCES), $(foreach a, $(ALGORITHMS), $(RESULTS)/$(a)/$i.
 dir-% :
 	mkdir -p $(RESULTS) $(RESULTS)/$*
 
-define ALGORITHM_template
-$(RESULTS)/$(1)/%.out : | dir-$(1)
-	ulimit -s $$(STACK_SPACE) ; ../directedLAD/main -v -f -s $$(TIMEOUT) \
-	    -p $$(shell grep "^`basename $$*` " < instances.txt | cut -d' ' -f2 ) \
-	    -t $$(shell grep "^`basename $$*` " < instances.txt | cut -d' ' -f3 ) > >(tee $$@ ) || grep -q exceeded $$@
-endef
+$(RESULTS)/lad/%.out : | dir-lad
+	ulimit -s $(STACK_SPACE) ; ../directedLAD/main -v -f -s $(TIMEOUT) \
+	    -p $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f2 ) \
+	    -t $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f3 ) > >(tee $@ ) || grep -q exceeded $@
+
+$(RESULTS)/supplementallad/%.out : | dir-supplementallad
+	ulimit -s $(STACK_SPACE) ; ../supplementalLAD/main -v -f -s $(TIMEOUT) \
+	    -p $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f2 ) \
+	    -t $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f3 ) > >(tee $@ ) || grep -q exceeded $@
 
 $(foreach a,$(ALGORITHMS),$(eval $(call ALGORITHM_template,$(a))))
 
