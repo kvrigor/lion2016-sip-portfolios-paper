@@ -1,0 +1,156 @@
+% vim: set spell spelllang=en tw=100 et sw=4 sts=4 :
+
+\documentclass{llncs}
+
+% \usepackage{showframe}
+
+\usepackage{complexity}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{cleveref}                  % no need to type Figure etc
+
+% lncs style
+\crefname{algocf}{Algorithm}{Algorithms}
+\Crefname{algocf}{Algorithm}{Algorithms}
+\crefname{figure}{Fig.}{Figs.}
+\Crefname{figure}{Fig.}{Figs.}
+\crefname{table}{Table}{Tables}
+\Crefname{table}{Table}{Tables}
+\crefname{proposition}{Proposition}{Propositions}
+\Crefname{proposition}{Proposition}{Propositions}
+
+\title{Portfolios of Subgraph Isomorphism Algorithms}
+
+\author{
+    Lars Kotthoff\inst{1}
+    \and Ciaran McCreesh\thanks{This work was supported by the Engineering
+        and Physical Sciences Research Council [grant number EP/K503058/1]}\inst{2}
+    \and Patrick Prosser\inst{2}
+    \and Christine Solnon\inst{3}}
+
+\institute{
+    University of British Columbia, Vancouver, Canada
+    \and University of Glasgow, Glasgow, Scotland
+    \and INSA-Lyon, LIRIS, UMR5205, F-69621, France}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+There are several competitive algorithms for the subgraph isomorphism problem, and one of these
+algorithms additionally has a choice of parameter. As with many other hard problems, the single best
+choice of algorithm overall is rarely the best algorithm on a per-instance basis. We show that using
+witchcraft to pick from a portfolio of algorithms on an instance by instance basis provides super
+dooper amazingly quite OKish results, most of the time, and opens up some flexibility in algorithm
+design.
+\end{abstract}
+
+\section{Introduction}
+
+The \emph{(non-induced) subgraph isomorphism problem} is to find an injective mapping from a small
+\emph{pattern} graph to a large \emph{target} graph which preserves adjacency. This problem is
+\NP-complete, but applications in chemistry and computer vision and model checking and some other
+things we should cite mean various exact algorithms exist:
+
+\begin{itemize}
+    \item VF2 \cite{Cordella:2004} is a backtracking search algorithm which is especially fast on
+        trivially satisfiable instances (which are common in certain application areas).
+    \item LAD \cite{Solnon:2010} and SND \cite{Audemard:2014} do very strong reasoning, at the
+        expense of making few guesses per second when working with larger graphs.
+    \item Most recently, the Glasgow algorithm \cite{McCreesh:2015} does an expensive preprocessing
+        pass once, followed by weaker reasoning during search.
+\end{itemize}
+
+\noindent The experiments by the Glasgow authors indicated that overall, the Glasgow algorithm is
+the single best algorithm when evaluated across a wide range of problem instances. However, they
+also observed that on an instance by instance basis, it is often not the single best.  Additionally,
+the Glasgow algorithm has a parameter, which controls the lengths of paths used when reasoning about
+non-adjacent vertices.  The choice of paths of length 3 was used as a reasonable compromise---longer
+paths lead to prohibitively expensive preprocessing on larger, denser instances. Again, this is
+often not the best choice on an instance by instance basis: sometimes path-based reasoning gives no
+benefit at all, sometimes considering only paths of length 2 suffices, occasionally paths of
+length 4 are helpful, and even looking at paths of length 3 is relatively expensive on some graphs.
+
+?? Also, we can use supplemental graphs in LAD. Christine: can you explain what you implemented?
+
+We could try to come up with rules to pick an algorithm on an instance by instance basis using our
+knowledge of how the algorithms behave: for example, maybe we should use the Glasgow algorithm with
+paths of length 2 with large target graphs (but how large?), and only use length 3 on smaller
+graphs. Also, we could guess that LAD might do better than Glasgow on smaller, heavily-structured
+graphs. However, this is not very systematic.
+
+?? Lars: a paragraph of fluff about instance selection please.
+
+We show that picking algorithms and parameter choices on an instance by instance basis, by
+considering features of the pattern and target graphs, gives better overall performance than any
+single algorithm. This is the first time this has been done for subgraph isomorphism, and we must
+consider an unusual factor: our features must look at pairs of inputs, and the relationships between
+them.
+
+?? Lars: do you know of any other problems where you have two inputs rather than one? Or is this
+novel?
+
+?? Can we get better results if we explicitly consider, say, how close the target density and
+pattern density are?
+
+\section{Experiments}
+
+Our runtimes were measured on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
+Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
+the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
+\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
+timeout of $10^8$ milliseconds (a little over a day).
+
+?? Lars: your stuff here.
+
+\subsection{Problem instances}
+
+All instances are available in a simple text format
+\footnote{\url{http://liris.cnrs.fr/csolnon/SIP.html}}.
+
+Real-world and application-derived graphs:
+
+\begin{itemize}
+    \item The LV graphs (family 2). Also, the same targets, but with larger pattern graphs (family
+        11, Multiple edges have been combined into a single edge.)
+    \item CVIU11 images (family 8)
+    \item CVIU11 meshes (family 10)
+    \item PR15 (family 9)
+\end{itemize}
+
+\noindent Randomly generated instances with particular properties:
+
+\begin{itemize}
+    \item Bounded-degree random graphs (family 3, 4) \cite{GraphDatabase}
+    \item Random 4d mesh graphs (family 5, 6) \cite{GraphDatabase}
+    \item Random graphs (family 7) \cite{GraphDatabase}
+    \item Randomly generated scale-free graphs. (family 1) \cite{Solnon:2010}
+    \item Phase transition (family 12)
+\end{itemize}
+
+\noindent Note that this is not like SAT, where we can reasonably split things up based upon which
+family they're from.
+
+\subsection{Machine learning voodoo stuff}
+
+\subsection{Results}
+
+?? Can we do better than picking the single best on a family by family basis? Bear in mind that we
+don't have the family as a usable feature.
+
+\section{Conclusion and Future Work}
+
+This stuff works respectably well, considering we're dealing with two inputs rather than one.
+
+We have only looked at sequential algorithms: the Glasgow algorithm has a parallel implementation,
+and a similar technique could easily be used to parallelise LAD.  We have also not considered the
+induced variant of the problem, nor instances involving labels or directed edges.  We could also
+look at other encodings. For example, a direct SAT requires $O(v^4)$ clauses, but may be good in
+certain situations.
+
+\bibliographystyle{splncs}
+\bibliography{paper}
+
+\end{document}
+
