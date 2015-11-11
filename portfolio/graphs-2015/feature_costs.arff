@@ -6,7 +6,7 @@
 @attribute cheap_target numeric
 @attribute distance_pattern numeric
 @attribute distance_target numeric
-@attribute lad numeric
+@attribute lad_features numeric
 
 @data
 A.01,1,0,0,0.003,0.003,0

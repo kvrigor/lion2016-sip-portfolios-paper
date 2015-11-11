@@ -28,7 +28,6 @@ features_deterministic:
 - distance.target.proportiondistancege4
 - lad.values.removed
 - lad.values.removed.percent
-- lad.time
 features_stochastic: []
 algorithms_deterministic:
 - lad
@@ -52,7 +51,7 @@ default_steps:
 - cheap_target
 - distance_pattern
 - distance_target
-- lad
+- lad_features
 feature_steps:
   cheap_pattern:
     provides:
@@ -88,8 +87,7 @@ feature_steps:
     - distance.target.proportiondistancege2
     - distance.target.proportiondistancege3
     - distance.target.proportiondistancege4
-  lad:
+  lad_features:
     provides:
     - lad.values.removed
     - lad.values.removed.percent
-    - lad.time

@@ -30,9 +30,10 @@ costs.distance.pattern = "distance.pattern.time"
 feats.distance.target = names(features.distance)[grep("target.", names(features.distance), fixed = TRUE)][-1]
 costs.distance.target = "distance.target.time"
 
-feats.lad = names(features.lad)[grep("lad.", names(features.lad), fixed = TRUE)][-c(length(names(features.lad))-1, length(names(features.lad)))]
+feats.lad = names(features.lad)[grep("lad.", names(features.lad), fixed = TRUE)]
 costs.lad = "lad.time"
 presolved.lad = "lad.detected.inconsistent"
+feats.lad = feats.lad[!(feats.lad %in% c(costs.lad, presolved.lad))]
 
 # convert ms to s to avoid integer overflows later
 for (alg in algorithms) {
@@ -63,13 +64,13 @@ desc = makeS3Obj("ASScenarioDesc",
   features_cutoff_memory = NA,
 
   number_of_feature_steps = 5,
-  default_steps = c("cheap_pattern", "cheap_target", "distance_pattern", "distance_target", "lad"),
+  default_steps = c("cheap_pattern", "cheap_target", "distance_pattern", "distance_target", "lad_features"),
   feature_steps =
       list(cheap_pattern = list(provides = feats.cheap.pattern),
            cheap_target = list(provides = feats.cheap.target),
            distance_pattern = list(provides = feats.distance.pattern),
            distance_target = list(provides = feats.distance.target),
-           lad = list(provides = feats.lad))
+           lad_features = list(provides = feats.lad))
 )
 
 mfeats = merge(merge(features.cheap, features.distance, by = "instance"), features.lad, by = "instance")
@@ -77,15 +78,15 @@ mfeats = merge(merge(features.cheap, features.distance, by = "instance"), featur
 feature.values = cbind(instance_id = mfeats$instance, repetition = 1, mfeats[, c(feats.cheap.pattern, feats.cheap.target, feats.distance.pattern, feats.distance.target, feats.lad)])
 feature.values$instance_id = as.character(feature.values$instance_id)
 
-feature.runstatus = data.frame(instance_id = mfeats$instance, repetition = 1, cheap_pattern = "ok", cheap_target = "ok", distance_pattern = "ok", distance_target = "ok", lad = ifelse(mfeats[, presolved.lad] == "true", "presolved", "ok"))
+feature.runstatus = data.frame(instance_id = mfeats$instance, repetition = 1, cheap_pattern = "ok", cheap_target = "ok", distance_pattern = "ok", distance_target = "ok", lad_features = ifelse(mfeats[, presolved.lad] == "true", "presolved", "ok"))
 feature.runstatus$instance_id = as.character(feature.runstatus$instance_id)
 feature.runstatus$cheap_pattern = factor(feature.runstatus$cheap_pattern)
 feature.runstatus$cheap_target = factor(feature.runstatus$cheap_target)
 feature.runstatus$distance_pattern = factor(feature.runstatus$distance_pattern)
 feature.runstatus$distance_target = factor(feature.runstatus$distance_target)
-feature.runstatus$lad = factor(feature.runstatus$lad)
+feature.runstatus$lad_features = factor(feature.runstatus$lad_features)
 
-feature.costs = data.frame(instance_id = mfeats$instance, repetition = 1, cheap_pattern = mfeats[, costs.cheap.pattern], cheap_target = mfeats[, costs.cheap.target], distance_pattern = mfeats[, costs.distance.target], distance_target = mfeats[, costs.distance.target], lad = mfeats[, costs.lad])
+feature.costs = data.frame(instance_id = mfeats$instance, repetition = 1, cheap_pattern = mfeats[, costs.cheap.pattern], cheap_target = mfeats[, costs.cheap.target], distance_pattern = mfeats[, costs.distance.target], distance_target = mfeats[, costs.distance.target], lad_features = mfeats[, costs.lad])
 feature.costs$instance_id = as.character(feature.costs$instance_id)
 
 algo.runs = cbind(instance_id = times$instance, times[, -1])

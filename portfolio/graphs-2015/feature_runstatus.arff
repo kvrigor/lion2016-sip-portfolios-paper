@@ -6,7 +6,7 @@
 @attribute cheap_target {ok}
 @attribute distance_pattern {ok}
 @attribute distance_target {ok}
-@attribute lad {ok,presolved}
+@attribute lad_features {ok,presolved}
 
 @data
 A.01,1,ok,ok,ok,ok,ok
