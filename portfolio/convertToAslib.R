@@ -9,6 +9,8 @@ names(features.cheap)[-1] = paste0("cheap.", names(features.cheap))[-1]
 features.distance = read.table("gpgnode-sip-distance-features.data", header = TRUE, sep = " ", stringsAsFactors = FALSE)
 features.distance$family = NULL
 names(features.distance)[-1] = paste0("distance.", names(features.distance))[-1]
+features.lad = read.table("gpgnode-sip-lad-features.data", header = TRUE, sep = " ", stringsAsFactors = FALSE)
+features.lad$family = NULL
 
 times = read.table("gpgnode-sip-runtimes.data", header = TRUE, sep = " ", stringsAsFactors = FALSE)
 times$family = NULL
@@ -28,6 +30,10 @@ costs.distance.pattern = "distance.pattern.time"
 feats.distance.target = names(features.distance)[grep("target.", names(features.distance), fixed = TRUE)][-1]
 costs.distance.target = "distance.target.time"
 
+feats.lad = names(features.lad)[grep("lad.", names(features.lad), fixed = TRUE)][-c(length(names(features.lad))-1, length(names(features.lad)))]
+costs.lad = "lad.time"
+presolved.lad = "lad.detected.inconsistent"
+
 # convert ms to s to avoid integer overflows later
 for (alg in algorithms) {
     times[,alg] = times[,alg] / 1000
@@ -37,11 +43,12 @@ features.cheap[,costs.cheap.pattern] = features.cheap[,costs.cheap.pattern] / 10
 features.cheap[,costs.cheap.target] = features.cheap[,costs.cheap.target] / 1000
 features.distance[,costs.distance.pattern] = features.distance[,costs.distance.pattern] / 1000
 features.distance[,costs.distance.target] = features.distance[,costs.distance.target] / 1000
+features.lad[,costs.lad] = features.lad[,costs.lad] / 1000
 
 # convert to aslib
 desc = makeS3Obj("ASScenarioDesc",
   scenario_id = "graphs-2015",
-  features_deterministic = c(feats.cheap.pattern, feats.cheap.target, feats.distance.pattern, feats.distance.target),
+  features_deterministic = c(feats.cheap.pattern, feats.cheap.target, feats.distance.pattern, feats.distance.target, feats.lad),
   features_stochastic = character(0),
   algorithms_deterministic = algorithms,
   algorithms_stochastic = character(0),
@@ -55,28 +62,30 @@ desc = makeS3Obj("ASScenarioDesc",
   features_cutoff_time = NA,
   features_cutoff_memory = NA,
 
-  number_of_feature_steps = 4,
-  default_steps = c("cheap_pattern", "cheap_target", "distance_pattern", "distance_target"),
+  number_of_feature_steps = 5,
+  default_steps = c("cheap_pattern", "cheap_target", "distance_pattern", "distance_target", "lad"),
   feature_steps =
       list(cheap_pattern = list(provides = feats.cheap.pattern),
            cheap_target = list(provides = feats.cheap.target),
            distance_pattern = list(provides = feats.distance.pattern),
-           distance_target = list(provides = feats.distance.target))
+           distance_target = list(provides = feats.distance.target),
+           lad = list(provides = feats.lad))
 )
 
-mfeats = merge(features.cheap, features.distance, by = "instance")
+mfeats = merge(merge(features.cheap, features.distance, by = "instance"), features.lad, by = "instance")
 
-feature.values = cbind(instance_id = mfeats$instance, repetition = 1, mfeats[, c(feats.cheap.pattern, feats.cheap.target, feats.distance.pattern, feats.distance.target)])
+feature.values = cbind(instance_id = mfeats$instance, repetition = 1, mfeats[, c(feats.cheap.pattern, feats.cheap.target, feats.distance.pattern, feats.distance.target, feats.lad)])
 feature.values$instance_id = as.character(feature.values$instance_id)
 
-feature.runstatus = data.frame(instance_id = mfeats$instance, repetition = 1, cheap_pattern = "ok", cheap_target = "ok", distance_pattern = "ok", distance_target = "ok")
+feature.runstatus = data.frame(instance_id = mfeats$instance, repetition = 1, cheap_pattern = "ok", cheap_target = "ok", distance_pattern = "ok", distance_target = "ok", lad = ifelse(mfeats[, presolved.lad] == "true", "presolved", "ok"))
 feature.runstatus$instance_id = as.character(feature.runstatus$instance_id)
 feature.runstatus$cheap_pattern = factor(feature.runstatus$cheap_pattern)
 feature.runstatus$cheap_target = factor(feature.runstatus$cheap_target)
 feature.runstatus$distance_pattern = factor(feature.runstatus$distance_pattern)
 feature.runstatus$distance_target = factor(feature.runstatus$distance_target)
+feature.runstatus$lad = factor(feature.runstatus$lad)
 
-feature.costs = data.frame(instance_id = mfeats$instance, repetition = 1, cheap_pattern = mfeats[, costs.cheap.pattern], cheap_target = mfeats[, costs.cheap.target], distance_pattern = mfeats[, costs.distance.target], distance_target = mfeats[, costs.distance.target])
+feature.costs = data.frame(instance_id = mfeats$instance, repetition = 1, cheap_pattern = mfeats[, costs.cheap.pattern], cheap_target = mfeats[, costs.cheap.target], distance_pattern = mfeats[, costs.distance.target], distance_target = mfeats[, costs.distance.target], lad = mfeats[, costs.lad])
 feature.costs$instance_id = as.character(feature.costs$instance_id)
 
 algo.runs = cbind(instance_id = times$instance, times[, -1])
