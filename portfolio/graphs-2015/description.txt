@@ -1,0 +1,95 @@
+scenario_id: graphs-2015
+features_deterministic:
+- cheap.pattern.vertices
+- cheap.pattern.edges
+- cheap.pattern.loops
+- cheap.pattern.meandeg
+- cheap.pattern.maxdeg
+- cheap.pattern.degisfixed
+- cheap.pattern.density
+- cheap.target.vertices
+- cheap.target.edges
+- cheap.target.loops
+- cheap.target.meandeg
+- cheap.target.maxdeg
+- cheap.target.degisfixed
+- cheap.target.density
+- distance.pattern.isconnected
+- distance.pattern.meandistance
+- distance.pattern.maxdistance
+- distance.pattern.proportiondistancege2
+- distance.pattern.proportiondistancege3
+- distance.pattern.proportiondistancege4
+- distance.target.isconnected
+- distance.target.meandistance
+- distance.target.maxdistance
+- distance.target.proportiondistancege2
+- distance.target.proportiondistancege3
+- distance.target.proportiondistancege4
+- lad.values.removed
+- lad.values.removed.percent
+- lad.time
+features_stochastic: []
+algorithms_deterministic:
+- lad
+- supplementallad
+- vf2
+- glasgow1
+- glasgow2
+- glasgow3
+- glasgow4
+algorithms_stochastic: []
+performance_measures: time
+performance_type: runtime
+maximize: no
+algorithm_cutoff_time: 100000.0
+algorithm_cutoff_memory: '?'
+features_cutoff_time: '?'
+features_cutoff_memory: '?'
+number_of_feature_steps: 5.0
+default_steps:
+- cheap_pattern
+- cheap_target
+- distance_pattern
+- distance_target
+- lad
+feature_steps:
+  cheap_pattern:
+    provides:
+    - cheap.pattern.vertices
+    - cheap.pattern.edges
+    - cheap.pattern.loops
+    - cheap.pattern.meandeg
+    - cheap.pattern.maxdeg
+    - cheap.pattern.degisfixed
+    - cheap.pattern.density
+  cheap_target:
+    provides:
+    - cheap.target.vertices
+    - cheap.target.edges
+    - cheap.target.loops
+    - cheap.target.meandeg
+    - cheap.target.maxdeg
+    - cheap.target.degisfixed
+    - cheap.target.density
+  distance_pattern:
+    provides:
+    - distance.pattern.isconnected
+    - distance.pattern.meandistance
+    - distance.pattern.maxdistance
+    - distance.pattern.proportiondistancege2
+    - distance.pattern.proportiondistancege3
+    - distance.pattern.proportiondistancege4
+  distance_target:
+    provides:
+    - distance.target.isconnected
+    - distance.target.meandistance
+    - distance.target.maxdistance
+    - distance.target.proportiondistancege2
+    - distance.target.proportiondistancege3
+    - distance.target.proportiondistancege4
+  lad:
+    provides:
+    - lad.values.removed
+    - lad.values.removed.percent
+    - lad.time
