@@ -5,7 +5,7 @@ VF2_ALGORITHMS := vf2
 ALL_ALGORITHMS := vbs $(LAD_ALGORITHMS) $(VF2_ALGORITHMS) $(GLASGOW_ALGORITHMS)
 RESULTS := results
 
-all : $(RESULTS)/runtimes.data $(RESULTS)/cheap-features.data $(RESULTS)/distance-features.data
+all : $(RESULTS)/runtimes.data $(RESULTS)/cheap-features.data $(RESULTS)/distance-features.data $(RESULTS)/lad-features.data
 
 $(RESULTS)/runtimes.data :
 	{ \
@@ -32,5 +32,26 @@ $(RESULTS)/distance-features.data :
 	        $$(../graph_stats/graph_stats --distances $$(head -n1 instances.txt | cut -d' ' -f3 ) | grep 'distance\|connected\|time' | cut -d= -f1 | sed -e 's,^,target-,') ; \
 	    cat instances.txt | while read i p t f ; do \
 	        echo $$i $$f $$(../graph_stats/graph_stats --distances $$p | grep 'distance\|connected\|time' | cut -d= -f2 ) $$(../graph_stats/graph_stats --distances $$t | grep 'distance\|connected\|time' | cut -d= -f2  ) ; \
+	    done ; \
+	} | tee $@
+
+$(RESULTS)/lad-features.data :
+	{ \
+	    echo instance family lad-values-removed lad-values-removed-percent lad-time lad-detected-inconsistent ; \
+	    cat instances.txt | while read i p t f ; do \
+	        x=$$(../lad_stats/LADpreprocessing -p $$p -t $$t ) ; \
+	        vt=$$(echo $$x | sed -n -e 's/.* in \(.*\) seconds/\1/p' ) ; \
+	        vt=$$(dc -e "$$vt 1000 * p ") ; \
+	        [[ "$${vt#.}" != "$${vt}" ]] && vt=0.${vt} ; \
+	        vt=$${vt%.*} ; \
+	        if echo $$x | grep -q Inconsistency ; then \
+		    vn=0 ; vp=100 ; vi=true ; \
+		else \
+		    vn=$$(echo $$x | sed -n -e 's/\(.*\) removed values.*/\1/p' ) ; \
+		    vp=$$(echo $$x | sed -n -e 's/.* (percentage = \(.*\)) in .* seconds/\1/p' ) ; \
+		    vi=false ; \
+		fi ; \
+		[[ -z $$vn ]] || [[ -z $$vp ]] || [[ -z $$vt ]] && echo error parsing $$i: line is $$x, vn is $$vn, vp is $$vp, vt is $$vt 1>&2 && exit 1 ; \
+	        echo $$i $$f $$vn $$vp $$vt $$vi ; \
 	    done ; \
 	} | tee $@
