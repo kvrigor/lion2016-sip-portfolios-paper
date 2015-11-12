@@ -27,7 +27,7 @@ parallelLibrary("llama", "mlr")
 \section*{Data Analysis}
 
 <<echo=FALSE, results='asis'>>=
-source("convertToAslib.R")
+#source("convertToAslib.R")
 
 asscenario = parseASScenario("graphs-2015")
 ldf = convertToLlamaCVFolds(asscenario)
@@ -263,16 +263,110 @@ perfScatterPlot(parscores, mod, singleBest, ldf, addCostsx = TRUE, addCostsy = F
 
 \clearpage
 
+\subsection*{Algorithm Selection Results with instances solved during
+computation of LAD features removed}
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
+ldf3 = ldf
+presolved = asscenario$feature.runstatus$instance_id[asscenario$feature.runstatus$lad_features == "presolved"]
+ldf3$data = subset(ldf$data, ldf$data$instance_id %in% presolved)
+ldf3$best = subset(ldf$best, ldf$data$instance_id %in% presolved)
+ldf3$train = NULL
+ldf3$test = NULL
+ldf3 = cvFolds(ldf3)
+timess2 = subset(timess, timess$instance %in% ldf3$data$instance_id)
+ldf3$data$family = factor(timess2[order(timess2$instance, as.character(ldf3$data$instance_id)), 'family'])
+ldf3$extra = "family"
+
+tab = t(sapply(ldf3$data[,ldf3$performance], mean))
+print(xtable(tab, caption = "Mean performance of each algorithm."), booktabs = TRUE, include.rownames = FALSE)
+
+tabs = by(ldf3$data, ldf3$data$family, function(x) as.data.frame.matrix(t(sapply(x[,ldf3$performance], mean))))
+tab = rbind.fill(tabs)
+tab$family = rownames(tab)
+tab = tab[,order(names(tab))]
+print(xtable(tab, digits = 3, caption = "Mean performance by family."), booktabs = TRUE, include.rownames = FALSE)
+
+tab = t(sapply(ldf3$data[,ldf3$performance], median))
+print(xtable(tab, caption = "Median performance of each algorithm."), booktabs = TRUE, include.rownames = FALSE)
+
+tabs = by(ldf3$data, ldf3$data$family, function(x) as.data.frame.matrix(t(sapply(x[,ldf3$performance], median))))
+tab = rbind.fill(tabs)
+tab$family = rownames(tab)
+tab = tab[,order(names(tab))]
+print(xtable(tab, digits = 3, caption = "Median performance by family."), booktabs = TRUE, include.rownames = FALSE)
+
+tab = t(table(unlist(ldf3$best)))
+print(xtable(tab, caption = "Number of times each algorithm is best. More than one algorithm may be best for one instance if there are ties."), booktabs = TRUE, include.rownames = FALSE)
+
+tabs = tapply(ldf3$best, ldf3$data$family, function(x) as.data.frame.matrix(t(table(unlist(x)))))
+tab = rbind.fill(tabs)
+tab[is.na(tab)] = 0
+tab$family = rownames(tab)
+tab = tab[,order(names(tab))]
+print(xtable(tab, digits = 0, caption = "Number of times each algorithm is best by family."), booktabs = TRUE, include.rownames = FALSE)
+@
+
+\clearpage
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
+resvbs = data.frame(model = "virtual best",
+    mean.performance = mean(parscores(ldf3, vbs, factor = 1)),
+    median.performance = median(parscores(ldf3, vbs, factor = 1)))
+ressb = data.frame(model = "single best",
+    mean.performance = mean(parscores(ldf3, singleBest, factor = 1)),
+    median.performance = median(parscores(ldf3, singleBest, factor = 1)))
+
+modelc = classify(makeLearner("classif.randomForest"), ldf3)
+resc = data.frame(model = "classification",
+    mean.performance = mean(parscores(ldf3, modelc, factor = 1)),
+    median.performance = median(parscores(ldf3, modelc, factor = 1)))
+times = sapply(modelc$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
+print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for classification."), booktabs = TRUE)
+
+modelr = regression(makeLearner("regr.randomForest"), ldf3)
+resr = data.frame(model = "regression",
+    mean.performance = mean(parscores(ldf3, modelr, factor = 1)),
+    median.performance = median(parscores(ldf3, modelr, factor = 1)))
+times = sapply(modelr$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
+print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regression."), booktabs = TRUE)
+
+modelcp = classifyPairs(makeLearner("classif.randomForest"), ldf3)
+rescp = data.frame(model = "classifyPairs",
+    mean.performance = mean(parscores(ldf3, modelcp, factor = 1)),
+    median.performance = median(parscores(ldf3, modelcp, factor = 1)))
+times = sapply(modelcp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
+print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for classificationPairs."), booktabs = TRUE)
+
+modelrp = regressionPairs(makeLearner("regr.randomForest"), ldf3)
+resrp = data.frame(model = "regressionPairs",
+    mean.performance = mean(parscores(ldf3, modelrp, factor = 1)),
+    median.performance = median(parscores(ldf3, modelrp, factor = 1)))
+times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
+print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regressionPairs."), booktabs = TRUE)
+
+tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
+print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolver."), booktabs = TRUE, include.rownames = FALSE)
+@
+
+<<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance with presolved instances removed (best model).'>>=
+best = which.min(c(resc$mean.performance, resr$mean.performance, rescp$mean.performance, resrp$mean.performance))
+mod = list(modelc, modelr, modelcp, modelrp)[[best]]
+perfScatterPlot(parscores, mod, singleBest, ldf3, factor = 1, pargs=aes(colour = family)) + scale_x_log10() + scale_y_log10() + xlab("portfolio") + ylab("single best")
+@
+
+\clearpage
+
 \subsection*{Algorithm Selection Results with Presolver}
 
-Run vf2 for 0.05 second as a presolver.
+Run vf2 for 0.05 second as a presolver, after removing presolved instances.
 
 <<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
 # presolver
-ldf2 = ldf
+ldf2 = ldf3
 presolvetime = 0.05
-ldf2$data = subset(ldf$data, ldf$data$vf2 > presolvetime)
-ldf2$best = subset(ldf$best, ldf$data$vf2 > presolvetime)
+ldf2$data = subset(ldf3$data, ldf3$data$vf2 > presolvetime)
+ldf2$best = subset(ldf3$best, ldf3$data$vf2 > presolvetime)
 ldf2$train = NULL
 ldf2$test = NULL
 ldf2 = cvFolds(ldf2)
