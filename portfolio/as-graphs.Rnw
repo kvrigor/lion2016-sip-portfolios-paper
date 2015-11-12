@@ -269,8 +269,8 @@ computation of LAD features removed}
 <<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
 ldf3 = ldf
 presolved = asscenario$feature.runstatus$instance_id[asscenario$feature.runstatus$lad_features == "presolved"]
-ldf3$data = subset(ldf$data, ldf$data$instance_id %in% presolved)
-ldf3$best = subset(ldf$best, ldf$data$instance_id %in% presolved)
+ldf3$data = subset(ldf$data, !(ldf$data$instance_id %in% presolved))
+ldf3$best = subset(ldf$best, !(ldf$data$instance_id %in% presolved))
 ldf3$train = NULL
 ldf3$test = NULL
 ldf3 = cvFolds(ldf3)
