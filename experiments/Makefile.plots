@@ -37,7 +37,7 @@ $(RESULTS)/distance-features.data :
 
 $(RESULTS)/lad-features.data :
 	{ \
-	    echo instance family lad-values-removed lad-values-removed-percent lad-time lad-detected-inconsistent ; \
+	    echo instance family lad-values-removed lad-values-removed-percent lad-values-removed-min lad-values-removed-max lad-time lad-detected-inconsistent ; \
 	    cat instances.txt | while read i p t f ; do \
 	        x=$$(../lad_stats/LADpreprocessing -p $$p -t $$t ) ; \
 	        vt=$$(echo $$x | sed -n -e 's/.* in \(.*\) seconds/\1/p' ) ; \
@@ -45,13 +45,17 @@ $(RESULTS)/lad-features.data :
 	        [[ "$${vt#.}" != "$${vt}" ]] && vt=0.${vt} ; \
 	        vt=$${vt%.*} ; \
 	        if echo $$x | grep -q Inconsistency ; then \
-		    vn=0 ; vp=100 ; vi=true ; \
+		    vn=0 ; vp=100 ; vx=0 ; vn=0 ; vi=true ; \
 		else \
 		    vn=$$(echo $$x | sed -n -e 's/\(.*\) removed values.*/\1/p' ) ; \
-		    vp=$$(echo $$x | sed -n -e 's/.* (percentage = \(.*\)) in .* seconds/\1/p' ) ; \
+		    vp=$$(echo $$x | sed -n -e 's/.* (percentage = \([^,]*\)\(, .*\)\?) in .* seconds/\1/p' ) ; \
+		    vx=$$(echo $$x | sed -n -e 's/.* (percentage = .*, min = \(.*\), max = .*) in .* seconds/\1/p' ) ; \
+		    vn=$$(echo $$x | sed -n -e 's/.* (percentage = .*, min = .*, max = \(.*\)) in .* seconds/\1/p' ) ; \
+		    [[ -z $$vx ]] && vx=0 ; \
+		    [[ -z $$vn ]] && vn=0 ; \
 		    vi=false ; \
 		fi ; \
 		[[ -z $$vn ]] || [[ -z $$vp ]] || [[ -z $$vt ]] && echo error parsing $$i: line is $$x, vn is $$vn, vp is $$vp, vt is $$vt 1>&2 && exit 1 ; \
-	        echo $$i $$f $$vn $$vp $$vt $$vi ; \
+	        echo $$i $$f $$vn $$vp $$vn $$vx $$vt $$vi ; \
 	    done ; \
 	} | tee $@
