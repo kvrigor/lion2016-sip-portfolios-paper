@@ -136,26 +136,24 @@ int main(int argc, char* argv[]){
 	Tgraph *Gt = createGraph(fileNameGt);       // Target graph
     
     struct rusage ru;     // reusable structure to get CPU time usage
+    
+    float minReduction = 100.0;
+    float maxReduction = 0.0;
     if ((Gp->nbVertices > Gt->nbVertices) || (Gp->maxDegree > Gt->maxDegree)){
         getrusage(RUSAGE_SELF, &ru);
         printf("Inconsistency detected in %d.%06d seconds\n",
                (int) ru.ru_utime.tv_sec, (int) ru.ru_utime.tv_usec);
     }
-    else if (Gt->minDegree == Gt->maxDegree){
-        if (Gp->maxDegree <= Gt->maxDegree){
-            getrusage(RUSAGE_SELF, &ru);
-            printf("0 removed values (percentage = 0) in %d.%06d seconds\n",(int) ru.ru_utime.tv_sec, (int) ru.ru_utime.tv_usec);
-        }
-        else{
-            getrusage(RUSAGE_SELF, &ru);
-            printf("Inconsistency detected in %d.%06d seconds\n",
-                   (int) ru.ru_utime.tv_sec, (int) ru.ru_utime.tv_usec);
-        }
+    else if (Gp->maxDegree <= Gt->minDegree){
+        getrusage(RUSAGE_SELF, &ru);
+        printf("0 removed values (percentage = 0) in %d.%06d seconds\n",(int) ru.ru_utime.tv_sec, (int) ru.ru_utime.tv_usec);
     }
     else{
         int cpt = 0;
         int mu[Gt->maxDegree+1];
         int** mv = (int**)malloc(Gt->nbVertices*sizeof(int*));
+        bool isUsed[Gt->nbVertices];
+        memset(isUsed,false,(Gt->nbVertices)*sizeof(bool));
         for (int v=0; v<Gt->nbVertices; v++){
             mv[v] = (int*)calloc(Gt->maxDegree+1,sizeof(int));
             memset(mv[v],0,(Gt->maxDegree+1)*sizeof(int));
@@ -163,25 +161,34 @@ int main(int argc, char* argv[]){
         }
         for (int u=0; u<Gp->nbVertices; u++){
             int domainSize = 0;
+            int val;
             memset(mu,0,(Gt->maxDegree+1)*sizeof(int));
             for (int i=0; i<Gp->nbAdj[u]; i++) mu[Gp->nbAdj[Gp->adj[u][i]]]++;
             for (int v=0; v<Gt->nbVertices; v++){
-                if ((Gp->nbAdj[u] > Gt->nbAdj[v]) || (!compare(mu, mv[v], Gt->maxDegree))){
+                if ((Gp->nbAdj[u] > Gt->nbAdj[v]) || (Gp->isLoop[u] != Gt->isLoop[v]) || (isUsed[v]) || (!compare(mu, mv[v], Gt->maxDegree))){
                     cpt++;
                 }
                 else{
                     domainSize++;
+                    val = v;
                 }
-            }
+           }
             if (domainSize == 0){
                 getrusage(RUSAGE_SELF, &ru);
                 printf("Inconsistency detected in %d.%06d seconds\n",
                        (int) ru.ru_utime.tv_sec, (int) ru.ru_utime.tv_usec);
                 return 0;
             }
+            if (domainSize == 1)
+                isUsed[val] = true;
+            float reduction = 100.0*(Gt->nbVertices - domainSize)/Gt->nbVertices;
+            if (reduction > maxReduction)
+                maxReduction = reduction;
+            if (reduction < minReduction)
+                minReduction = reduction;
         }
         getrusage(RUSAGE_SELF, &ru);
-        printf("%d removed values (percentage = %f) in %d.%06d seconds\n",cpt,100.0*cpt/(Gp->nbVertices*Gt->nbVertices), (int) ru.ru_utime.tv_sec, (int) ru.ru_utime.tv_usec);
+        printf("%d removed values (percentage = %f, min = %f, max = %f) in %d.%06d seconds\n",cpt,100.0*cpt/(Gp->nbVertices*Gt->nbVertices), minReduction, maxReduction, (int) ru.ru_utime.tv_sec, (int) ru.ru_utime.tv_usec);
     }
     return 0;
 }
