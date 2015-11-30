@@ -4,6 +4,6 @@ gen-*
 *.fls
 *.log
 *.out
-*.pdf
+paper.pdf
 *.bbl
 *.blg
