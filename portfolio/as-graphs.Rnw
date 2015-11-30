@@ -20,7 +20,7 @@ library(plyr)
 library(aslib)
 
 library(parallelMap)
-parallelStartSocket(4)
+parallelStartSocket(5)
 parallelLibrary("llama", "mlr")
 @
 
@@ -223,7 +223,9 @@ ressb = data.frame(model = "single best",
     mean.performance = mean(parscores(ldf, singleBest, factor = 1)),
     median.performance = median(parscores(ldf, singleBest, factor = 1)))
 
-modelc = classify(makeLearner("classif.randomForest"), ldf)
+rflearner = makeLearner("classif.randomForest")
+
+modelc = classify(rflearner, ldf)
 resc = data.frame(model = "classification",
     mean.performance = mean(parscores(ldf, modelc, factor = 1)),
     median.performance = median(parscores(ldf, modelc, factor = 1)))
@@ -237,7 +239,7 @@ resr = data.frame(model = "regression",
 times = sapply(modelr$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
 print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regression."), booktabs = TRUE)
 
-modelcp = classifyPairs(makeLearner("classif.randomForest"), ldf)
+modelcp = classifyPairs(rflearner, ldf)
 rescp = data.frame(model = "classifyPairs",
     mean.performance = mean(parscores(ldf, modelcp, factor = 1)),
     median.performance = median(parscores(ldf, modelcp, factor = 1)))
@@ -256,8 +258,8 @@ print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results
 @
 
 <<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance (best model).'>>=
-best = which.min(c(resc$mean.performance, resr$mean.performance, rescp$mean.performance, resrp$mean.performance))
-mod = list(modelc, modelr, modelcp, modelrp)[[best]]
+best = which.min(c(resc$mean.performance))
+mod = list(modelc)[[best]]
 perfScatterPlot(parscores, mod, singleBest, ldf, addCostsx = TRUE, addCostsy = FALSE, factor = 1, pargs=aes(colour = family)) + scale_x_log10() + scale_y_log10() + xlab("portfolio") + ylab("single best")
 @
 
@@ -317,7 +319,7 @@ ressb = data.frame(model = "single best",
     mean.performance = mean(parscores(ldf3, singleBest, factor = 1)),
     median.performance = median(parscores(ldf3, singleBest, factor = 1)))
 
-modelc = classify(makeLearner("classif.randomForest"), ldf3)
+modelc = classify(rflearner, ldf3)
 resc = data.frame(model = "classification",
     mean.performance = mean(parscores(ldf3, modelc, factor = 1)),
     median.performance = median(parscores(ldf3, modelc, factor = 1)))
@@ -331,7 +333,7 @@ resr = data.frame(model = "regression",
 times = sapply(modelr$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
 print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regression."), booktabs = TRUE)
 
-modelcp = classifyPairs(makeLearner("classif.randomForest"), ldf3)
+modelcp = classifyPairs(rflearner, ldf3)
 rescp = data.frame(model = "classifyPairs",
     mean.performance = mean(parscores(ldf3, modelcp, factor = 1)),
     median.performance = median(parscores(ldf3, modelcp, factor = 1)))
@@ -346,7 +348,7 @@ times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$l
 print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regressionPairs."), booktabs = TRUE)
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
-print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolver."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolved instances removed."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance with presolved instances removed (best model).'>>=
@@ -413,7 +415,7 @@ ressb = data.frame(model = "single best",
     mean.performance = mean(parscores(ldf2, singleBest, factor = 1)),
     median.performance = median(parscores(ldf2, singleBest, factor = 1)))
 
-modelc = classify(makeLearner("classif.randomForest"), ldf2)
+modelc = classify(rflearner, ldf2)
 resc = data.frame(model = "classification",
     mean.performance = mean(parscores(ldf2, modelc, factor = 1)),
     median.performance = median(parscores(ldf2, modelc, factor = 1)))
@@ -427,7 +429,7 @@ resr = data.frame(model = "regression",
 times = sapply(modelr$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
 print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regression."), booktabs = TRUE)
 
-modelcp = classifyPairs(makeLearner("classif.randomForest"), ldf2)
+modelcp = classifyPairs(rflearner, ldf2)
 rescp = data.frame(model = "classifyPairs",
     mean.performance = mean(parscores(ldf2, modelcp, factor = 1)),
     median.performance = median(parscores(ldf2, modelcp, factor = 1)))

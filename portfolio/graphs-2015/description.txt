@@ -28,6 +28,8 @@ features_deterministic:
 - distance.target.proportiondistancege4
 - lad.values.removed
 - lad.values.removed.percent
+- lad.values.removed.min
+- lad.values.removed.max
 features_stochastic: []
 algorithms_deterministic:
 - lad
@@ -91,3 +93,5 @@ feature_steps:
     provides:
     - lad.values.removed
     - lad.values.removed.percent
+    - lad.values.removed.min
+    - lad.values.removed.max
