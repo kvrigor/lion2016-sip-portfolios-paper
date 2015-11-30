@@ -9,6 +9,9 @@
 \usepackage{microtype}
 \usepackage{cleveref}                  % no need to type Figure etc
 
+\usepackage{todonotes}
+\usepackage{booktabs}
+
 % lncs style
 \crefname{algocf}{Algorithm}{Algorithms}
 \Crefname{algocf}{Algorithm}{Algorithms}
@@ -80,25 +83,38 @@ length 4 are helpful, and even looking at paths of length 3 is relatively expens
 
 ?? Also, we can use supplemental graphs in LAD. Christine: can you explain what you implemented?
 
-We could try to come up with rules to pick an algorithm on an instance by instance basis using our
-knowledge of how the algorithms behave: for example, maybe we should use the Glasgow algorithm with
-paths of length 2 with large target graphs (but how large?), and only use length 3 on smaller
-graphs. Also, we could guess that LAD might do better than Glasgow on smaller, heavily-structured
-graphs. However, this is not very systematic.
-
-?? Lars: a paragraph of fluff about instance selection please.
-
-We show that picking algorithms and parameter choices on an instance by instance basis, by
-considering features of the pattern and target graphs, gives better overall performance than any
-single algorithm. This is the first time this has been done for subgraph isomorphism, and we must
-consider an unusual factor: our features must look at pairs of inputs, and the relationships between
-them.
-
-?? Lars: do you know of any other problems where you have two inputs rather than one? Or is this
-novel?
+We show that by choosing algorithms on an instance by instance basis, by
+considering features of the pattern and target graphs, we achieve better overall
+performance than any single algorithm.
 
 ?? Can we get better results if we explicitly consider, say, how close the target density and
 pattern density are?
+
+\section{Background}
+
+\todo[inline]{Some background on subgraph isomorphism algorithms, maybe move
+some stuff from the intro here.}
+
+The per-instance algorithm selection problem~\cite{rice_algorithm_1976} is to
+select from an algorithm
+portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} the one expected
+to perform best on a given problem instance. Algorithm selection systems usually
+build machine learning models of the algorithms or the portfolio they are
+contained in to forecast which algorithm to use in a particular context. Using
+the model predictions, one or more algorithms from the portfolio are selected to
+be run sequentially or in parallel.
+
+Here, we consider the case where exactly one algorithm is selected for
+solving the problem. One of the most prominent and successful systems that
+employs this approach is SATzilla~\cite{xu_satzilla_2008}, which defined the
+state of the art in SAT solving for a number of years. Other application areas
+include constraint solving~\cite{omahony_using_2008},
+the travelling salesperson problem~\cite{kotthoff_improving_2015},
+and AI planning~\cite{seipp_learning_2012}.
+
+The interested reader is referred to a recent
+survey~\cite{kotthoff_algorithm_2014} for additional information on algorithm
+selection.
 
 \section{Experiments}
 
@@ -107,8 +123,6 @@ Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \c
 the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
 \cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
 timeout of $10^8$ milliseconds (a little over a day).
-
-?? Lars: your stuff here.
 
 \subsection{Problem instances}
 
@@ -135,15 +149,99 @@ Real-world and application-derived graphs:
     \item Phase transition (family 12)
 \end{itemize}
 
-\noindent Note that this is not like SAT, where we can reasonably split things up based upon which
-family they're from.
+We consider a total of 5725 instances.
 
-\subsection{Machine learning voodoo stuff}
+\subsubsection{Features}
 
-\subsection{Results}
+\todo[inline]{Describe features here.}
 
-?? Can we do better than picking the single best on a family by family basis? Bear in mind that we
-don't have the family as a usable feature.
+This gives us a total of 30 features.
+
+The data we use in this paper is available as Aslib scenario GRAPHS-2015.
+
+\subsection{Algorithm Selection approach}
+
+We apply two static steps to each instance before solving it. First, the
+computation of the LAD features can detect unsatisfiability of an instance. If
+an instance is identified as unsatisfiable, we do not process it further.
+Second, we run the VF2 solver for 0.05 seconds. This solves easy instances
+without the overhead of running algorithm selection and avoids potentially
+making incorrect solver choices.
+
+Computing the LAD features detects unsatisfiability on 1919 instances. Running
+VF2 for 0.05 seconds removes a further 1470. We are left with 2336 hard
+instances that we consider for algorithm selection.
+
+To decide which solver to run on the remaining instances, we use
+LLAMA~\cite{kotthoff_llama_2013}. In preliminary experiments, we identified
+random forest regression to predict the performance difference between pairs of
+algorithms, with the best algorithm identified as the one with the best
+cumulative performance difference over all pairs, as the best approach. We make
+no claims that this is the overall best approach.
+
+\section{Results}
+
+Table~\ref{tab:res} shows the performance of our algorithm selection approach,
+compared to two baselines. The virtual best solver is the oracle predictor that,
+for each instance, chooses the best solver from our portfolio. This is the upper
+bound of what an algorithm selection approach can achieve. The single best
+solver is the one solver from the portfolio that has the overall best
+performance across the entire set of instances. We consider it a lower bound on
+performance.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lr}
+  \toprule
+& mean runtime\\
+  \midrule
+virtual best & 5822.809\\
+  single best & 7782.569\\
+  LLAMA & 6595.275\\
+   \bottomrule
+\end{tabular}
+\vspace{1ex}
+\caption{Algorithm selection performance on reduced set of 2336
+instances.}\label{tab:res}
+\end{table}
+
+We are able to close more than 60\% of the performance gap between the single
+best and the virtual best solver, our lower and upper bounds. For comparison, we
+show the results achieved on the entire set of instances without
+unsatisfiability detection and presolving in Table~\ref{tab:resfull}. We achieve
+similar results with more than 58\% of the gap between the single best and the
+virtual best closed.
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{lr}
+  \toprule
+& mean runtime\\
+  \midrule
+virtual best & 2375.913\\
+  single best & 3177.569\\
+  LLAMA & 2706.330\\
+   \bottomrule
+\end{tabular}
+\vspace{1ex}
+\caption{Algorithm selection performance on the full set of 5725
+instances.}\label{tab:resfull}
+\end{table}
+
+Figure~\ref{fig:scatter} shows detailed results for each of the 2336 instances
+in the reduced set. Our algorithm selection approach is by no means able to
+identify the best solver on a majority of instances, although we are able to
+achieve performance improvements overall. There seems to be no particular
+pattern as to where algorithm selection performs well and where it fails.
+
+\begin{figure}[!ht]
+\includegraphics[width=\textwidth]{figures/perfScatter}
+\caption{Single best algorithm vs.\ portfolio performance on all instances by
+family. Points above the diagonal indicate that the portfolio achieved better
+performance, while the single best solver was better on instances below the
+diagonal.}
+\label{fig:scatter}
+\end{figure}
 
 \section{Conclusion and Future Work}
 
