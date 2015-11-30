@@ -38,12 +38,18 @@
 \maketitle
 
 \begin{abstract}
-There are several competitive algorithms for the subgraph isomorphism problem, and one of these
-algorithms additionally has a choice of parameter. As with many other hard problems, the single best
-choice of algorithm overall is rarely the best algorithm on a per-instance basis. We show that using
-witchcraft to pick from a portfolio of algorithms on an instance by instance basis provides super
-dooper amazingly quite OKish results, most of the time, and opens up some flexibility in algorithm
-design.
+The subgraph isomorphism problem is a computationally challenging problem with
+lots of important practical applications, for example in computer vision,
+biochemistry, and model checking. There are a number of state-of-the-art
+algorithms for solving it, each of which has its own performance
+characteristics. As with many other hard problems, the single best choice of
+algorithm overall is rarely the best algorithm for each instance. We develop a
+portfolio approach that leverages novel features to characterise subgraph
+isomorphism problems to dynamically decide which algorithm to use on a
+per-instance basis. We demonstrate significant performance improvements on a
+large set of hard benchmark problems. In addition, we show how algorithm
+selection models can be leveraged to gain new insights into what affects the
+performance of an algorithm.
 \end{abstract}
 
 \section{Introduction}
