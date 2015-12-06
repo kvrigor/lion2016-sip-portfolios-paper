@@ -71,10 +71,7 @@ depending on the CPU time limit considered, and that combining preprocessing wit
 selection on an instance by instance basis allows us to achieve better overall performance than any
 single algorithm.
 
-\section{Background}
-
-\todo[inline]{Some background on subgraph isomorphism algorithms, maybe move
-some stuff from the intro here.}
+\section{Per-Instance Algorithm Selection}
 
 The per-instance algorithm selection problem~\cite{rice_algorithm_1976} is to select from an
 algorithm portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} the one expected to perform
@@ -88,33 +85,32 @@ the most prominent and successful systems that employs this approach is
 SATzilla~\cite{xu_satzilla_2008}, which defined the state of the art in SAT solving for a number of
 years. Other application areas include constraint solving~\cite{omahony_using_2008}, the travelling
 salesperson problem~\cite{kotthoff_improving_2015}, and AI planning~\cite{seipp_learning_2012}.
-
 The interested reader is referred to a recent survey~\cite{kotthoff_algorithm_2014} for additional
 information on algorithm selection.
 
-\section{Algorithms for subgraph isomorphism}
+\subsection{Subgraph isomorphism algorithms}
 
-We consider the following exact algorithms: VF2 \cite{Cordella:2004}, which is a simple backtracking
-search algorithm, especially fast on trivially satisfiable instances; LAD \cite{Solnon:2010}, which
-does very strong reasoning based on local all different redundant constraints; and the Glasgow
-algorithm \cite{McCreesh:2015}, which does an expensive preprocessing pass once, followed by weaker
-reasoning during search.
+We consider the following exact subgraph isomorphism
+algorithms: VF2 \cite{Cordella:2004}, which is a simple backtracking search algorithm, especially
+fast on trivially satisfiable instances; LAD \cite{Solnon:2010}, which does very strong reasoning
+based on local all different redundant constraints; and the Glasgow algorithm \cite{McCreesh:2015},
+which does an expensive preprocessing pass once, followed by weaker reasoning during search.
 
- The Glasgow algorithm has a parameter, which controls the lengths of paths used when reasoning
- about non-adjacent vertices.  In experiments reported in \cite{McCreesh:2015}, the choice of paths
- of length 3 was used as a reasonable compromise---longer paths lead to prohibitively expensive
- preprocessing on larger, denser instances. This is often not the best choice on an instance by
- instance basis: sometimes path-based reasoning gives no benefit at all, sometimes considering only
- paths of length 2 suffices, occasionally paths of length 4 are helpful, and even looking at paths
- of length 3 is relatively expensive on some graphs. Therefore, in this new study, we consider 4
- different instances of the Glasgow algorithm, with path lengths varying from 1 to 4.
+The Glasgow algorithm has a parameter, which controls the lengths of paths used when reasoning about
+non-adjacent vertices.  In experiments reported in \cite{McCreesh:2015}, the choice of paths of
+length 3 was used as a reasonable compromise---longer paths lead to prohibitively expensive
+preprocessing on larger, denser instances. This is often not the best choice on an instance by
+instance basis: sometimes path-based reasoning gives no benefit at all, sometimes considering only
+paths of length 2 suffices, occasionally paths of length 4 are helpful, and even looking at paths of
+length 3 is relatively expensive on some graphs. Therefore, in this new study, we consider 4
+different instances of the Glasgow algorithm, with path lengths varying from 1 to 4.
 
-We introduce two new variants of LAD. The first variant is a weaker LAD filtering (called LAD
+We also introduce two new variants of LAD. The first variant is a weaker LAD filtering (called LAD
 preprocessing) which is applied once, without performing a backtracking search, and detects
 inconsistencies on many instances: For each pattern node $u$, we check that there exists at least
 one target node $v$ such that for each neighbor $u'$ of $u$ there exists a different neighbor $v'$
 of $v$ such that the degree of $u'$ is smaller than or equal to the degree of $v'$. LAD
-preprocessing is an incomplete algorithm as it can only detect inconsistency of some instances: When
+preprocessing is an incomplete algorithm as it can only detect inconsistency of some instances: when
 it does not detect inconsistency, the instance may either be consistent or not. The time complexity
 of LAD preprocessing is ${\cal O}(n(n'+p'))$ where $n$ and $n'$ are the number of pattern and target
 nodes, respectively, and $p$ is the number of target edges.
@@ -126,70 +122,72 @@ between $u$ and $v$, and each node $u$ with the number of cycles of length 3 pas
 and to add the constraint that the label of a pattern node (resp. edge) must be smaller than or
 equal to the label of its associated target node (resp. edge).
 
-\section{Benchmark}
+\subsection{Problem instances}
 
-We consider 5725 instances which are available in a simple text
+We consider 5725 instances, which are available in a simple text
 format\footnote{\url{http://liris.cnrs.fr/csolnon/SIP.html}}. These instances are grouped into 12
 classes.
 
 \begin{itemize}
 \item Class 1 contains randomly generated scale-free graphs \cite{}.
-\item Classes 2 and 3 contain various kinds of graphs coming from \cite{}: class 2 contains small instances generated from the 50 first graphs of the benchmark, whereas class 3 contains larger instances where pattern graphs are coming from class 2, and target graphs are coming from the next 50 graphs of the benchmark.
-\item Classes 4 to 8 contain randomly generated graphs coming from \cite{GraphDatabase}: bounded-degree graphs for classes 3 and 4, regular meshes for classes 5 and 6, and random graphs with uniform edge probabilities for class 7.
+\item Classes 2 and 3 contain various kinds of graphs coming from \cite{}: class 2 contains small
+    instances generated from the 50 first graphs of the benchmark, whereas class 3 contains larger
+    instances where pattern graphs are coming from class 2, and target graphs are coming from the
+    next 50 graphs of the benchmark.
+\item Classes 4 to 8 contain randomly generated graphs coming from \cite{GraphDatabase}:
+    bounded-degree graphs for classes 3 and 4, regular meshes for classes 5 and 6, and random graphs
+    with uniform edge probabilities for class 7.
 \item Classes 9 and 10 contain instances coming from images \cite{}.
 \item Class 11 contains instances coming from meshes modeling 3D objects \cite{}.
 \item Class 12 contains random graph instances belonging to the phase transition.
 \end{itemize}
 
-\noindent Randomly generated instances with particular properties:
+Note that Classes 3 and 12 were not considered in the previous experimental study reported in \cite{McCreesh:2015}.
 
-\begin{itemize}
-    \item Bounded-degree random graphs (family 3, 4) \cite{GraphDatabase}
-    \item Random 4d mesh graphs (family 5, 6) \cite{GraphDatabase}
-    \item Random graphs (family 7) \cite{GraphDatabase}
-    \item Randomly generated scale-free graphs. (family 1) \cite{Solnon:2010}
-    \item Phase transition (family 12)
-\end{itemize}
+\subsection{Features}
 
-We consider a total of 5725 instances.
+For both the pattern and the target graph, we consider the number of vertices, edges and loops, the
+mean and maximum degree, the density, whether or not every vertex has same degree, whether or not
+the graph is connected, the mean and maximum distances between all pairs of vertices, and the
+proportion of vertex pairs which are distance at least 2, 3 and 4 apart. We also consider the number
+of variable-value assignments removed by LAD preprocessing in absolute terms, as a percentage, and
+the minimum and maximum on a per-variable basis.  This gives us a total of 30 features.
 
-\subsubsection{Features}
+\subsection{Experimental Setup}
 
-\todo[inline]{Describe features here.}
-
-This gives us a total of 30 features.
-
-The data we use in this paper is available as Aslib scenario GRAPHS-2015.
+We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
+Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
+the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
+\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
+timeout of $10^8$ milliseconds (a little over a day).
 
 \subsection{Algorithm Selection approach}
 
-We apply two static steps to each instance before solving it. First, the
-computation of the LAD features can detect unsatisfiability of an instance. If
-an instance is identified as unsatisfiable, we do not process it further.
-Second, we run the VF2 solver for 0.05 seconds. This solves easy instances
-without the overhead of running algorithm selection and avoids potentially
-making incorrect solver choices.
+We apply two static steps to each instance before solving it. First, the computation of the LAD
+features can detect unsatisfiability of an instance. If an instance is identified as unsatisfiable,
+we do not process it further.  Second, we run the VF2 solver for 0.05 seconds. This solves easy
+instances without the overhead of running algorithm selection and avoids potentially making
+incorrect solver choices.
 
-Computing the LAD features detects unsatisfiability on 1919 instances. Running
-VF2 for 0.05 seconds removes a further 1470. We are left with 2336 hard
-instances that we consider for algorithm selection.
+Computing the LAD features detects unsatisfiability on 1919 instances. Running VF2 for 0.05 seconds
+removes a further 1470. We are left with 2336 hard instances that we consider for algorithm
+selection.
 
-To decide which solver to run on the remaining instances, we use
-LLAMA~\cite{kotthoff_llama_2013}. In preliminary experiments, we identified
-random forest regression to predict the performance difference between pairs of
-algorithms, with the best algorithm identified as the one with the best
-cumulative performance difference over all pairs, as the best approach. We make
-no claims that this is the overall best approach.
+To decide which solver to run on the remaining instances, we use LLAMA~\cite{kotthoff_llama_2013}.
+In preliminary experiments, we identified random forest regression to predict the performance
+difference between pairs of algorithms, with the best algorithm identified as the one with the best
+cumulative performance difference over all pairs, as the best approach. We make no claims that this
+is the overall best approach.
 
-\section{Results}
+The data we use in this paper is available as Aslib scenario GRAPHS-2015.
 
-Table~\ref{tab:res} shows the performance of our algorithm selection approach,
-compared to two baselines. The virtual best solver is the oracle predictor that,
-for each instance, chooses the best solver from our portfolio. This is the upper
-bound of what an algorithm selection approach can achieve. The single best
-solver is the one solver from the portfolio that has the overall best
-performance across the entire set of instances. We consider it a lower bound on
-performance.
+\section{Experimental Results}
+
+Table~\ref{tab:res} shows the performance of our algorithm selection approach, compared to two
+baselines. The virtual best solver is the oracle predictor that, for each instance, chooses the best
+solver from our portfolio. This is the upper bound of what an algorithm selection approach can
+achieve. The single best solver is the one solver from the portfolio that has the overall best
+performance across the entire set of instances. We consider it a lower bound on performance.
 
 \begin{table}[ht]
 \centering
@@ -245,17 +243,6 @@ diagonal.}
 \label{fig:scatter}
 \end{figure}
 
-Note that Classes 3 and 12 were not considered in the previous experimental study reported in \cite{McCreesh:2015}.
-
-\section{Experimental comparison}
-
-Our runtimes were measured on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
-Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
-the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
-\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
-timeout of $10^8$ milliseconds (a little over a day).
-
-
 \begin{table}[t]
 \begin{center}
 \begin{tabular}{|c||r||r|r|r||r|r|r|r||r|r|}
@@ -301,7 +288,7 @@ instead of 1000 ms makes a big difference. Therefore, it is important to select 
 for each instance.
 
 Table \ref{expClass} shows us that we cannot reasonably split things up based upon which class
-instances are comin from, unlike SAT. For all classes, there are always at least 2 algorithms which
+instances are coming from, unlike SAT. For all classes, there are always at least 2 algorithms which
 are the best for at least one instance of the class. In particular, for classes 2 and 3, each
 algorithm is the best for at least one instance (except Glasgow 4 for Class 2).
 
@@ -329,10 +316,6 @@ Class & VF2 & \multicolumn{3}{c||}{LAD} & \multicolumn{4}{c|}{Glasgow}\\
 \caption{Number of times each algorithm is best, for each class.\label{expClass}}
 \end{table}
 
-\section{Algorithm selection approach}
-
-Describe features + selection approach.
-
 Table 3 shows the performance of our algorithm selection approach, compared to the VBS (which is the
 upper bound of what an algorithm selection approach can achieve), and the single best solver, at
 different CPU time limits (the single best corresponds to results highlighted in blue in Table 1).
@@ -355,6 +338,7 @@ Add Figure 1 which compares single best at $10^8$ ms (Glasgow 2) with LLAMA ?
 
 \section{Conclusion and Future Work}
 
+Mention parallel, directed, labelled in here briefly.
 
 \bibliographystyle{splncs}
 \bibliography{paper}
