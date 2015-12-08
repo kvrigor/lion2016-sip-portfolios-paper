@@ -4,6 +4,7 @@
 
 % \usepackage{showframe}
 
+\usepackage{times}
 \usepackage{complexity}
 \usepackage{hyperref}
 \usepackage{microtype}
@@ -71,7 +72,9 @@ depending on the CPU time limit considered, and that combining preprocessing wit
 selection on an instance by instance basis allows us to achieve better overall performance than any
 single algorithm.
 
-\section{Per-Instance Algorithm Selection}
+\section{Background}
+
+\subsection{Per-Instance Algorithm Selection}
 
 The per-instance algorithm selection problem~\cite{rice_algorithm_1976} is to select from an
 algorithm portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} the one expected to perform
@@ -88,41 +91,13 @@ salesperson problem~\cite{kotthoff_improving_2015}, and AI planning~\cite{seipp_
 The interested reader is referred to a recent survey~\cite{kotthoff_algorithm_2014} for additional
 information on algorithm selection.
 
-\subsection{Subgraph isomorphism algorithms}
+\subsection{Subgraph Isomorphism}
 
-We consider the following exact subgraph isomorphism
-algorithms: VF2 \cite{Cordella:2004}, which is a simple backtracking search algorithm, especially
-fast on trivially satisfiable instances; LAD \cite{Solnon:2010}, which does very strong reasoning
-based on local all different redundant constraints; and the Glasgow algorithm \cite{McCreesh:2015},
-which does an expensive preprocessing pass once, followed by weaker reasoning during search.
+\todo[inline]{Add some background on subgraph isomorphism.}
 
-The Glasgow algorithm has a parameter, which controls the lengths of paths used when reasoning about
-non-adjacent vertices.  In experiments reported in \cite{McCreesh:2015}, the choice of paths of
-length 3 was used as a reasonable compromise---longer paths lead to prohibitively expensive
-preprocessing on larger, denser instances. This is often not the best choice on an instance by
-instance basis: sometimes path-based reasoning gives no benefit at all, sometimes considering only
-paths of length 2 suffices, occasionally paths of length 4 are helpful, and even looking at paths of
-length 3 is relatively expensive on some graphs. Therefore, in this new study, we consider 4
-different instances of the Glasgow algorithm, with path lengths varying from 1 to 4.
+\section{Experimental Setup}
 
-We also introduce two new variants of LAD. The first variant is a weaker LAD filtering (called LAD
-preprocessing) which is applied once, without performing a backtracking search, and detects
-inconsistencies on many instances: For each pattern node $u$, we check that there exists at least
-one target node $v$ such that for each neighbor $u'$ of $u$ there exists a different neighbor $v'$
-of $v$ such that the degree of $u'$ is smaller than or equal to the degree of $v'$. LAD
-preprocessing is an incomplete algorithm as it can only detect inconsistency of some instances: when
-it does not detect inconsistency, the instance may either be consistent or not. The time complexity
-of LAD preprocessing is ${\cal O}(n(n'+p'))$ where $n$ and $n'$ are the number of pattern and target
-nodes, respectively, and $p$ is the number of target edges.
-
-The second variant of LAD is called new LAD and it is stronger than the default LAD introduced in
-\cite{Solnon:2010}. It combines LAD filtering with new invariant properties borrowed from SND
-\cite{Audemard:2014}. The idea is to label each edge $(u,v)$ with the number of paths of length 2
-between $u$ and $v$, and each node $u$ with the number of cycles of length 3 passing through $u$,
-and to add the constraint that the label of a pattern node (resp. edge) must be smaller than or
-equal to the label of its associated target node (resp. edge).
-
-\subsection{Problem instances}
+\subsection{Problem Instances}
 
 We consider 5725 instances, which are available in a simple text
 format\footnote{\url{http://liris.cnrs.fr/csolnon/SIP.html}}. These instances are grouped into 12
@@ -144,6 +119,64 @@ classes.
 
 Note that Classes 3 and 12 were not considered in the previous experimental study reported in \cite{McCreesh:2015}.
 
+\subsection{Subgraph Isomorphism Algorithms}
+
+We consider the following exact subgraph isomorphism
+algorithms: VF2 \cite{Cordella:2004}, which is a simple backtracking search algorithm, especially
+fast on trivially satisfiable instances; LAD \cite{Solnon:2010}, which does very strong reasoning
+based on local all different redundant constraints; and the Glasgow algorithm \cite{McCreesh:2015},
+which does an expensive preprocessing pass once, followed by weaker reasoning during search.
+
+We also introduce two new variants of LAD. The first variant is a weaker LAD filtering (called LAD
+preprocessing) which is applied once, without performing a backtracking search, and detects
+inconsistencies on many instances: For each pattern node $u$, we check that there exists at least
+one target node $v$ such that for each neighbour $u'$ of $u$ there exists a
+different neighbour $v'$
+of $v$ such that the degree of $u'$ is smaller than or equal to the degree of $v'$. LAD
+preprocessing is an incomplete algorithm as it can only detect inconsistency of some instances: when
+it does not detect inconsistency, the instance may either be consistent or not. The time complexity
+of LAD preprocessing is ${\cal O}(n(n'+p'))$ where $n$ and $n'$ are the number of pattern and target
+nodes, respectively, and $p$ is the number of target edges.
+
+The second variant of LAD is called new LAD and it is stronger than the default LAD introduced in
+\cite{Solnon:2010}. It combines LAD filtering with new invariant properties borrowed from SND
+\cite{Audemard:2014}. The idea is to label each edge $(u,v)$ with the number of paths of length 2
+between $u$ and $v$, and each node $u$ with the number of cycles of length 3 passing through $u$,
+and to add the constraint that the label of a pattern node (resp.\ edge) must be smaller than or
+equal to the label of its associated target node (resp.\ edge).
+
+The Glasgow algorithm has a parameter, which controls the lengths of paths used
+when reasoning about non-adjacent vertices.  In experiments reported in
+\cite{McCreesh:2015}, the choice of paths of length 3 was used as a reasonable
+compromise -- longer paths lead to prohibitively expensive preprocessing on
+larger, denser instances. This is often not the best choice on an instance by
+instance basis: sometimes path-based reasoning gives no benefit at all,
+sometimes considering only paths of length 2 suffices, occasionally paths of
+length 4 are helpful, and even looking at paths of length 3 is relatively
+expensive on some graphs.
+
+\begin{figure}[!ht]
+\includegraphics[width=\textwidth]{figures/ecdf-glasgow}
+\caption{Empirical cumulative distribution function for the Glasgow algorithm
+with path lengths 1, 2, 3, and 4.}
+\label{fig:ecdf-glasgow}
+\end{figure}
+
+Figure~\ref{fig:ecdf-glasgow} shows the cumulative distribution function for the
+Glasgow algorithm with four different path lengths. As the instances become
+harder to solve, longer paths become better. This is what we expect, as more
+reasoning is expensive, but potentially increases the reduction of the search
+space. In particular, the relative performance of the algorithms is monotone in
+the time it takes to solve the instance -- path length 1 is best at first, but
+gets worse as the time to solve the instance increases until path length 2 is
+better. After that point, length 1 is never better than length 2 again. The same
+is true for the other path lengths.
+
+The figure illustrates the potential for portfolios and algorithm selection we
+have. There is clearly no path length that dominates throughout. Therefore, we
+consider 4 different instances of the Glasgow algorithm here, with path lengths
+varying from 1 to 4.
+
 \subsection{Features}
 
 For both the pattern and the target graph, we consider the number of vertices, edges and loops, the
@@ -153,15 +186,7 @@ proportion of vertex pairs which are distance at least 2, 3 and 4 apart. We also
 of variable-value assignments removed by LAD preprocessing in absolute terms, as a percentage, and
 the minimum and maximum on a per-variable basis.  This gives us a total of 30 features.
 
-\subsection{Experimental Setup}
-
-We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
-Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
-the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
-\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
-timeout of $10^8$ milliseconds (a little over a day).
-
-\subsection{Algorithm Selection approach}
+\section{Algorithm Selection Approach}
 
 We apply two static steps to each instance before solving it. First, the computation of the LAD
 features can detect unsatisfiability of an instance. If an instance is identified as unsatisfiable,
@@ -180,6 +205,15 @@ cumulative performance difference over all pairs, as the best approach. We make 
 is the overall best approach.
 
 The data we use in this paper is available as Aslib scenario GRAPHS-2015.
+
+\subsection{Experimental Environment}
+
+We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
+Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
+the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
+\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
+timeout of $10^8$ milliseconds (a little over a day).
+
 
 \section{Experimental Results}
 
@@ -243,8 +277,8 @@ diagonal.}
 \label{fig:scatter}
 \end{figure}
 
-Figure~\ref{fig:portfolio-ecdf} shows the cumulative density function for the
-individual solvers, the virtual best solver, and the LLAMA portfolio. The
+Figure~\ref{fig:portfolio-ecdf} shows the cumulative distribution function for
+the individual solvers, the virtual best solver, and the LLAMA portfolio. The
 virtual best solver clearly dominates with a significant margin to the next
 best. VF2 is far below all other solvers. The portfolio does not perform well
 for instances that can be solved quickly because of the overhead incurred
@@ -255,8 +289,8 @@ to the virtual best solver.
 
 \begin{figure}[!ht]
 \includegraphics[width=\textwidth]{figures/portfolio-ecdf}
-\caption{Empirical cumulative density function of solvers, virtual best solvers,
-and the LLAMA portfolio.}
+\caption{Empirical cumulative distribution function of solvers, virtual best
+solvers, and the LLAMA portfolio.}
 \label{fig:portfolio-ecdf}
 \end{figure}
 
