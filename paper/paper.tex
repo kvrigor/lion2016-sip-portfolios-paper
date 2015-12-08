@@ -179,32 +179,18 @@ varying from 1 to 4.
 
 \subsection{Features}
 
-For both the pattern and the target graph, we consider the number of vertices, edges and loops, the
-mean and maximum degree, the density, whether or not every vertex has same degree, whether or not
-the graph is connected, the mean and maximum distances between all pairs of vertices, and the
-proportion of vertex pairs which are distance at least 2, 3 and 4 apart. We also consider the number
-of variable-value assignments removed by LAD preprocessing in absolute terms, as a percentage, and
-the minimum and maximum on a per-variable basis.  This gives us a total of 30 features.
+For both the pattern and the target graph, we consider the number of vertices,
+edges and loops, the mean and maximum degree, the density, whether or not every
+vertex has same degree, whether or not the graph is connected, the mean and
+maximum distances between all pairs of vertices, and the proportion of vertex
+pairs which are distance at least 2, 3 and 4 apart. We also consider the number
+of variable-value assignments removed by LAD preprocessing in absolute terms, as
+a percentage, and the minimum and maximum on a per-variable basis. This gives
+us a total of 30 features.
 
-\section{Algorithm Selection Approach}
-
-We apply two static steps to each instance before solving it. First, the computation of the LAD
-features can detect unsatisfiability of an instance. If an instance is identified as unsatisfiable,
-we do not process it further.  Second, we run the VF2 solver for 0.05 seconds. This solves easy
-instances without the overhead of running algorithm selection and avoids potentially making
-incorrect solver choices.
-
-Computing the LAD features detects unsatisfiability on 1919 instances. Running VF2 for 0.05 seconds
-removes a further 1470. We are left with 2336 hard instances that we consider for algorithm
-selection.
-
-To decide which solver to run on the remaining instances, we use LLAMA~\cite{kotthoff_llama_2013}.
-In preliminary experiments, we identified random forest regression to predict the performance
-difference between pairs of algorithms, with the best algorithm identified as the one with the best
-cumulative performance difference over all pairs, as the best approach. We make no claims that this
-is the overall best approach.
-
-The data we use in this paper is available as Aslib scenario GRAPHS-2015.
+In addition to computing feature values, the LAD preprocessing is able to detect
+whether an instance is unsatisfiable. In this case, it is not necessary to run
+an algorithm on the instance.
 
 \subsection{Experimental Environment}
 
@@ -213,6 +199,41 @@ Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \c
 the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
 \cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
 timeout of $10^8$ milliseconds (a little over a day).
+
+\section{Algorithm Selection Approach}
+
+We apply two static steps to each instance before solving it. First, the
+computation of the LAD features can detect unsatisfiability of an instance. If
+an instance is identified as unsatisfiable, we do not process it further.
+Second, we run the VF2 solver for 0.05 seconds. This solves easy instances
+without the overhead of running algorithm selection and avoids potentially
+making incorrect solver choices.
+
+Computing the LAD features detects unsatisfiability on 1919 instances. Running
+VF2 for 0.05 seconds removes a further 1470. We are left with 2336 hard
+instances that we consider for algorithm selection.
+
+To decide which solver to run on the remaining instances, we use
+LLAMA~\cite{kotthoff_llama_2013}. LLAMA supports the most common algorithm
+selection approaches used in the literature. We performed a set of preliminary
+experiments to determine the approach that works best in this case.
+
+LLAMA's pairwise regression approach with random forest regression gave the best
+performance. The idea is very similar to the pairwise classification used
+in~\cite{xu_satzilla_2008}. For each pair of algorithms in our portfolio, we
+train a model that predicts the performance difference between them. That is, if
+the first algorithm is better than the second, the difference is positive,
+otherwise negative. The algorithm with the highest cumulative performance
+difference, i.e.\ the most positive difference over all other algorithms, is
+chosen to be run.
+
+As this approach gives very good performance already, we did not tune the
+parameters of the random forest machine learning algorithm. It is possible that
+overall performance can be improved by doing so and we make no claims that the
+particular algorithm selection approach we use in this paper cannot be improved.
+
+The data we use in this paper is available as ASlib~\cite{aslib} scenario
+GRAPHS-2015.
 
 
 \section{Experimental Results}
