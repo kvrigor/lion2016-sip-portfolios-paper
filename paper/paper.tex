@@ -196,8 +196,8 @@ performance across the entire set of instances. We consider it a lower bound on 
 & mean runtime\\
   \midrule
 virtual best & 5822.809\\
-  single best & 7782.569\\
-  LLAMA & 6595.275\\
+  single best & 7788.719\\
+  LLAMA & 6509.947\\
    \bottomrule
 \end{tabular}
 \vspace{1ex}
@@ -220,7 +220,7 @@ virtual best closed.
   \midrule
 virtual best & 2375.913\\
   single best & 3177.569\\
-  LLAMA & 2706.330\\
+  LLAMA & 2706.749\\
    \bottomrule
 \end{tabular}
 \vspace{1ex}
@@ -241,6 +241,23 @@ family. Points above the diagonal indicate that the portfolio achieved better
 performance, while the single best solver was better on instances below the
 diagonal.}
 \label{fig:scatter}
+\end{figure}
+
+Figure~\ref{fig:portfolio-ecdf} shows the cumulative density function for the
+individual solvers, the virtual best solver, and the LLAMA portfolio. The
+virtual best solver clearly dominates with a significant margin to the next
+best. VF2 is far below all other solvers. The portfolio does not perform well
+for instances that can be solved quickly because of the overhead incurred
+through feature computation. As the instances become more difficult to solve,
+its performance improves. For instances that take more than 1,000 seconds to
+solve, the portfolio eclipses any individual solver and closes most of the gap
+to the virtual best solver.
+
+\begin{figure}[!ht]
+\includegraphics[width=\textwidth]{figures/portfolio-ecdf}
+\caption{Empirical cumulative density function of solvers, virtual best solvers,
+and the LLAMA portfolio.}
+\label{fig:portfolio-ecdf}
 \end{figure}
 
 \begin{table}[t]
