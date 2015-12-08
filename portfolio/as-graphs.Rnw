@@ -18,6 +18,7 @@ library(BBmisc)
 library(xtable)
 library(plyr)
 library(aslib)
+library(tidyr)
 
 library(parallelMap)
 parallelStartSocket(5)
@@ -258,10 +259,31 @@ print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results
 @
 
 <<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance (best model).'>>=
-best = which.min(c(resc$mean.performance))
-mod = list(modelc)[[best]]
+best = which.min(c(resc$mean.performance, resr$mean.performance, rescp$mean.performance, resrp$mean.performance))
+mod = list(modelc, modelr, modelcp, modelrp)[[best]]
 perfScatterPlot(parscores, mod, singleBest, ldf, addCostsx = TRUE, addCostsy = FALSE, factor = 1, pargs=aes(colour = family)) + scale_x_log10() + scale_y_log10() + xlab("portfolio") + ylab("single best")
 @
+
+<<echo=FALSE,fig.cap='ECDF for algorithms and portfolio (best model).'>>=
+vbs.agg = aggregate(as.formula(paste("score~", paste(c("instance_id", "iteration"), sep="+", collapse="+"))), vbs(ldf), function(ss) { ss[1] })
+vbs.agg$virtual.best = parscores(ldf, vbs, factor = 1)
+vbs.agg$iteration = NULL
+vbs.agg$score = NULL
+
+pmod = mod$predictions
+pmod$portfolio = parscores(ldf, mod, factor = 1)
+pmod$iteration = NULL
+pmod$algorithm = NULL
+pmod$score = NULL
+
+perfs = subset(ldf$data, TRUE, c("instance_id", ldf$performance))
+perfs = merge(perfs, vbs.agg, by = "instance_id")
+perfs = merge(perfs, pmod, by = "instance_id")
+wide = gather_(perfs, "solver", "time", names(perfs)[-1])
+ggplot(wide, aes(x = time, col = solver)) + stat_ecdf() + scale_x_log10() +
+    ylab("fraction of instances solved")
+@
+
 
 \clearpage
 
@@ -355,6 +377,26 @@ print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results
 best = which.min(c(resc$mean.performance, resr$mean.performance, rescp$mean.performance, resrp$mean.performance))
 mod = list(modelc, modelr, modelcp, modelrp)[[best]]
 perfScatterPlot(parscores, mod, singleBest, ldf3, factor = 1, pargs=aes(colour = family)) + scale_x_log10() + scale_y_log10() + xlab("portfolio") + ylab("single best")
+@
+
+<<echo=FALSE,fig.cap='ECDF for algorithms and portfolio (best model).'>>=
+vbs.agg = aggregate(as.formula(paste("score~", paste(c("instance_id", "iteration"), sep="+", collapse="+"))), vbs(ldf3), function(ss) { ss[1] })
+vbs.agg$virtual.best = parscores(ldf3, vbs, factor = 1)
+vbs.agg$iteration = NULL
+vbs.agg$score = NULL
+
+pmod = mod$predictions
+pmod$portfolio = parscores(ldf3, mod, factor = 1)
+pmod$iteration = NULL
+pmod$algorithm = NULL
+pmod$score = NULL
+
+perfs = subset(ldf3$data, TRUE, c("instance_id", ldf3$performance))
+perfs = merge(perfs, vbs.agg, by = "instance_id")
+perfs = merge(perfs, pmod, by = "instance_id")
+wide = gather_(perfs, "solver", "time", names(perfs)[-1])
+ggplot(wide, aes(x = time, col = solver)) + stat_ecdf() + scale_x_log10() +
+    ylab("fraction of instances solved")
 @
 
 \clearpage
@@ -451,6 +493,26 @@ print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results
 best = which.min(c(resc$mean.performance, resr$mean.performance, rescp$mean.performance, resrp$mean.performance))
 mod = list(modelc, modelr, modelcp, modelrp)[[best]]
 perfScatterPlot(parscores, mod, singleBest, ldf2, factor = 1, pargs=aes(colour = family)) + scale_x_log10() + scale_y_log10() + xlab("portfolio") + ylab("single best")
+@
+
+<<echo=FALSE,fig.cap='ECDF for algorithms and portfolio (best model).'>>=
+vbs.agg = aggregate(as.formula(paste("score~", paste(c("instance_id", "iteration"), sep="+", collapse="+"))), vbs(ldf2), function(ss) { ss[1] })
+vbs.agg$virtual.best = parscores(ldf2, vbs, factor = 1)
+vbs.agg$iteration = NULL
+vbs.agg$score = NULL
+
+pmod = mod$predictions
+pmod$portfolio = parscores(ldf2, mod, factor = 1)
+pmod$iteration = NULL
+pmod$algorithm = NULL
+pmod$score = NULL
+
+perfs = subset(ldf2$data, TRUE, c("instance_id", ldf2$performance))
+perfs = merge(perfs, vbs.agg, by = "instance_id")
+perfs = merge(perfs, pmod, by = "instance_id")
+wide = gather_(perfs, "solver", "time", names(perfs)[-1])
+ggplot(wide, aes(x = time, col = solver)) + stat_ecdf() + scale_x_log10() +
+    ylab("fraction of instances solved")
 @
 
 <<echo=FALSE, message=FALSE, warning=FALSE>>=

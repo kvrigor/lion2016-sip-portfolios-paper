@@ -1,8 +1,8 @@
 library(aslib)
 
 makeEDAConfig = function(
-  algo.perf.impute.zero.vals = FALSE,
-  algo.perf.log = FALSE
+  algo.perf.impute.zero.vals = TRUE,
+  algo.perf.log = TRUE
 ) {
 
   makeS3Obj("ASScenarioHTMLConfig",
