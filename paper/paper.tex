@@ -305,6 +305,15 @@ LLAMA~\cite{kotthoff_llama_2013}. LLAMA supports the most common algorithm
 selection approaches used in the literature. We performed a set of preliminary
 experiments to determine the approach that works best in this case.
 
+We use 10-fold cross-validation to determine the performance of the LLAMA
+models. The entire set of instances was randomly partitioned into 10 subsets of
+approximately equal size. Of the 10 subsets, 9 were combined to form the
+training set for the algorithm selection models, which were evaluated on the
+remaining subset. This process was repeated 10 times for all possible
+combinations of training and test sets. At the end of this process, each problem
+instance in the original set was used exactly once to evaluate the performance
+of the algorithm selection models.
+
 LLAMA's pairwise regression approach with random forest regression gave the best
 performance. The idea is very similar to the pairwise classification used
 in~\cite{xu_satzilla_2008}. For each pair of algorithms in our portfolio, we
