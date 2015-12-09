@@ -218,9 +218,13 @@ print(xtable(res, display = c("s", "d", rep("g", ncol(res) - 1L))), booktabs = T
 
 <<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
 resvbs = data.frame(model = "virtual best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, vbs)),
+    solved = sum(successes(ldf, vbs)),
     mean.performance = mean(parscores(ldf, vbs, factor = 1)),
     median.performance = median(parscores(ldf, vbs, factor = 1)))
 ressb = data.frame(model = "single best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, singleBest)),
+    solved = sum(successes(ldf, singleBest)),
     mean.performance = mean(parscores(ldf, singleBest, factor = 1)),
     median.performance = median(parscores(ldf, singleBest, factor = 1)))
 
@@ -228,6 +232,8 @@ rflearner = makeLearner("classif.randomForest")
 
 modelc = classify(rflearner, ldf)
 resc = data.frame(model = "classification",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, modelc)),
+    solved = sum(successes(ldf, modelc)),
     mean.performance = mean(parscores(ldf, modelc, factor = 1)),
     median.performance = median(parscores(ldf, modelc, factor = 1)))
 times = sapply(modelc$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
@@ -235,6 +241,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelr = regression(makeLearner("regr.randomForest"), ldf)
 resr = data.frame(model = "regression",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, modelr)),
+    solved = sum(successes(ldf, modelr)),
     mean.performance = mean(parscores(ldf, modelr, factor = 1)),
     median.performance = median(parscores(ldf, modelr, factor = 1)))
 times = sapply(modelr$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
@@ -242,6 +250,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelcp = classifyPairs(rflearner, ldf)
 rescp = data.frame(model = "classifyPairs",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, modelcp)),
+    solved = sum(successes(ldf, modelcp)),
     mean.performance = mean(parscores(ldf, modelcp, factor = 1)),
     median.performance = median(parscores(ldf, modelcp, factor = 1)))
 times = sapply(modelcp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
@@ -249,6 +259,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelrp = regressionPairs(makeLearner("regr.randomForest"), ldf)
 resrp = data.frame(model = "regressionPairs",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, modelrp)),
+    solved = sum(successes(ldf, modelrp)),
     mean.performance = mean(parscores(ldf, modelrp, factor = 1)),
     median.performance = median(parscores(ldf, modelrp, factor = 1)))
 times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
@@ -270,18 +282,18 @@ vbs.agg$virtual.best = parscores(ldf, vbs, factor = 1)
 vbs.agg$iteration = NULL
 vbs.agg$score = NULL
 
-pmod = mod$predictions
-pmod$portfolio = parscores(ldf, mod, factor = 1)
-pmod$iteration = NULL
-pmod$algorithm = NULL
-pmod$score = NULL
+pmod = data.frame(instance_id = unique(mod$predictions$instance_id), portfolio = parscores(ldf, mod, factor = 1))
 
 perfs = subset(ldf$data, TRUE, c("instance_id", ldf$performance))
 perfs = merge(perfs, vbs.agg, by = "instance_id")
 perfs = merge(perfs, pmod, by = "instance_id")
 wide = gather_(perfs, "solver", "time", names(perfs)[-1])
-ggplot(wide, aes(x = time, col = solver)) + stat_ecdf() + scale_x_log10() +
-    ylab("fraction of instances solved")
+wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
+ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
+    scale_linetype_manual(values=c(3,1), guide = FALSE) +
+    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
+    ylab("fraction of instances solved") +
+    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
 @
 
 
@@ -335,14 +347,20 @@ print(xtable(tab, digits = 0, caption = "Number of times each algorithm is best 
 
 <<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
 resvbs = data.frame(model = "virtual best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf3, vbs)),
+    solved = sum(successes(ldf3, vbs)),
     mean.performance = mean(parscores(ldf3, vbs, factor = 1)),
     median.performance = median(parscores(ldf3, vbs, factor = 1)))
 ressb = data.frame(model = "single best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf3, singleBest)),
+    solved = sum(successes(ldf3, singleBest)),
     mean.performance = mean(parscores(ldf3, singleBest, factor = 1)),
     median.performance = median(parscores(ldf3, singleBest, factor = 1)))
 
 modelc = classify(rflearner, ldf3)
 resc = data.frame(model = "classification",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf3, modelc)),
+    solved = sum(successes(ldf3, modelc)),
     mean.performance = mean(parscores(ldf3, modelc, factor = 1)),
     median.performance = median(parscores(ldf3, modelc, factor = 1)))
 times = sapply(modelc$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
@@ -350,6 +368,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelr = regression(makeLearner("regr.randomForest"), ldf3)
 resr = data.frame(model = "regression",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf3, modelr)),
+    solved = sum(successes(ldf3, modelr)),
     mean.performance = mean(parscores(ldf3, modelr, factor = 1)),
     median.performance = median(parscores(ldf3, modelr, factor = 1)))
 times = sapply(modelr$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
@@ -357,6 +377,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelcp = classifyPairs(rflearner, ldf3)
 rescp = data.frame(model = "classifyPairs",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf3, modelcp)),
+    solved = sum(successes(ldf3, modelcp)),
     mean.performance = mean(parscores(ldf3, modelcp, factor = 1)),
     median.performance = median(parscores(ldf3, modelcp, factor = 1)))
 times = sapply(modelcp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
@@ -364,6 +386,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelrp = regressionPairs(makeLearner("regr.randomForest"), ldf3)
 resrp = data.frame(model = "regressionPairs",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf3, modelrp)),
+    solved = sum(successes(ldf3, modelrp)),
     mean.performance = mean(parscores(ldf3, modelrp, factor = 1)),
     median.performance = median(parscores(ldf3, modelrp, factor = 1)))
 times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
@@ -371,6 +395,50 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
 print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolved instances removed."), booktabs = TRUE, include.rownames = FALSE)
+@
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
+addmcp = rep.int(0, length(presolved))
+addsucc = rep.int(1, length(presolved))
+addtime = subset(ldf$data, ldf$data$instance_id %in% presolved)$lad_features
+
+resvbs = data.frame(model = "virtual best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, vbs)),
+    solved = sum(successes(ldf, vbs)),
+    mean.performance = mean(parscores(ldf, vbs, factor = 1)),
+    median.performance = median(parscores(ldf, vbs, factor = 1)))
+ressb = data.frame(model = "single best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, singleBest)),
+    solved = sum(successes(ldf, singleBest)),
+    mean.performance = mean(parscores(ldf, singleBest, factor = 1)),
+    median.performance = median(parscores(ldf, singleBest, factor = 1)))
+
+resc = data.frame(model = "classification",
+    mean.misclassification.penalty = mean(c(misclassificationPenalties(ldf3, modelc), addmcp)),
+    solved = sum(c(successes(ldf3, modelc), addsucc)),
+    mean.performance = mean(c(parscores(ldf3, modelc, factor = 1), addtime)),
+    median.performance = median(c(parscores(ldf3, modelc, factor = 1), addtime)))
+
+resr = data.frame(model = "regression",
+    mean.misclassification.penalty = mean(c(misclassificationPenalties(ldf3, modelr), addmcp)),
+    solved = sum(c(successes(ldf3, modelr), addsucc)),
+    mean.performance = mean(c(parscores(ldf3, modelr, factor = 1), addtime)),
+    median.performance = median(c(parscores(ldf3, modelr, factor = 1), addtime)))
+
+rescp = data.frame(model = "classifyPairs",
+    mean.misclassification.penalty = mean(c(misclassificationPenalties(ldf3, modelcp), addmcp)),
+    solved = sum(c(successes(ldf3, modelcp), addsucc)),
+    mean.performance = mean(c(parscores(ldf3, modelcp, factor = 1), addtime)),
+    median.performance = median(c(parscores(ldf3, modelcp, factor = 1), addtime)))
+
+resrp = data.frame(model = "regressionPairs",
+    mean.misclassification.penalty = mean(c(misclassificationPenalties(ldf3, modelrp), addmcp)),
+    solved = sum(c(successes(ldf3, modelrp), addsucc)),
+    mean.performance = mean(c(parscores(ldf3, modelrp, factor = 1), addtime)),
+    median.performance = median(c(parscores(ldf3, modelrp, factor = 1), addtime)))
+
+tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
+print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolved instances removed (evaluated on all instances)."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance with presolved instances removed (best model).'>>=
@@ -385,18 +453,39 @@ vbs.agg$virtual.best = parscores(ldf3, vbs, factor = 1)
 vbs.agg$iteration = NULL
 vbs.agg$score = NULL
 
-pmod = mod$predictions
-pmod$portfolio = parscores(ldf3, mod, factor = 1)
-pmod$iteration = NULL
-pmod$algorithm = NULL
-pmod$score = NULL
+pmod = data.frame(instance_id = unique(mod$predictions$instance_id), portfolio = parscores(ldf3, mod, factor = 1))
 
 perfs = subset(ldf3$data, TRUE, c("instance_id", ldf3$performance))
 perfs = merge(perfs, vbs.agg, by = "instance_id")
 perfs = merge(perfs, pmod, by = "instance_id")
 wide = gather_(perfs, "solver", "time", names(perfs)[-1])
-ggplot(wide, aes(x = time, col = solver)) + stat_ecdf() + scale_x_log10() +
-    ylab("fraction of instances solved")
+wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
+ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
+    scale_linetype_manual(values=c(3,1), guide = FALSE) +
+    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
+    ylab("fraction of instances solved") +
+    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
+@
+
+<<echo=FALSE,fig.cap='ECDF for algorithms and portfolio for all instances (best model).'>>=
+vbs.agg = aggregate(as.formula(paste("score~", paste(c("instance_id", "iteration"), sep="+", collapse="+"))), vbs(ldf), function(ss) { ss[1] })
+vbs.agg$virtual.best = parscores(ldf, vbs, factor = 1)
+vbs.agg$iteration = NULL
+vbs.agg$score = NULL
+
+pmod = data.frame(instance_id = unique(mod$predictions$instance_id), portfolio = parscores(ldf3, mod, factor = 1))
+pmod = rbind(pmod, data.frame(instance_id = factor(presolved), portfolio = subset(ldf$data, ldf$data$instance_id %in% presolved)$lad_features))
+
+perfs = subset(ldf$data, TRUE, c("instance_id", ldf$performance))
+perfs = merge(perfs, vbs.agg, by = "instance_id")
+perfs = merge(perfs, pmod, by = "instance_id")
+wide = gather_(perfs, "solver", "time", names(perfs)[-1])
+wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
+ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
+    scale_linetype_manual(values=c(3,1), guide = FALSE) +
+    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
+    ylab("fraction of instances solved") +
+    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
 @
 
 \clearpage
@@ -451,14 +540,20 @@ print(xtable(tab, digits = 0, caption = "Number of times each algorithm is best 
 
 <<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
 resvbs = data.frame(model = "virtual best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf2, vbs)),
+    solved = sum(successes(ldf2, vbs)),
     mean.performance = mean(parscores(ldf2, vbs, factor = 1)),
     median.performance = median(parscores(ldf2, vbs, factor = 1)))
 ressb = data.frame(model = "single best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf2, singleBest)),
+    solved = sum(successes(ldf2, singleBest)),
     mean.performance = mean(parscores(ldf2, singleBest, factor = 1)),
     median.performance = median(parscores(ldf2, singleBest, factor = 1)))
 
 modelc = classify(rflearner, ldf2)
 resc = data.frame(model = "classification",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf2, modelc)),
+    solved = sum(successes(ldf2, modelc)),
     mean.performance = mean(parscores(ldf2, modelc, factor = 1)),
     median.performance = median(parscores(ldf2, modelc, factor = 1)))
 times = sapply(modelc$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
@@ -466,6 +561,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelr = regression(makeLearner("regr.randomForest"), ldf2)
 resr = data.frame(model = "regression",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf2, modelr)),
+    solved = sum(successes(ldf2, modelr)),
     mean.performance = mean(parscores(ldf2, modelr, factor = 1)),
     median.performance = median(parscores(ldf2, modelr, factor = 1)))
 times = sapply(modelr$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
@@ -473,6 +570,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelcp = classifyPairs(rflearner, ldf2)
 rescp = data.frame(model = "classifyPairs",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf2, modelcp)),
+    solved = sum(successes(ldf2, modelcp)),
     mean.performance = mean(parscores(ldf2, modelcp, factor = 1)),
     median.performance = median(parscores(ldf2, modelcp, factor = 1)))
 times = sapply(modelcp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
@@ -480,6 +579,8 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 modelrp = regressionPairs(makeLearner("regr.randomForest"), ldf2)
 resrp = data.frame(model = "regressionPairs",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf2, modelrp)),
+    solved = sum(successes(ldf2, modelrp)),
     mean.performance = mean(parscores(ldf2, modelrp, factor = 1)),
     median.performance = median(parscores(ldf2, modelrp, factor = 1)))
 times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
@@ -487,6 +588,51 @@ print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most im
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
 print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolver."), booktabs = TRUE, include.rownames = FALSE)
+@
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
+vf2pre = setdiff(ldf3$data$instance_id, ldf2$data$instance_id)
+addmcp = rep.int(0, length(presolved) + length(vf2pre))
+addsucc = rep.int(1, length(presolved) + length(vf2pre))
+addtime = c(subset(ldf$data, ldf$data$instance_id %in% presolved)$lad_features, subset(ldf$data, ldf$data$instance_id %in% vf2pre)$vf2)
+
+resvbs = data.frame(model = "virtual best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, vbs)),
+    solved = sum(successes(ldf, vbs)),
+    mean.performance = mean(parscores(ldf, vbs, factor = 1)),
+    median.performance = median(parscores(ldf, vbs, factor = 1)))
+ressb = data.frame(model = "single best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf, singleBest)),
+    solved = sum(successes(ldf, singleBest)),
+    mean.performance = mean(parscores(ldf, singleBest, factor = 1)),
+    median.performance = median(parscores(ldf, singleBest, factor = 1)))
+
+resc = data.frame(model = "classification",
+    mean.misclassification.penalty = mean(c(misclassificationPenalties(ldf2, modelc), addmcp)),
+    solved = sum(c(successes(ldf2, modelc), addsucc)),
+    mean.performance = mean(c(parscores(ldf2, modelc, factor = 1), addtime)),
+    median.performance = median(c(parscores(ldf2, modelc, factor = 1), addtime)))
+
+resr = data.frame(model = "regression",
+    mean.misclassification.penalty = mean(c(misclassificationPenalties(ldf2, modelr), addmcp)),
+    solved = sum(c(successes(ldf2, modelr), addsucc)),
+    mean.performance = mean(c(parscores(ldf2, modelr, factor = 1), addtime)),
+    median.performance = median(c(parscores(ldf2, modelr, factor = 1), addtime)))
+
+rescp = data.frame(model = "classifyPairs",
+    mean.misclassification.penalty = mean(c(misclassificationPenalties(ldf2, modelcp), addmcp)),
+    solved = sum(c(successes(ldf2, modelcp), addsucc)),
+    mean.performance = mean(c(parscores(ldf2, modelcp, factor = 1), addtime)),
+    median.performance = median(c(parscores(ldf2, modelcp, factor = 1), addtime)))
+
+resrp = data.frame(model = "regressionPairs",
+    mean.misclassification.penalty = mean(c(misclassificationPenalties(ldf2, modelrp), addmcp)),
+    solved = sum(c(successes(ldf2, modelrp), addsucc)),
+    mean.performance = mean(c(parscores(ldf2, modelrp, factor = 1), addtime)),
+    median.performance = median(c(parscores(ldf2, modelrp, factor = 1), addtime)))
+
+tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
+print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolver (evaluated on all instances)."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance with presolver (best model).'>>=
@@ -501,18 +647,41 @@ vbs.agg$virtual.best = parscores(ldf2, vbs, factor = 1)
 vbs.agg$iteration = NULL
 vbs.agg$score = NULL
 
-pmod = mod$predictions
-pmod$portfolio = parscores(ldf2, mod, factor = 1)
-pmod$iteration = NULL
-pmod$algorithm = NULL
-pmod$score = NULL
+pmod = data.frame(instance_id = unique(mod$predictions$instance_id), portfolio = parscores(ldf2, mod, factor = 1))
 
 perfs = subset(ldf2$data, TRUE, c("instance_id", ldf2$performance))
 perfs = merge(perfs, vbs.agg, by = "instance_id")
 perfs = merge(perfs, pmod, by = "instance_id")
 wide = gather_(perfs, "solver", "time", names(perfs)[-1])
-ggplot(wide, aes(x = time, col = solver)) + stat_ecdf() + scale_x_log10() +
-    ylab("fraction of instances solved")
+wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
+ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
+    scale_linetype_manual(values=c(3,1), guide = FALSE) +
+    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
+    ylab("fraction of instances solved") +
+    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
+@
+
+<<echo=FALSE,fig.cap='ECDF for algorithms and portfolio for all instances (best model).'>>=
+vbs.agg = aggregate(as.formula(paste("score~", paste(c("instance_id", "iteration"), sep="+", collapse="+"))), vbs(ldf), function(ss) { ss[1] })
+vbs.agg$virtual.best = parscores(ldf, vbs, factor = 1)
+vbs.agg$iteration = NULL
+vbs.agg$score = NULL
+
+pmod = data.frame(instance_id = unique(mod$predictions$instance_id), portfolio = parscores(ldf2, mod, factor = 1))
+pmod = rbind(pmod, data.frame(instance_id = factor(presolved), portfolio = subset(ldf$data, ldf$data$instance_id %in% presolved)$lad_features))
+vf2pre = setdiff(ldf3$data$instance_id, ldf2$data$instance_id)
+pmod = rbind(pmod, data.frame(instance_id = factor(vf2pre), portfolio = subset(ldf$data, ldf$data$instance_id %in% vf2pre)$vf2))
+
+perfs = subset(ldf$data, TRUE, c("instance_id", ldf$performance))
+perfs = merge(perfs, vbs.agg, by = "instance_id")
+perfs = merge(perfs, pmod, by = "instance_id")
+wide = gather_(perfs, "solver", "time", names(perfs)[-1])
+wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
+ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
+    scale_linetype_manual(values=c(3,1), guide = FALSE) +
+    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
+    ylab("fraction of instances solved") +
+    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
 @
 
 <<echo=FALSE, message=FALSE, warning=FALSE>>=
