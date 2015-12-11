@@ -58,13 +58,13 @@ insights into what affects the performance of an algorithm.
 
 The subgraph isomorphism problem is to find an injective mapping from vertices of a small
 \emph{pattern} graph to vertices of a large \emph{target} graph which preserves adjacency. This
-\NP-complete problem has lots of important practical applications, for example in computer vision,
-biochemistry, and model checking. There exist various exact algorithms, which have been compared on
-a large benchmark in  \cite{McCreesh:2015}. These experiments indicated that the single best
-algorithm depends on the CPU time limit considered: for very small (resp. larger) CPU time limits,
-VF2 \cite{Cordella:2004} (resp. the Glasgow algorithm \cite{McCreesh:2015}) has better success
-rates. Furthermore, they also showed us that on an instance by instance basis, other algorithms may
-become better.
+\NP-complete problem has lots of important practical applications, for example in computer vision
+\cite{cviu11,pr15}, biochemistry \cite{Giugno:2013}, and model checking \cite{Sevegnani:2015}. There
+exist various exact algorithms, which have been compared on a large benchmark in
+\cite{McCreesh:2015}. These experiments indicated that the single best algorithm depends on the CPU
+time limit considered: for very small (resp. larger) CPU time limits, VF2 \cite{Cordella:2004}
+(resp. the Glasgow algorithm \cite{McCreesh:2015}) has better success rates. Furthermore, they also
+showed us that on an instance by instance basis, other algorithms may become better.
 
 In this paper, we report experimental results on a larger set of 8 algorithms, including new
 variants, and a larger benchmark. We show that 4 of these algorithms are single best algorithms,
@@ -121,18 +121,19 @@ We have selected a set of algorithms with complementary performance:
 \begin{itemize}
 \item VF2 \cite{Cordella:2004}, which performs a weak filtering so that it is especially fast on trivially satisfiable instances;
 \item LAD \cite{Solnon:2010}, which combines two strong but expensive filtering techniques (AllDifferent Generalized Arc Consistency and LAD);
-\item Glasgow \cite{McCreesh:2015}, which does an expensive preprocessing based on path length invariant properties, followed by weaker filtering (forward-checking) during search. We consider 4 different instanciations of Glasgow, with path lengths varying from 1 to 4: The longer the path, the stronger the reduction, and the more expensive to achieve.
+\item Glasgow \cite{McCreesh:2015}, which does expensive preprocessing based on path length
+    invariant properties to generate additional constraints, followed by weaker filtering
+    (forward-checking, and a heuristic AllDifferent propagator which can miss deletions) and
+    conflict-directed backjumping during search.
 \end{itemize}
 
-The Glasgow algorithm has a parameter, which controls the lengths of paths used
-when reasoning about non-adjacent vertices.  In experiments reported in
-\cite{McCreesh:2015}, the choice of paths of length 3 was used as a reasonable
-compromise -- longer paths lead to prohibitively expensive preprocessing on
-larger, denser instances. This is often not the best choice on an instance by
-instance basis: sometimes path-based reasoning gives no benefit at all,
-sometimes considering only paths of length 2 suffices, occasionally paths of
-length 4 are helpful, and even looking at paths of length 3 is relatively
-expensive on some graphs.
+\noindent The Glasgow algorithm has a parameter, which controls the lengths of paths used when
+reasoning about non-adjacent vertices.  In experiments reported in \cite{McCreesh:2015}, the choice
+of paths of length 3 was used as a reasonable compromise---longer paths lead to prohibitively
+expensive preprocessing on larger, denser instances. This is often not the best choice on an
+instance by instance basis: sometimes path-based reasoning gives no benefit at all, sometimes
+considering only paths of length 2 suffices, occasionally paths of length 4 are helpful, and even
+looking at paths of length 3 is relatively expensive on some graphs.
 
 \begin{figure}[!ht]
 \includegraphics[width=\textwidth]{figures/ecdf-glasgow}
@@ -146,7 +147,7 @@ Glasgow algorithm with four different path lengths. As the instances become
 harder to solve, longer paths become better. This is what we expect, as more
 reasoning is expensive, but potentially increases the reduction of the search
 space. In particular, the relative performance of the algorithms is monotone in
-the time it takes to solve the instance -- path length 1 is best at first, but
+the time it takes to solve the instance---path length 1 is best at first, but
 gets worse as the time to solve the instance increases until path length 2 is
 better. After that point, length 1 is never better than length 2 again. The same
 is true for the other path lengths.
@@ -176,9 +177,9 @@ instances are grouped into 12 classes.
     instances generated from the 50 first graphs, whereas class 3 contains larger
     instances where pattern graphs are coming from class 2, and target graphs are coming from the
     next 50 graphs.
-\item Classes 4 to 8 contain randomly generated graphs coming from \cite{GraphDatabase}:
-    bounded-degree graphs for classes 3 and 4, regular meshes for classes 5 and 6, and random graphs
-    with uniform edge probabilities for class 7.
+\item Classes 4 to 8 contain randomly generated graphs coming from
+    \cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for classes 3 and 4, regular meshes
+    for classes 5 and 6, and random graphs with uniform edge probabilities for class 7.
 \item Classes 9 and 10 contain instances coming from segmented images \cite{pr15,cviu11}.
 \item Class 11 contains instances coming from meshes modeling 3D objects \cite{cviu11}.
 \item Class 12 contains random graph instances belonging to the phase transition.
@@ -206,8 +207,19 @@ PathLAD and Glasgow(1) outperform incompleteLAD when considering longer time lim
 Finally, for CPU time limits larger than 3000 ms, the best solver becomes Glasgow(2).
 As we increase the CPU time limit, variants of Glasgow with longer paths (Glasgow(3) and Glasgow(4)) become better. This is what we expect, as more reasoning is expensive, but potentially increases the reduction of the search space. In particular, the relative performance of Glasgow variants is monotone in the time it takes to solve the instance – Glasgow(1) is best at first, but gets worse as the time to solve the instance increases until Glasgow(2) is better. After that point, Glasgow(1) is never better than Glasgow(2) again. The same is true for path lengths 3 and 4.
 
-The figure illustrates the potential for portfolios and algorithm selection we have. There is clearly no single solver that dominates throughout. 
-Furthermore, the Virtual Best Solver (VBS), which considers the best algorithm for each instance separately, obtains much better results, showing us that the algorithms have complementary performance. The difference between VBS and single best is more particularly important for rather small CPU time limits (smaller than 1000 ms). In many applications, it is important to have the fastest possible algorithm. For example, in pattern recognition applications such as those reported in \cite{pr15,cviu11}, we often have to solve subgraph isomorphism problems for a very large number of graphs (in order to find a pattern image in a large database of target images, for example), so that having an algorithm that is able to solve an instance in 100 ms instead of 1000 ms makes a big difference. Therefore, it is important to select the best algorithm for each instance, even if the instance is an easy one.
+The figure illustrates the potential for portfolios and algorithm selection we have. There is clearly no single solver that dominates throughout.
+
+Furthermore, the Virtual Best Solver (VBS), which considers the best algorithm for each instance
+separately, obtains much better results, showing us that the algorithms have complementary
+performance. The difference between VBS and single best is more particularly important for rather
+small CPU time limits (smaller than 1000 ms). In many applications, it is important to have the
+fastest possible algorithm. For example, in pattern recognition applications such as those reported
+in \cite{pr15,cviu11}, and in chemical applications such as \cite{Giugno:2013}, we often have to
+solve subgraph isomorphism problems for a very large number of graphs (in order to find a pattern
+image or molecule in a large database of target images or compounds, for example), so that having an
+algorithm that is able to solve an instance in 100 ms instead of 1000 ms makes a big difference.
+Therefore, it is important to select the best algorithm for each instance, even if the instance is
+an easy one.
 
 Table \ref{expClass} shows us that we cannot reasonably split things up based upon which class instances are coming from, unlike SAT. For all classes, there are always at least 2 algorithms which are the best for at least one instance of the class. In particular, for classes 2 and 3, each algorithm is the best for at least one instance (except Glasgow 4 for Class 3).
 
@@ -262,43 +274,46 @@ both hard and unsatisfiable instances.
 
 \section{Algorithm Selection Approach}
 
-Our approach is composed of 3 steps described below: First, we run two presolvers in a static way to quickly solve easy instances; Second, we extract features from instances which are not solved by the first step; Finally, we select an algorithm and run it.
+Our approach is composed of 3 steps described below. First, we run two presolvers in a static way to
+quickly solve easy instances; second, we extract features from instances which are not solved by the
+first step; and finally, we select an algorithm and run it.
 
-\paragraph{Static steps.}
+\subsection{Presolving}
 
-Experimental results reported in Section \ref{expComp} have shown us that incompleteLAD is very fast (7 ms on average) and is able to very quickly solve 1919 instances. Therefore, we propose to first run incompleteLAD: If the instance is solved, then we do not process it further. Furthermore, running IncompleteLAD allows us to collect features on the number of candidate couples which are removed by the filtering.
+Experimental results reported in Section \ref{expComp} have shown us that incompleteLAD is very fast
+(7 ms on average) and is able to very quickly solve 1919 instances. Therefore, we first run
+incompleteLAD: if the instance is detected to be unsatisfiable, then we do not process it further.
+Otherwise, we record as features the number of candidate couples removed by incompleteLAD in absolute
+terms, as a percentage, and the minimum and maximum on a per-variable basis.
 
-VF2 is also able to solve very quickly many easy instances: Among the 3806 instances which are not solved by incompleteLAD, 1470 are solved by VF2 in less than 50 milliseconds. Therefore, after running incompleteLAD, we run the VF2 solver for 50 ms. This solves easy instances without the overhead of running algorithm selection and avoids potentially making incorrect solver choices. After running incompleteLAD and VF2 for 50 ms, we are left with 2336 hard instances that we consider for algorithm selection.
+VF2 is also able to solve many easy instances very quickly: among the 3806 instances which are not
+solved by incompleteLAD, 1470 are solved by VF2 in less than 50 milliseconds. Therefore, after
+running incompleteLAD, we run the VF2 solver for 50 ms. This solves easy instances without the
+overhead of running algorithm selection and avoids potentially making incorrect solver choices.
+After running incompleteLAD and VF2 for 50 ms, we are left with 2336 hard instances that we consider
+for algorithm selection.
 
+\subsection{Feature Extraction}
 
+If presolving does not give us a solution, we extract additional features. For both the pattern and
+the target graph, we consider some basic graph properties, which may be computed very quickly:
 
+\begin{itemize}
+    \item The number of vertices and edges.
+    \item The density---we expect that some kinds of filtering might be expensive and ineffective on
+        dense graphs.
+    \item How many loops (self-adjacent vertices) the graph contains---since loops must be mapped to
+        loops, this could have a strong effect on how easy an instance is.
+    \item The mean and maximum degrees, and whether or not every vertex has the same degree. (The
+        degree-based invariants used by LAD and Glasgow do nothing at the top of search if every
+        vertex has the same degree.)
+    \item Whether or not the graph is connected.
+    \item The mean and maximum distances between all pairs of vertices (if nearly all vertices are
+        close together, path-based reasoning is likely to be ineffective). We also consider the
+        proportion of vertex pairs which are distance at least 2, 3 and 4 apart.
+\end{itemize}
 
-\subsection{Features}
-
-For both the pattern and the target graph, we consider the number of vertices,
-edges and loops, the mean and maximum degree, the density, whether or not every
-vertex has same degree, whether or not the graph is connected, the mean and
-maximum distances between all pairs of vertices, and the proportion of vertex
-pairs which are distance at least 2, 3 and 4 apart. We also consider the number
-of candidate couples removed by incompleteLAD in absolute terms, as
-a percentage, and the minimum and maximum on a per-variable basis. This gives
-us a total of 30 features.
-
-In addition to computing feature values, the LAD preprocessing is able to detect
-whether an instance is unsatisfiable. In this case, it is not necessary to run
-an algorithm on the instance.
-
-
-We apply two static steps to each instance before solving it. First, the
-computation of the LAD features can detect unsatisfiability of an instance. If
-an instance is identified as unsatisfiable, we do not process it further.
-Second, we run the VF2 solver for 0.05 seconds. This solves easy instances
-without the overhead of running algorithm selection and avoids potentially
-making incorrect solver choices.
-
-Computing the LAD features detects unsatisfiability on 1919 instances. Running
-VF2 for 0.05 seconds removes a further 1470. We are left with 2336 hard
-instances that we consider for algorithm selection.
+\subsection{Solver Selection}
 
 To decide which solver to run on the remaining instances, we use
 LLAMA~\cite{kotthoff_llama_2013}. LLAMA supports the most common algorithm
