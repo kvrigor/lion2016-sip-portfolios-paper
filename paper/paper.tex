@@ -30,7 +30,6 @@
     Lars Kotthoff\inst{1}
     \and Ciaran McCreesh\thanks{This work was supported by the Engineering
         and Physical Sciences Research Council [grant number EP/K503058/1]}\inst{2}
-    \and Patrick Prosser\inst{2}
     \and Christine Solnon\inst{3}}
 
 \institute{
@@ -90,7 +89,7 @@ We also define $n_p = \# N_p$, $n_t = \# N_t$,  $e_p=\# E_p$, $e_t=\# E_t$, and 
 
 Subgraph isomorphism problems may be solved by a systematic exploration of the search space composed of all possible injective matchings from $N_p$ to $N_t$: starting from an empty matching, one incrementally extends a partial matching by matching a non matched pattern node to a non matched target node until either some edges are not matched by the current matching (the search must backtrack to a previous choice point and go on with another extension) or all pattern nodes have been matched (a solution has been found). To reduce the search space, this exhaustive exploration is combined with filtering techniques that aim at removing candidate couples of non matched pattern-target nodes $(u,v)\in N_p\times N_t$. Different filterings may be considered; some are stronger than others (they remove more candidate couples), but also have higher time complexities.
 
-\paragraph{Filtering for subgraph isomorphism.}
+\subsection{Filtering for subgraph isomorphism}
 
 Simple filterings basically propagate difference constraints (which ensure that the matching is injective) and edge constraints (which ensure that the matching preserves pattern edges): each time a pattern node $u\in N_p$ is matched with a target node $v\in N_t$, one removes every candidate couple $(u',v')\in N_p\times N_t$ such that either $v'=v$ (difference constraint) or $(u,u')$ is a pattern edge whereas $(v,v')$ is not a target edge (edge constraint). This simple filtering (called {\em Forward-Checking}) is very fast to achieve: in ${\cal O}(n_p)$ for difference constraints, and in ${\cal O}(d_p\cdot n_t)$ for edge constraints. It is used, for example, in McGregor's algorithm \cite{mcgregor79} and in VF2 \cite{Cordella:2004}.
 
@@ -100,7 +99,7 @@ Various filterings have been introduced for edge constraints. Ullman \cite{ullma
 
 A stronger filtering may be obtained by propagating edge constraints in a more global way, as proposed in \cite{LV02}. The idea is to check for each candidate couple $(u,v)\in N_p\times N_t$ that the number of pattern nodes adjacent to $u$ is smaller than or equal to the number of target nodes that are both adjacent to $v$ and that may be matched with nodes adjacent to $u$. This is done in ${\cal O}(n_p^2\cdot n_t^2)$. This idea has been generalized in \cite{Solnon:2010} where, for each candidate couple $(u,v)\in N_p\times N_t$, a redundant Local AllDifferent (LAD) constraint ensures that each neighbour of $u$ may be matched with a different neighbour of $v$. This is done in ${\cal O}(n_p\cdot n_t\cdot d_p^2\cdot d_t^2)$.
 
-\paragraph{Propagation of invariant properties.}
+\subsection{Propagation of invariant properties}
 
 Some filterings exploit invariant properties, {\em i.e.}, properties associated with nodes such that nodes may be matched only if they have compatible properties. A classical property is the degree: a pattern node $u\in N_p$ may be matched with a target node $v\in N_t$ only if $d^\circ(u)\leq d^\circ(v)$. This property is usually used at the beginning of the search to reduce the set of candidate couples to $\{(u,v)\in N_p\times N_t\;|\;d^\circ(u)\leq d^\circ(v)\}$.
 Other examples of invariant properties are the number of cycles of length $k$ passing through the node, and the number of cliques of size $k$ containing the node, which must be smaller for a pattern node than for its matched target node.
@@ -115,8 +114,62 @@ These invariant properties are used, for example:
 In \cite{Audemard:2014} , the length of paths is not limited, and it is iteratively incremented until no more couple is removed. In \cite{battiti-mascia07} and \cite{McCreesh:2015},  algorithms are parameterized by the maximum path length considered when counting paths: Larger values for this parameter remove more candidate couples, but are also more time consuming. Experiments reported in \cite{battiti-mascia07} show us that the best setting depends on the instance considered, and that a portfolio running several randomized 
 versions in time-sharing decreases the total CPU-time needed to find a solution for feasible instances. In experiments reported in \cite{McCreesh:2015}, this parameter has been set to 3, as this setting seemed to be a reasonable compromise.
 
+\subsection{Per-Instance Algorithm Selection}
 
-\paragraph{Algorithms selected in our portfolio.}
+The per-instance algorithm selection problem~\cite{rice_algorithm_1976} is to select from an
+algorithm portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} the one expected to perform
+best on a given problem instance. Algorithm selection systems usually build machine learning models
+of the algorithms or the portfolio they are contained in to forecast which algorithm to use in a
+particular context. Using the model predictions, one or more algorithms from the portfolio are
+selected to be run sequentially or in parallel.
+
+Here, we consider the case where exactly one algorithm is selected for solving the problem. One of
+the most prominent and successful systems that employs this approach is
+SATzilla~\cite{xu_satzilla_2008}, which defined the state of the art in SAT solving for a number of
+years. Other application areas include constraint solving~\cite{omahony_using_2008}, the travelling
+salesperson problem~\cite{kotthoff_improving_2015}, and AI planning~\cite{seipp_learning_2012}.
+The interested reader is referred to a recent survey~\cite{kotthoff_algorithm_2014} for additional
+information on algorithm selection.
+
+\subsection{Problem Instances}
+
+We consider 5725 instances, which are available in a simple text
+format\footnote{\url{http://liris.cnrs.fr/csolnon/SIP.html}}. These
+instances are grouped into 12 classes.
+
+\begin{itemize}
+\item Class 1 contains randomly generated scale-free graphs \cite{constraints10}.
+\item Classes 2 and 3 contain various kinds of graphs coming from \cite{LV02}: class 2 contains small
+    instances generated from the 50 first graphs, whereas class 3 contains larger
+    instances where pattern graphs are coming from class 2, and target graphs are coming from the
+    next 50 graphs.
+\item Classes 4 to 8 contain randomly generated graphs coming from
+    \cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for classes 3 and 4, regular meshes
+    for classes 5 and 6, and random graphs with uniform edge probabilities for class 7.
+\item Classes 9 and 10 contain instances coming from segmented images \cite{pr15,cviu11}.
+\item Class 11 contains instances coming from meshes modeling 3D objects \cite{cviu11}.
+\item Class 12 contains random graph instances belonging to the phase transition.
+\end{itemize}
+
+Note that Classes 3 and 12 were not considered in the previous experimental
+study reported in \cite{McCreesh:2015}.  This set of instances is also much
+larger than that of Battiti and Mascia~\cite{battiti-mascia07}, who were the
+first to propose algorithm portfolios for subgraph isomorphism problems.
+Battiti and Mascia only considered a pure parallel portfolio consisting of two
+solvers, and without a selection mechanism. Their problem set consisted
+entirely of easy satisfiable instances, which is where this style of approach
+has most success.
+
+\subsection{Experimental setup}
+
+We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
+Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
+the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
+\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
+timeout of $10^8$ milliseconds (a little over a day).
+
+\subsection{Algorithms selected in our portfolio}
+
 We have selected a set of algorithms with complementary performance:
 \begin{itemize}
 \item VF2 \cite{Cordella:2004}, which performs a weak filtering so that it is especially fast on trivially satisfiable instances;
@@ -162,44 +215,14 @@ We also introduce two new variants of LAD. The first variant is a weaker LAD fil
 
 The second variant of LAD is called pathLAD and it combines the LAD constraints introduced in \cite{Solnon:2010} with the exploitation of path length properties, as proposed in \cite{Audemard:2014}. The idea is to label each edge $(u,v)$ with the number of paths of length 2 between $u$ and $v$, and each node $u$ with the number of cycles of length 3 passing through $u$, and to add the constraint that the label of a pattern node (resp. edge) must be smaller than or equal to the label of its associated target node (resp. edge). 
 
-\section{Experimental Comparison of Algorithms of the Portfolio}\label{expComp}
-
-
-\paragraph{Benchmark.}
-
-We consider 5725 instances, which are available in a simple text
-format\footnote{\url{http://liris.cnrs.fr/csolnon/SIP.html}}. These
-instances are grouped into 12 classes.
-
-\begin{itemize}
-\item Class 1 contains randomly generated scale-free graphs \cite{constraints10}.
-\item Classes 2 and 3 contain various kinds of graphs coming from \cite{LV02}: class 2 contains small
-    instances generated from the 50 first graphs, whereas class 3 contains larger
-    instances where pattern graphs are coming from class 2, and target graphs are coming from the
-    next 50 graphs.
-\item Classes 4 to 8 contain randomly generated graphs coming from
-    \cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for classes 3 and 4, regular meshes
-    for classes 5 and 6, and random graphs with uniform edge probabilities for class 7.
-\item Classes 9 and 10 contain instances coming from segmented images \cite{pr15,cviu11}.
-\item Class 11 contains instances coming from meshes modeling 3D objects \cite{cviu11}.
-\item Class 12 contains random graph instances belonging to the phase transition.
-\end{itemize}
-
-Note that Classes 3 and 12 were not considered in the previous experimental study reported in \cite{McCreesh:2015}.
-
-
-\paragraph{Experimental setup.} We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
-Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
-the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
-\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
-timeout of $10^8$ milliseconds (a little over a day).
+\subsection{Results from Individual Algorithms} \label{expComp}
 
 \begin{figure}[t]
 \includegraphics[width=\textwidth]{courbe.pdf}
-\caption{Evolution of the number of solved instances with respect to CPU time, for the 8 algorithms of the portfolio, and a Virtual Best Solver (VBS).\label{expTime}}
+\caption{Evolution of the number of solved instances with respect to CPU time, for the 8 algorithms of the portfolio, and a Virtual Best Solver (VBS).\label{expTimeGraph}}
 \end{figure}
 
-\paragraph{Results.}Figure \ref{expTime} displays the evolution of the number of instances solved with respect to CPU time. It shows us that the best solver depends on the time limit
+Figure \ref{expTimeGraph} displays the evolution of the number of instances solved with respect to CPU time. It shows us that the best solver depends on the time limit
 considered. IncompleteLAD is able to solve easy inconsistent instances very quickly, in a few milliseconds. Hence, for time limits lower than 5 ms, the best solver is incompleteLAD. However, it is not able to solve harder inconsistent instances, neither can it solve consistent instances. 
 
 PathLAD and Glasgow(1) outperform incompleteLAD when considering longer time limits: PathLAD is the best solver for time limits larger than 5ms and lower than 40 ms, and Glasgow(1) is the best solver for time limits larger than 40ms and lower than 3000 ms.
@@ -246,31 +269,6 @@ Total & 1282 & 1865 & 881 & 1273 & 1530 & 465 & 82& 15\\\hline
 \end{center}
 \caption{Number of times each algorithm is best, for each class.\label{expClass}}
 \end{table}
-
-\subsection{Per-Instance Algorithm Selection}
-
-The per-instance algorithm selection problem~\cite{rice_algorithm_1976} is to select from an
-algorithm portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} the one expected to perform
-best on a given problem instance. Algorithm selection systems usually build machine learning models
-of the algorithms or the portfolio they are contained in to forecast which algorithm to use in a
-particular context. Using the model predictions, one or more algorithms from the portfolio are
-selected to be run sequentially or in parallel.
-
-Here, we consider the case where exactly one algorithm is selected for solving the problem. One of
-the most prominent and successful systems that employs this approach is
-SATzilla~\cite{xu_satzilla_2008}, which defined the state of the art in SAT solving for a number of
-years. Other application areas include constraint solving~\cite{omahony_using_2008}, the travelling
-salesperson problem~\cite{kotthoff_improving_2015}, and AI planning~\cite{seipp_learning_2012}.
-The interested reader is referred to a recent survey~\cite{kotthoff_algorithm_2014} for additional
-information on algorithm selection.
-
-\medskip
-
-Battiti and Mascia~\cite{battiti-mascia07} were the first to propose
-algorithm portfolios for subgraph isomorphism problems. However, they only
-consider a pure parallel portfolio without a selection mechanism consisting of
-only two solvers. In addition, our instance set is much larger and considers
-both hard and unsatisfiable instances.
 
 \section{Algorithm Selection Approach}
 
@@ -447,10 +445,10 @@ $10^8$ & 4191 & 1919 & 5423 & 5479 & 5508 &  \cellcolor{blue!25}5561 & 5560 & 55
 $t$ (in milliseconds) followed by the number of instances solved within this time limit by VF2, LAD
 preprocessing, default LAD, and new LAD, Glasgow with  the lengths of paths limited to 1, 2, 3 and
 4, and the VBS. The best single algorithm is highlighted in blue, and the difference between VBS and
-single best if displayed in the last column ($\delta$).\label{expTime}}
+single best if displayed in the last column ($\delta$).\label{expTimeTable}}
 \end{table}
 
-Table \ref{expTime} displays the number of instances solved at different CPU time limits, ranging
+Table \ref{expTimeTable} displays the number of instances solved at different CPU time limits, ranging
 from 1 to $10^8$ milliseconds. It shows us that the best single solver depends on the time limit
 considered. Simple approaches like LAD preprocessing and VF2 are able to solve easy instances very
 quickly, in a few milliseconds. However, they are not able to solve harder instances: LAD
@@ -461,7 +459,7 @@ and LAD preprocessing when considering longer time limits: 10 ms for default and
 1, and 100 (resp. 1000 and 10000) ms for Glasgow 2 (resp. 3 and 4). The Virtual Best Solver (VBS),
 which considers the best algorithm for each instance separately, obtains much better results,
 showing us that the algorithms have complementary performance. The difference between VBS and single
-best (column $\delta$ of Table \ref{expTime}) is more particularly important for rather small CPU
+best (column $\delta$ of Table \ref{expTimeTable}) is more particularly important for rather small CPU
 time limits. In particular, VBS solves 693 more instances than the single best (Glasgow 1) when the
 limit is 100 ms. In many applications, it is important to have the fastest possible algorithm. For
 example, in pattern recognition applications, we often have to solve subgraph isomorphism problems
