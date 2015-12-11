@@ -1,5 +1,6 @@
 scenario_id: graphs-2015
 features_deterministic:
+- cheap.pattern.time
 - cheap.pattern.vertices
 - cheap.pattern.edges
 - cheap.pattern.loops
@@ -7,6 +8,7 @@ features_deterministic:
 - cheap.pattern.maxdeg
 - cheap.pattern.degisfixed
 - cheap.pattern.density
+- cheap.target.time
 - cheap.target.vertices
 - cheap.target.edges
 - cheap.target.loops
@@ -14,12 +16,14 @@ features_deterministic:
 - cheap.target.maxdeg
 - cheap.target.degisfixed
 - cheap.target.density
+- distance.pattern.time
 - distance.pattern.isconnected
 - distance.pattern.meandistance
 - distance.pattern.maxdistance
 - distance.pattern.proportiondistancege2
 - distance.pattern.proportiondistancege3
 - distance.pattern.proportiondistancege4
+- distance.target.time
 - distance.target.isconnected
 - distance.target.meandistance
 - distance.target.maxdistance
@@ -30,6 +34,7 @@ features_deterministic:
 - lad.values.removed.percent
 - lad.values.removed.min
 - lad.values.removed.max
+- lad.time
 features_stochastic: []
 algorithms_deterministic:
 - lad
@@ -47,7 +52,7 @@ algorithm_cutoff_time: 1.0e+08
 algorithm_cutoff_memory: '?'
 features_cutoff_time: '?'
 features_cutoff_memory: '?'
-number_of_feature_steps: 5.0
+number_of_feature_steps: 5
 default_steps:
 - cheap_pattern
 - cheap_target
@@ -57,6 +62,7 @@ default_steps:
 feature_steps:
   cheap_pattern:
     provides:
+    - cheap.pattern.time
     - cheap.pattern.vertices
     - cheap.pattern.edges
     - cheap.pattern.loops
@@ -66,6 +72,7 @@ feature_steps:
     - cheap.pattern.density
   cheap_target:
     provides:
+    - cheap.target.time
     - cheap.target.vertices
     - cheap.target.edges
     - cheap.target.loops
@@ -75,6 +82,7 @@ feature_steps:
     - cheap.target.density
   distance_pattern:
     provides:
+    - distance.pattern.time
     - distance.pattern.isconnected
     - distance.pattern.meandistance
     - distance.pattern.maxdistance
@@ -83,6 +91,7 @@ feature_steps:
     - distance.pattern.proportiondistancege4
   distance_target:
     provides:
+    - distance.target.time
     - distance.target.isconnected
     - distance.target.meandistance
     - distance.target.maxdistance
@@ -95,3 +104,4 @@ feature_steps:
     - lad.values.removed.percent
     - lad.values.removed.min
     - lad.values.removed.max
+    - lad.time

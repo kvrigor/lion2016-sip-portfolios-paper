@@ -20,22 +20,21 @@ times$sat = NULL
 timeout = 1e8
 algorithms = names(times)[-1]
 
-feats.cheap.pattern = names(features.cheap)[grep("pattern.", names(features.cheap), fixed = TRUE)][-1]
+feats.cheap.pattern = names(features.cheap)[grep("pattern.", names(features.cheap), fixed = TRUE)]
 costs.cheap.pattern = "cheap.pattern.time"
-feats.cheap.target = names(features.cheap)[grep("target.", names(features.cheap), fixed = TRUE)][-1]
+feats.cheap.target = names(features.cheap)[grep("target.", names(features.cheap), fixed = TRUE)]
 costs.cheap.target = "cheap.target.time"
 
-feats.distance.pattern = names(features.distance)[grep("pattern.", names(features.distance), fixed = TRUE)][-1]
+feats.distance.pattern = names(features.distance)[grep("pattern.", names(features.distance), fixed = TRUE)]
 costs.distance.pattern = "distance.pattern.time"
-feats.distance.target = names(features.distance)[grep("target.", names(features.distance), fixed = TRUE)][-1]
+feats.distance.target = names(features.distance)[grep("target.", names(features.distance), fixed = TRUE)]
 costs.distance.target = "distance.target.time"
 
 feats.lad = names(features.lad)[grep("lad.", names(features.lad), fixed = TRUE)]
 costs.lad = "lad.time"
 presolved.lad = "lad.detected.inconsistent"
-feats.lad = feats.lad[!(feats.lad %in% c(costs.lad, presolved.lad))]
+feats.lad = feats.lad[!(feats.lad %in% c(presolved.lad))]
 
-# convert ms to s to avoid integer overflows later
 for (alg in algorithms) {
     times[,alg] = times[,alg]
     times[,alg][times[,alg] >= timeout] = NA
@@ -63,7 +62,7 @@ desc = makeS3Obj("ASScenarioDesc",
   features_cutoff_time = NA,
   features_cutoff_memory = NA,
 
-  number_of_feature_steps = 5,
+  number_of_feature_steps = 5L,
   default_steps = c("cheap_pattern", "cheap_target", "distance_pattern", "distance_target", "lad_features"),
   feature_steps =
       list(cheap_pattern = list(provides = feats.cheap.pattern),
