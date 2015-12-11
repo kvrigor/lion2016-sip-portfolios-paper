@@ -58,13 +58,13 @@ insights into what affects the performance of an algorithm.
 
 The subgraph isomorphism problem is to find an injective mapping from vertices of a small
 \emph{pattern} graph to vertices of a large \emph{target} graph which preserves adjacency. This
-\NP-complete problem has lots of important practical applications, for example in computer vision,
-biochemistry, and model checking. There exist various exact algorithms, which have been compared on
-a large benchmark in  \cite{McCreesh:2015}. These experiments indicated that the single best
-algorithm depends on the CPU time limit considered: for very small (resp. larger) CPU time limits,
-VF2 \cite{Cordella:2004} (resp. the Glasgow algorithm \cite{McCreesh:2015}) has better success
-rates. Furthermore, they also showed us that on an instance by instance basis, other algorithms may
-become better.
+\NP-complete problem has lots of important practical applications, for example in computer vision
+\cite{cviu11,pr15}, biochemistry \cite{Giugno:2013}, and model checking \cite{Sevegnani:2015}. There
+exist various exact algorithms, which have been compared on a large benchmark in
+\cite{McCreesh:2015}. These experiments indicated that the single best algorithm depends on the CPU
+time limit considered: for very small (resp. larger) CPU time limits, VF2 \cite{Cordella:2004}
+(resp. the Glasgow algorithm \cite{McCreesh:2015}) has better success rates. Furthermore, they also
+showed us that on an instance by instance basis, other algorithms may become better.
 
 In this paper, we report experimental results on a larger set of 8 algorithms, including new
 variants, and a larger benchmark. We show that 4 of these algorithms are single best algorithms,
@@ -177,9 +177,9 @@ instances are grouped into 12 classes.
     instances generated from the 50 first graphs, whereas class 3 contains larger
     instances where pattern graphs are coming from class 2, and target graphs are coming from the
     next 50 graphs.
-\item Classes 4 to 8 contain randomly generated graphs coming from \cite{GraphDatabase}:
-    bounded-degree graphs for classes 3 and 4, regular meshes for classes 5 and 6, and random graphs
-    with uniform edge probabilities for class 7.
+\item Classes 4 to 8 contain randomly generated graphs coming from
+    \cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for classes 3 and 4, regular meshes
+    for classes 5 and 6, and random graphs with uniform edge probabilities for class 7.
 \item Classes 9 and 10 contain instances coming from segmented images \cite{pr15,cviu11}.
 \item Class 11 contains instances coming from meshes modeling 3D objects \cite{cviu11}.
 \item Class 12 contains random graph instances belonging to the phase transition.
@@ -207,8 +207,19 @@ PathLAD and Glasgow(1) outperform incompleteLAD when considering longer time lim
 Finally, for CPU time limits larger than 3000 ms, the best solver becomes Glasgow(2).
 As we increase the CPU time limit, variants of Glasgow with longer paths (Glasgow(3) and Glasgow(4)) become better. This is what we expect, as more reasoning is expensive, but potentially increases the reduction of the search space. In particular, the relative performance of Glasgow variants is monotone in the time it takes to solve the instance – Glasgow(1) is best at first, but gets worse as the time to solve the instance increases until Glasgow(2) is better. After that point, Glasgow(1) is never better than Glasgow(2) again. The same is true for path lengths 3 and 4.
 
-The figure illustrates the potential for portfolios and algorithm selection we have. There is clearly no single solver that dominates throughout. 
-Furthermore, the Virtual Best Solver (VBS), which considers the best algorithm for each instance separately, obtains much better results, showing us that the algorithms have complementary performance. The difference between VBS and single best is more particularly important for rather small CPU time limits (smaller than 1000 ms). In many applications, it is important to have the fastest possible algorithm. For example, in pattern recognition applications such as those reported in \cite{pr15,cviu11}, we often have to solve subgraph isomorphism problems for a very large number of graphs (in order to find a pattern image in a large database of target images, for example), so that having an algorithm that is able to solve an instance in 100 ms instead of 1000 ms makes a big difference. Therefore, it is important to select the best algorithm for each instance, even if the instance is an easy one.
+The figure illustrates the potential for portfolios and algorithm selection we have. There is clearly no single solver that dominates throughout.
+
+Furthermore, the Virtual Best Solver (VBS), which considers the best algorithm for each instance
+separately, obtains much better results, showing us that the algorithms have complementary
+performance. The difference between VBS and single best is more particularly important for rather
+small CPU time limits (smaller than 1000 ms). In many applications, it is important to have the
+fastest possible algorithm. For example, in pattern recognition applications such as those reported
+in \cite{pr15,cviu11}, and in chemical applications such as \cite{Giugno:2013}, we often have to
+solve subgraph isomorphism problems for a very large number of graphs (in order to find a pattern
+image or molecule in a large database of target images or compounds, for example), so that having an
+algorithm that is able to solve an instance in 100 ms instead of 1000 ms makes a big difference.
+Therefore, it is important to select the best algorithm for each instance, even if the instance is
+an easy one.
 
 Table \ref{expClass} shows us that we cannot reasonably split things up based upon which class instances are coming from, unlike SAT. For all classes, there are always at least 2 algorithms which are the best for at least one instance of the class. In particular, for classes 2 and 3, each algorithm is the best for at least one instance (except Glasgow 4 for Class 3).
 
