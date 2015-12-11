@@ -17,7 +17,7 @@ times$family = NULL
 times$vbs = NULL
 times$sat = NULL
 
-timeout = 1e8/1000
+timeout = 1e8
 algorithms = names(times)[-1]
 
 feats.cheap.pattern = names(features.cheap)[grep("pattern.", names(features.cheap), fixed = TRUE)][-1]
@@ -37,14 +37,14 @@ feats.lad = feats.lad[!(feats.lad %in% c(costs.lad, presolved.lad))]
 
 # convert ms to s to avoid integer overflows later
 for (alg in algorithms) {
-    times[,alg] = times[,alg] / 1000
+    times[,alg] = times[,alg]
     times[,alg][times[,alg] >= timeout] = NA
 }
-features.cheap[,costs.cheap.pattern] = features.cheap[,costs.cheap.pattern] / 1000
-features.cheap[,costs.cheap.target] = features.cheap[,costs.cheap.target] / 1000
-features.distance[,costs.distance.pattern] = features.distance[,costs.distance.pattern] / 1000
-features.distance[,costs.distance.target] = features.distance[,costs.distance.target] / 1000
-features.lad[,costs.lad] = features.lad[,costs.lad] / 1000
+features.cheap[,costs.cheap.pattern] = features.cheap[,costs.cheap.pattern] 
+features.cheap[,costs.cheap.target] = features.cheap[,costs.cheap.target]
+features.distance[,costs.distance.pattern] = features.distance[,costs.distance.pattern]
+features.distance[,costs.distance.target] = features.distance[,costs.distance.target]
+features.lad[,costs.lad] = features.lad[,costs.lad]
 
 # convert to aslib
 desc = makeS3Obj("ASScenarioDesc",

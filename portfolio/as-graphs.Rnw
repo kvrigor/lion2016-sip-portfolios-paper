@@ -19,6 +19,8 @@ library(xtable)
 library(plyr)
 library(aslib)
 library(tidyr)
+library(ggthemes)
+library(scales)
 
 library(parallelMap)
 parallelStartSocket(5)
@@ -46,7 +48,7 @@ tabs = by(ldf$data, ldf$data$family, function(x) as.data.frame.matrix(t(sapply(x
 tab = rbind.fill(tabs)
 tab$family = rownames(tab)
 tab = tab[,order(names(tab))]
-print(xtable(tab, digits = 3, caption = "Mean performance by family."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Mean performance by family."), booktabs = TRUE, include.rownames = FALSE)
 
 tab = t(sapply(ldf$data[,ldf$performance], median))
 print(xtable(tab, caption = "Median performance of each algorithm."), booktabs = TRUE, include.rownames = FALSE)
@@ -55,7 +57,7 @@ tabs = by(ldf$data, ldf$data$family, function(x) as.data.frame.matrix(t(sapply(x
 tab = rbind.fill(tabs)
 tab$family = rownames(tab)
 tab = tab[,order(names(tab))]
-print(xtable(tab, digits = 3, caption = "Median performance by family."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Median performance by family."), booktabs = TRUE, include.rownames = FALSE)
 
 tab = t(table(unlist(ldf$best)))
 print(xtable(tab, caption = "Number of times each algorithm is best. More than one algorithm may be best for one instance if there are ties."), booktabs = TRUE, include.rownames = FALSE)
@@ -94,7 +96,7 @@ source("eda_config.R")
 config = readEDAConfig(asscenario, ".")
 
 res = summarizeAlgoPerf(asscenario)
-print(xtable(res, digits = 6, display = c("s", "d", "d", rep("g", 8))), booktabs = TRUE)
+print(xtable(res, digits = 0, display = c("s", "d", "d", rep("g", 8))), booktabs = TRUE)
 @
 
 \subsubsection*{Summary of the runstatus per algorithm}
@@ -103,7 +105,7 @@ The following table summarizes the runstatus of each algorithm over all instance
 
 <<echo=FALSE, results='asis'>>=
 res = summarizeAlgoRunstatus(asscenario)
-print(xtable(res, digits = 3), booktabs = TRUE)
+print(xtable(res, digits = 0), booktabs = TRUE)
 @
 
 \subsubsection*{Dominated Algorithms}
@@ -267,7 +269,7 @@ times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$l
 print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regressionPairs."), booktabs = TRUE)
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
-print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance (best model).'>>=
@@ -291,9 +293,15 @@ wide = gather_(perfs, "solver", "time", names(perfs)[-1])
 wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
 ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
     scale_linetype_manual(values=c(3,1), guide = FALSE) +
-    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
-    ylab("fraction of instances solved") +
-    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 10),
+                  labels = trans_format("log10", math_format(10^.x)),
+                  limits = c(1, asscenario$desc$algorithm_cutoff_time-1)) +
+    coord_cartesian(xlim = c(1, asscenario$desc$algorithm_cutoff_time-1),
+        ylim = c(0,1)) +
+    ylab("fraction of instances solved") + xlab("time [ms]") +
+    annotation_logticks(sides = "b") +
+    theme_tufte(base_family='sans', base_size = 12) +
+    theme(legend.justification=c(1,0), legend.position=c(1,0.1), aspect.ratio = 0.6, axis.line = element_line(colour="black"), panel.grid = element_line(), panel.grid.major = element_line(colour="lightgray"))
 @
 
 
@@ -321,7 +329,7 @@ tabs = by(ldf3$data, ldf3$data$family, function(x) as.data.frame.matrix(t(sapply
 tab = rbind.fill(tabs)
 tab$family = rownames(tab)
 tab = tab[,order(names(tab))]
-print(xtable(tab, digits = 3, caption = "Mean performance by family."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Mean performance by family."), booktabs = TRUE, include.rownames = FALSE)
 
 tab = t(sapply(ldf3$data[,ldf3$performance], median))
 print(xtable(tab, caption = "Median performance of each algorithm."), booktabs = TRUE, include.rownames = FALSE)
@@ -330,7 +338,7 @@ tabs = by(ldf3$data, ldf3$data$family, function(x) as.data.frame.matrix(t(sapply
 tab = rbind.fill(tabs)
 tab$family = rownames(tab)
 tab = tab[,order(names(tab))]
-print(xtable(tab, digits = 3, caption = "Median performance by family."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Median performance by family."), booktabs = TRUE, include.rownames = FALSE)
 
 tab = t(table(unlist(ldf3$best)))
 print(xtable(tab, caption = "Number of times each algorithm is best. More than one algorithm may be best for one instance if there are ties."), booktabs = TRUE, include.rownames = FALSE)
@@ -394,7 +402,7 @@ times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$l
 print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regressionPairs."), booktabs = TRUE)
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
-print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolved instances removed."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results with presolved instances removed."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
@@ -438,7 +446,7 @@ resrp = data.frame(model = "regressionPairs",
     median.performance = median(c(parscores(ldf3, modelrp, factor = 1), addtime)))
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
-print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolved instances removed (evaluated on all instances)."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results with presolved instances removed (evaluated on all instances)."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance with presolved instances removed (best model).'>>=
@@ -462,9 +470,15 @@ wide = gather_(perfs, "solver", "time", names(perfs)[-1])
 wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
 ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
     scale_linetype_manual(values=c(3,1), guide = FALSE) +
-    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
-    ylab("fraction of instances solved") +
-    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 10),
+                  labels = trans_format("log10", math_format(10^.x)),
+                  limits = c(1, asscenario$desc$algorithm_cutoff_time-1)) +
+    coord_cartesian(xlim = c(1, asscenario$desc$algorithm_cutoff_time-1),
+        ylim = c(0,1)) +
+    ylab("fraction of instances solved") + xlab("time [ms]") +
+    annotation_logticks(sides = "b") +
+    theme_tufte(base_family='sans', base_size = 12) +
+    theme(legend.justification=c(1,0), legend.position=c(1,0.1), aspect.ratio = 0.6, axis.line = element_line(colour="black"), panel.grid = element_line(), panel.grid.major = element_line(colour="lightgray"))
 @
 
 <<echo=FALSE,fig.cap='ECDF for algorithms and portfolio for all instances (best model).'>>=
@@ -483,9 +497,15 @@ wide = gather_(perfs, "solver", "time", names(perfs)[-1])
 wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
 ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
     scale_linetype_manual(values=c(3,1), guide = FALSE) +
-    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
-    ylab("fraction of instances solved") +
-    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 10),
+                  labels = trans_format("log10", math_format(10^.x)),
+                  limits = c(1, asscenario$desc$algorithm_cutoff_time-1)) +
+    coord_cartesian(xlim = c(1, asscenario$desc$algorithm_cutoff_time-1),
+        ylim = c(0,1)) +
+    ylab("fraction of instances solved") + xlab("time [ms]") +
+    annotation_logticks(sides = "b") +
+    theme_tufte(base_family='sans', base_size = 12) +
+    theme(legend.justification=c(1,0), legend.position=c(1,0.1), aspect.ratio = 0.6, axis.line = element_line(colour="black"), panel.grid = element_line(), panel.grid.major = element_line(colour="lightgray"))
 @
 
 \clearpage
@@ -497,7 +517,7 @@ Run vf2 for 0.05 second as a presolver, after removing presolved instances.
 <<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
 # presolver
 ldf2 = ldf3
-presolvetime = 0.05
+presolvetime = 50
 ldf2$data = subset(ldf3$data, ldf3$data$vf2 > presolvetime)
 ldf2$best = subset(ldf3$best, ldf3$data$vf2 > presolvetime)
 ldf2$train = NULL
@@ -514,7 +534,7 @@ tabs = by(ldf2$data, ldf2$data$family, function(x) as.data.frame.matrix(t(sapply
 tab = rbind.fill(tabs)
 tab$family = rownames(tab)
 tab = tab[,order(names(tab))]
-print(xtable(tab, digits = 3, caption = "Mean performance by family."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Mean performance by family."), booktabs = TRUE, include.rownames = FALSE)
 
 tab = t(sapply(ldf2$data[,ldf2$performance], median))
 print(xtable(tab, caption = "Median performance of each algorithm."), booktabs = TRUE, include.rownames = FALSE)
@@ -523,7 +543,7 @@ tabs = by(ldf2$data, ldf2$data$family, function(x) as.data.frame.matrix(t(sapply
 tab = rbind.fill(tabs)
 tab$family = rownames(tab)
 tab = tab[,order(names(tab))]
-print(xtable(tab, digits = 3, caption = "Median performance by family."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Median performance by family."), booktabs = TRUE, include.rownames = FALSE)
 
 tab = t(table(unlist(ldf2$best)))
 print(xtable(tab, caption = "Number of times each algorithm is best. More than one algorithm may be best for one instance if there are ties."), booktabs = TRUE, include.rownames = FALSE)
@@ -587,7 +607,7 @@ times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$l
 print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regressionPairs."), booktabs = TRUE)
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
-print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolver."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results with presolver."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
@@ -632,7 +652,7 @@ resrp = data.frame(model = "regressionPairs",
     median.performance = median(c(parscores(ldf2, modelrp, factor = 1), addtime)))
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
-print(xtable(tab, digits = 3, caption = "Preliminary algorithm selection results with presolver (evaluated on all instances)."), booktabs = TRUE, include.rownames = FALSE)
+print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results with presolver (evaluated on all instances)."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE,fig.cap='Single best algorithm vs.\ portfolio performance with presolver (best model).'>>=
@@ -656,9 +676,15 @@ wide = gather_(perfs, "solver", "time", names(perfs)[-1])
 wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
 ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
     scale_linetype_manual(values=c(3,1), guide = FALSE) +
-    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
-    ylab("fraction of instances solved") +
-    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 10),
+                  labels = trans_format("log10", math_format(10^.x)),
+                  limits = c(1, asscenario$desc$algorithm_cutoff_time-1)) +
+    coord_cartesian(xlim = c(1, asscenario$desc$algorithm_cutoff_time-1),
+        ylim = c(0,1)) +
+    ylab("fraction of instances solved") + xlab("time [ms]") +
+    annotation_logticks(sides = "b") +
+    theme_tufte(base_family='sans', base_size = 12) +
+    theme(legend.justification=c(1,0), legend.position=c(1,0.1), aspect.ratio = 0.6, axis.line = element_line(colour="black"), panel.grid = element_line(), panel.grid.major = element_line(colour="lightgray"))
 @
 
 <<echo=FALSE,fig.cap='ECDF for algorithms and portfolio for all instances (best model).'>>=
@@ -679,9 +705,235 @@ wide = gather_(perfs, "solver", "time", names(perfs)[-1])
 wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
 ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
     scale_linetype_manual(values=c(3,1), guide = FALSE) +
-    scale_x_log10(limits = c(10e-5, asscenario$desc$algorithm_cutoff_time)) +
-    ylab("fraction of instances solved") +
-    geom_vline(xintercept = asscenario$desc$algorithm_cutoff_time, col = "red")
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 10),
+                  labels = trans_format("log10", math_format(10^.x)),
+                  limits = c(1, asscenario$desc$algorithm_cutoff_time-1)) +
+    coord_cartesian(xlim = c(1, asscenario$desc$algorithm_cutoff_time-1),
+        ylim = c(0,1)) +
+    ylab("fraction of instances solved") + xlab("time [ms]") +
+    annotation_logticks(sides = "b") +
+    theme_tufte(base_family='sans', base_size = 12) +
+    theme(legend.justification=c(1,0), legend.position=c(1,0.1), aspect.ratio = 0.6, axis.line = element_line(colour="black"), panel.grid = element_line(), panel.grid.major = element_line(colour="lightgray"))
+@
+
+\clearpage
+
+\subsection*{Only Glasgow variants}
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
+ldf.glasgow = ldf2
+ldf.glasgow$performance = c("glasgow1", "glasgow2", "glasgow3", "glasgow4")
+ldf.glasgow$success = c("glasgow1_success", "glasgow2_success", "glasgow3_success", "glasgow4_success")
+
+pnames = ldf.glasgow$performance
+snames = ldf.glasgow$success
+optfun = min
+best = apply(ldf.glasgow$data, 1,
+    function(x) {
+        tosel = pnames
+        nosuccs = sapply(snames[which(as.logical(x[snames]) == FALSE)], function(y) { unlist(strsplit(y, "_"))[1] })
+        tosel = setdiff(pnames, nosuccs)
+        if(length(tosel) == 0) {
+            # nothing was able to solve this instance
+            return(NA)
+        } else {
+            perfs = as.numeric(x[tosel])
+            return(tosel[which(perfs == optfun(perfs))])
+        }
+    })
+# simplify...
+names(best) = NULL
+ldf.glasgow$best = best
+
+resvbs = data.frame(model = "virtual best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf.glasgow, vbs)),
+    solved = sum(successes(ldf.glasgow, vbs)),
+    mean.performance = mean(parscores(ldf.glasgow, vbs, factor = 1)),
+    median.performance = median(parscores(ldf.glasgow, vbs, factor = 1)))
+ressb = data.frame(model = "single best",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf.glasgow, singleBest)),
+    solved = sum(successes(ldf.glasgow, singleBest)),
+    mean.performance = mean(parscores(ldf.glasgow, singleBest, factor = 1)),
+    median.performance = median(parscores(ldf.glasgow, singleBest, factor = 1)))
+
+modelc = classify(rflearner, ldf.glasgow)
+resc = data.frame(model = "classification",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf.glasgow, modelc)),
+    solved = sum(successes(ldf.glasgow, modelc)),
+    mean.performance = mean(parscores(ldf.glasgow, modelc, factor = 1)),
+    median.performance = median(parscores(ldf.glasgow, modelc, factor = 1)))
+times = sapply(modelc$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
+print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for classification."), booktabs = TRUE)
+
+modelr = regression(makeLearner("regr.randomForest"), ldf.glasgow)
+resr = data.frame(model = "regression",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf.glasgow, modelr)),
+    solved = sum(successes(ldf.glasgow, modelr)),
+    mean.performance = mean(parscores(ldf.glasgow, modelr, factor = 1)),
+    median.performance = median(parscores(ldf.glasgow, modelr, factor = 1)))
+times = sapply(modelr$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
+print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regression."), booktabs = TRUE)
+
+modelcp = classifyPairs(rflearner, ldf.glasgow)
+rescp = data.frame(model = "classifyPairs",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf.glasgow, modelcp)),
+    solved = sum(successes(ldf.glasgow, modelcp)),
+    mean.performance = mean(parscores(ldf.glasgow, modelcp, factor = 1)),
+    median.performance = median(parscores(ldf.glasgow, modelcp, factor = 1)))
+times = sapply(modelcp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "MeanDecreaseGini", asc = FALSE))[1])
+print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for classificationPairs."), booktabs = TRUE)
+
+modelrp = regressionPairs(makeLearner("regr.randomForest"), ldf.glasgow)
+resrp = data.frame(model = "regressionPairs",
+    mean.misclassification.penalty = mean(misclassificationPenalties(ldf.glasgow, modelrp)),
+    solved = sum(successes(ldf.glasgow, modelrp)),
+    mean.performance = mean(parscores(ldf.glasgow, modelrp, factor = 1)),
+    median.performance = median(parscores(ldf.glasgow, modelrp, factor = 1)))
+times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
+print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regressionPairs."), booktabs = TRUE)
+
+tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
+print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results with presolver for Glasgow solvers."), booktabs = TRUE, include.rownames = FALSE)
+@
+
+<<echo=FALSE,fig.cap='ECDF for algorithms and portfolio (best model).'>>=
+vbs.agg = aggregate(as.formula(paste("score~", paste(c("instance_id", "iteration"), sep="+", collapse="+"))), vbs(ldf.glasgow), function(ss) { ss[1] })
+vbs.agg$virtual.best = parscores(ldf.glasgow, vbs, factor = 1)
+vbs.agg$iteration = NULL
+vbs.agg$score = NULL
+
+pmod = data.frame(instance_id = unique(mod$predictions$instance_id), portfolio = parscores(ldf.glasgow, mod, factor = 1))
+
+perfs = subset(ldf.glasgow$data, TRUE, c("instance_id", ldf.glasgow$performance))
+perfs = merge(perfs, vbs.agg, by = "instance_id")
+perfs = merge(perfs, pmod, by = "instance_id")
+wide = gather_(perfs, "solver", "time", names(perfs)[-1])
+wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
+ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
+    scale_linetype_manual(values=c(3,1), guide = FALSE) +
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 10),
+                  labels = trans_format("log10", math_format(10^.x)),
+                  limits = c(1, asscenario$desc$algorithm_cutoff_time-1)) +
+    coord_cartesian(xlim = c(1, asscenario$desc$algorithm_cutoff_time-1),
+        ylim = c(0,1)) +
+    ylab("fraction of instances solved") + xlab("time [ms]") +
+    annotation_logticks(sides = "b") +
+    theme_tufte(base_family='sans', base_size = 12) +
+    theme(legend.justification=c(1,0), legend.position=c(1,0.1), aspect.ratio = 0.6, axis.line = element_line(colour="black"), panel.grid = element_line(), panel.grid.major = element_line(colour="lightgray"))
+@
+
+<<echo=FALSE,fig.cap='ECDF for algorithms and portfolio for all instances (best model).'>>=
+vbs.agg = aggregate(as.formula(paste("score~", paste(c("instance_id", "iteration"), sep="+", collapse="+"))), vbs(ldf), function(ss) { ss[1] })
+vbs.agg$virtual.best = parscores(ldf, vbs, factor = 1)
+vbs.agg$iteration = NULL
+vbs.agg$score = NULL
+
+pmod = data.frame(instance_id = unique(mod$predictions$instance_id), portfolio = parscores(ldf.glasgow, mod, factor = 1))
+pmod = rbind(pmod, data.frame(instance_id = factor(presolved), portfolio = subset(ldf$data, ldf$data$instance_id %in% presolved)$lad_features))
+vf2pre = setdiff(ldf3$data$instance_id, ldf.glasgow$data$instance_id)
+pmod = rbind(pmod, data.frame(instance_id = factor(vf2pre), portfolio = subset(ldf$data, ldf$data$instance_id %in% vf2pre)$vf2))
+
+perfs = subset(ldf$data, TRUE, c("instance_id", ldf$performance))
+perfs = merge(perfs, vbs.agg, by = "instance_id")
+perfs = merge(perfs, pmod, by = "instance_id")
+wide = gather_(perfs, "solver", "time", names(perfs)[-1])
+wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
+ggplot(wide, aes(x = time, col = solver, linetype = type)) + stat_ecdf() +
+    scale_linetype_manual(values=c(3,1), guide = FALSE) +
+    scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x, n = 10),
+                  labels = trans_format("log10", math_format(10^.x)),
+                  limits = c(1, asscenario$desc$algorithm_cutoff_time-1)) +
+    coord_cartesian(xlim = c(1, asscenario$desc$algorithm_cutoff_time-1),
+        ylim = c(0,1)) +
+    ylab("fraction of instances solved") + xlab("time [ms]") +
+    annotation_logticks(sides = "b") +
+    theme_tufte(base_family='sans', base_size = 12) +
+    theme(legend.justification=c(1,0), legend.position=c(1,0.1), aspect.ratio = 0.6, axis.line = element_line(colour="black"), panel.grid = element_line(), panel.grid.major = element_line(colour="lightgray"))
+@
+
+\clearpage
+
+\section*{Different timeouts}
+
+Consider timeouts $10^2$\ldots$10^8$ (after filtering and presolving).
+
+<<echo=FALSE, results='asis', warning=FALSE, message=FALSE>>=
+timeoutExps = 2:8
+
+tab = rbind.fill(lapply(timeoutExps, function(to) {
+    ldf.tmp = ldf2
+    if(10^to < asscenario$desc$algorithm_cutoff_time) {
+        for(p in ldf.tmp$performance) {
+            ldf.tmp$data[paste0(p, "_success")] = sapply(ldf.tmp$data[,p], function(x) x <= 10^to)
+            ldf.tmp$data[p] = sapply(ldf.tmp$data[,p], function(x) min(x, 10^to))
+        }
+        pnames = ldf.tmp$performance
+        snames = ldf.tmp$success
+        optfun = min
+        best = apply(ldf.tmp$data, 1,
+            function(x) {
+                tosel = pnames
+                nosuccs = sapply(snames[which(as.logical(x[snames]) == FALSE)], function(y) { unlist(strsplit(y, "_"))[1] })
+                tosel = setdiff(pnames, nosuccs)
+                if(length(tosel) == 0) {
+                    # nothing was able to solve this instance
+                    return(NA)
+                } else {
+                    perfs = as.numeric(x[tosel])
+                    return(tosel[which(perfs == optfun(perfs))])
+                }
+            })
+        names(best) = NULL
+        ldf.tmp$best = best
+    }
+    ldf.tmp$train = NULL
+    ldf.tmp$test = NULL
+    ldf.tmp = cvFolds(ldf.tmp)
+
+    resvbs = data.frame(model = "virtual best",
+        mean.misclassification.penalty = mean(misclassificationPenalties(ldf.tmp, vbs)),
+        solved = sum(successes(ldf.tmp, vbs)),
+        mean.performance = mean(parscores(ldf.tmp, vbs, factor = 1)),
+        median.performance = median(parscores(ldf.tmp, vbs, factor = 1)))
+    ressb = data.frame(model = "single best",
+        mean.misclassification.penalty = mean(misclassificationPenalties(ldf.tmp, singleBest)),
+        solved = sum(successes(ldf.tmp, singleBest)),
+        mean.performance = mean(parscores(ldf.tmp, singleBest, factor = 1)),
+        median.performance = median(parscores(ldf.tmp, singleBest, factor = 1)))
+
+    modelc = classify(rflearner, ldf.tmp)
+    resc = data.frame(model = "classification",
+        mean.misclassification.penalty = mean(misclassificationPenalties(ldf.tmp, modelc)),
+        solved = sum(successes(ldf.tmp, modelc)),
+        mean.performance = mean(parscores(ldf.tmp, modelc, factor = 1)),
+        median.performance = median(parscores(ldf.tmp, modelc, factor = 1)))
+
+    modelr = regression(makeLearner("regr.randomForest"), ldf.tmp)
+    resr = data.frame(model = "regression",
+        mean.misclassification.penalty = mean(misclassificationPenalties(ldf.tmp, modelr)),
+        solved = sum(successes(ldf.tmp, modelr)),
+        mean.performance = mean(parscores(ldf.tmp, modelr, factor = 1)),
+        median.performance = median(parscores(ldf.tmp, modelr, factor = 1)))
+
+    modelcp = classifyPairs(rflearner, ldf.tmp)
+    rescp = data.frame(model = "classifyPairs",
+        mean.misclassification.penalty = mean(misclassificationPenalties(ldf.tmp, modelcp)),
+        solved = sum(successes(ldf.tmp, modelcp)),
+        mean.performance = mean(parscores(ldf.tmp, modelcp, factor = 1)),
+        median.performance = median(parscores(ldf.tmp, modelcp, factor = 1)))
+
+    modelrp = regressionPairs(makeLearner("regr.randomForest"), ldf.tmp)
+    resrp = data.frame(model = "regressionPairs",
+        mean.misclassification.penalty = mean(misclassificationPenalties(ldf.tmp, modelrp)),
+        solved = sum(successes(ldf.tmp, modelrp)),
+        mean.performance = mean(parscores(ldf.tmp, modelrp, factor = 1)),
+        median.performance = median(parscores(ldf.tmp, modelrp, factor = 1)))
+
+    sb = levels(singleBest(ldf.tmp)$algorithm)
+    cbind(data.frame(timeout = 10^to, single.best = sb), rbind(resvbs, ressb, resc, resr, rescp, resrp))
+}))
+
+print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results for different timeouts with presolver."), booktabs = TRUE, include.rownames = FALSE)
 @
 
 <<echo=FALSE, message=FALSE, warning=FALSE>>=

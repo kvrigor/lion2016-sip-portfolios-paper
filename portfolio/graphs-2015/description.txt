@@ -43,7 +43,7 @@ algorithms_stochastic: []
 performance_measures: time
 performance_type: runtime
 maximize: no
-algorithm_cutoff_time: 100000.0
+algorithm_cutoff_time: 1.0e+08
 algorithm_cutoff_memory: '?'
 features_cutoff_time: '?'
 features_cutoff_memory: '?'
