@@ -263,43 +263,46 @@ both hard and unsatisfiable instances.
 
 \section{Algorithm Selection Approach}
 
-Our approach is composed of 3 steps described below: First, we run two presolvers in a static way to quickly solve easy instances; Second, we extract features from instances which are not solved by the first step; Finally, we select an algorithm and run it.
+Our approach is composed of 3 steps described below. First, we run two presolvers in a static way to
+quickly solve easy instances; second, we extract features from instances which are not solved by the
+first step; and finally, we select an algorithm and run it.
 
-\paragraph{Static steps.}
+\subsection{Presolving}
 
-Experimental results reported in Section \ref{expComp} have shown us that incompleteLAD is very fast (7 ms on average) and is able to very quickly solve 1919 instances. Therefore, we propose to first run incompleteLAD: If the instance is solved, then we do not process it further. Furthermore, running IncompleteLAD allows us to collect features on the number of candidate couples which are removed by the filtering.
+Experimental results reported in Section \ref{expComp} have shown us that incompleteLAD is very fast
+(7 ms on average) and is able to very quickly solve 1919 instances. Therefore, we first run
+incompleteLAD: if the instance is detected to be unsatisfiable, then we do not process it further.
+Otherwise, we record as features the number of candidate couples removed by incompleteLAD in absolute
+terms, as a percentage, and the minimum and maximum on a per-variable basis.
 
-VF2 is also able to solve very quickly many easy instances: Among the 3806 instances which are not solved by incompleteLAD, 1470 are solved by VF2 in less than 50 milliseconds. Therefore, after running incompleteLAD, we run the VF2 solver for 50 ms. This solves easy instances without the overhead of running algorithm selection and avoids potentially making incorrect solver choices. After running incompleteLAD and VF2 for 50 ms, we are left with 2336 hard instances that we consider for algorithm selection.
+VF2 is also able to solve many easy instances very quickly: among the 3806 instances which are not
+solved by incompleteLAD, 1470 are solved by VF2 in less than 50 milliseconds. Therefore, after
+running incompleteLAD, we run the VF2 solver for 50 ms. This solves easy instances without the
+overhead of running algorithm selection and avoids potentially making incorrect solver choices.
+After running incompleteLAD and VF2 for 50 ms, we are left with 2336 hard instances that we consider
+for algorithm selection.
 
+\subsection{Feature Extraction}
 
+If presolving does not give us a solution, we extract additional features. For both the pattern and
+the target graph, we consider some basic graph properties, which may be computed very quickly:
 
+\begin{itemize}
+    \item The number of vertices and edges.
+    \item The density---we expect that some kinds of filtering might be expensive and ineffective on
+        dense graphs.
+    \item How many loops (self-adjacent vertices) the graph contains---since loops must be mapped to
+        loops, this could have a strong effect on how easy an instance is.
+    \item The mean and maximum degrees, and whether or not every vertex has the same degree. (The
+        degree-based invariants used by LAD and Glasgow do nothing at the top of search if every
+        vertex has the same degree.)
+    \item Whether or not the graph is connected.
+    \item The mean and maximum distances between all pairs of vertices (if nearly all vertices are
+        close together, path-based reasoning is likely to be ineffective). We also consider the
+        proportion of vertex pairs which are distance at least 2, 3 and 4 apart.
+\end{itemize}
 
-\subsection{Features}
-
-For both the pattern and the target graph, we consider the number of vertices,
-edges and loops, the mean and maximum degree, the density, whether or not every
-vertex has same degree, whether or not the graph is connected, the mean and
-maximum distances between all pairs of vertices, and the proportion of vertex
-pairs which are distance at least 2, 3 and 4 apart. We also consider the number
-of candidate couples removed by incompleteLAD in absolute terms, as
-a percentage, and the minimum and maximum on a per-variable basis. This gives
-us a total of 30 features.
-
-In addition to computing feature values, the LAD preprocessing is able to detect
-whether an instance is unsatisfiable. In this case, it is not necessary to run
-an algorithm on the instance.
-
-
-We apply two static steps to each instance before solving it. First, the
-computation of the LAD features can detect unsatisfiability of an instance. If
-an instance is identified as unsatisfiable, we do not process it further.
-Second, we run the VF2 solver for 0.05 seconds. This solves easy instances
-without the overhead of running algorithm selection and avoids potentially
-making incorrect solver choices.
-
-Computing the LAD features detects unsatisfiability on 1919 instances. Running
-VF2 for 0.05 seconds removes a further 1470. We are left with 2336 hard
-instances that we consider for algorithm selection.
+\subsection{Solver Selection}
 
 To decide which solver to run on the remaining instances, we use
 LLAMA~\cite{kotthoff_llama_2013}. LLAMA supports the most common algorithm
