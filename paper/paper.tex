@@ -10,6 +10,7 @@
 \usepackage{microtype}
 \usepackage{cleveref}                  % no need to type Figure etc
 \usepackage{xcolor,colortbl}
+\usepackage{tabularx}
 
 \usepackage{todonotes}
 \usepackage{booktabs}
@@ -71,7 +72,7 @@ depending on the CPU time limit considered, and that combining preprocessing wit
 selection on an instance by instance basis allows us to achieve better overall performance than any
 single algorithm.
 
-\section{Definitions and notations}
+\section{Definitions and Notations}
 
 A \emph{graph} $G=(N,E)$ consists of a \emph{node set} $N$ and an \emph{edge set} $E \subseteq N \times N$, where an edge $(u,u')$ is a couple of nodes. The number of neighbors of a node $u$ is the degree of $u$, $d^\circ(u)=\#\{ (u,u')\in E\}$. In this paper, we implicitely consider non directed graphs, such that $(u,u')\in E\Leftrightarrow (u',u)\in E$. The extension to directed graphs is rather straightforward, and all algorithms compared in this paper can handle directed graphs as well.
    
@@ -85,11 +86,11 @@ In the following, we assume $G_p=(N_p,E_p)$ and $G_t=(N_t,E_t)$ to be the underl
 We also define $n_p = \# N_p$, $n_t = \# N_t$,  $e_p=\# E_p$, $e_t=\# E_t$, and $d_p$ and $d_t$ the maximal degrees of the graphs $G_p$ and $G_t$. 
 
 
-\section{Subgraph isomorphism algorithms}
+\section{Subgraph Isomorphism Algorithms}
 
 Subgraph isomorphism problems may be solved by a systematic exploration of the search space composed of all possible injective matchings from $N_p$ to $N_t$: starting from an empty matching, one incrementally extends a partial matching by matching a non matched pattern node to a non matched target node until either some edges are not matched by the current matching (the search must backtrack to a previous choice point and go on with another extension) or all pattern nodes have been matched (a solution has been found). To reduce the search space, this exhaustive exploration is combined with filtering techniques that aim at removing candidate couples of non matched pattern-target nodes $(u,v)\in N_p\times N_t$. Different filterings may be considered; some are stronger than others (they remove more candidate couples), but also have higher time complexities.
 
-\subsection{Filtering for subgraph isomorphism}
+\subsection{Filtering for Subgraph Isomorphism}
 
 Simple filterings basically propagate difference constraints (which ensure that the matching is injective) and edge constraints (which ensure that the matching preserves pattern edges): each time a pattern node $u\in N_p$ is matched with a target node $v\in N_t$, one removes every candidate couple $(u',v')\in N_p\times N_t$ such that either $v'=v$ (difference constraint) or $(u,u')$ is a pattern edge whereas $(v,v')$ is not a target edge (edge constraint). This simple filtering (called {\em Forward-Checking}) is very fast to achieve: in ${\cal O}(n_p)$ for difference constraints, and in ${\cal O}(d_p\cdot n_t)$ for edge constraints. It is used, for example, in McGregor's algorithm \cite{mcgregor79} and in VF2 \cite{Cordella:2004}.
 
@@ -99,7 +100,7 @@ Various filterings have been introduced for edge constraints. Ullman \cite{ullma
 
 A stronger filtering may be obtained by propagating edge constraints in a more global way, as proposed in \cite{LV02}. The idea is to check for each candidate couple $(u,v)\in N_p\times N_t$ that the number of pattern nodes adjacent to $u$ is smaller than or equal to the number of target nodes that are both adjacent to $v$ and that may be matched with nodes adjacent to $u$. This is done in ${\cal O}(n_p^2\cdot n_t^2)$. This idea has been generalized in \cite{Solnon:2010} where, for each candidate couple $(u,v)\in N_p\times N_t$, a redundant Local AllDifferent (LAD) constraint ensures that each neighbour of $u$ may be matched with a different neighbour of $v$. This is done in ${\cal O}(n_p\cdot n_t\cdot d_p^2\cdot d_t^2)$.
 
-\subsection{Propagation of invariant properties}
+\subsection{Propagation of Invariant Properties}
 
 Some filterings exploit invariant properties, {\em i.e.}, properties associated with nodes such that nodes may be matched only if they have compatible properties. A classical property is the degree: a pattern node $u\in N_p$ may be matched with a target node $v\in N_t$ only if $d^\circ(u)\leq d^\circ(v)$. This property is usually used at the beginning of the search to reduce the set of candidate couples to $\{(u,v)\in N_p\times N_t\;|\;d^\circ(u)\leq d^\circ(v)\}$.
 Other examples of invariant properties are the number of cycles of length $k$ passing through the node, and the number of cliques of size $k$ containing the node, which must be smaller for a pattern node than for its matched target node.
@@ -160,7 +161,7 @@ solvers, and without a selection mechanism. Their problem set consisted
 entirely of easy satisfiable instances, which is where this style of approach
 has most success.
 
-\subsection{Experimental setup}
+\subsection{Experimental Setup}
 
 We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
 Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
@@ -168,7 +169,7 @@ the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation o
 \cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
 timeout of $10^8$ milliseconds (a little over a day).
 
-\subsection{Algorithms selected in our portfolio}
+\subsection{Portfolio Composition}
 
 We have selected a set of algorithms with complementary performance:
 \begin{itemize}
@@ -188,34 +189,11 @@ instance by instance basis: sometimes path-based reasoning gives no benefit at a
 considering only paths of length 2 suffices, occasionally paths of length 4 are helpful, and even
 looking at paths of length 3 is relatively expensive on some graphs.
 
-\begin{figure}[!ht]
-\includegraphics[width=\textwidth]{figures/ecdf-glasgow}
-\caption{Empirical cumulative distribution function for the Glasgow algorithm
-with path lengths 1, 2, 3, and 4.}
-\label{fig:ecdf-glasgow}
-\end{figure}
-
-Figure~\ref{fig:ecdf-glasgow} shows the cumulative distribution function for the
-Glasgow algorithm with four different path lengths. As the instances become
-harder to solve, longer paths become better. This is what we expect, as more
-reasoning is expensive, but potentially increases the reduction of the search
-space. In particular, the relative performance of the algorithms is monotone in
-the time it takes to solve the instance---path length 1 is best at first, but
-gets worse as the time to solve the instance increases until path length 2 is
-better. After that point, length 1 is never better than length 2 again. The same
-is true for the other path lengths.
-
-The figure illustrates the potential for portfolios and algorithm selection we
-have. There is clearly no path length that dominates throughout. Therefore, we
-consider 4 different instances of the Glasgow algorithm here, with path lengths
-varying from 1 to 4.
-
-
 We also introduce two new variants of LAD. The first variant is a weaker LAD filtering (called incompleteLAD) which is applied once, without performing a backtracking search, and very quickly detects inconsistencies on many instances: For each pattern node $u$, we check that there exists at least one target node $v$ such that for each neighbor $u'$ of $u$ there exists a different neighbor $v'$ of $v$ such that the degree of $u'$ is smaller than or equal to the degree of $v'$. IncompleteLAD is an incomplete algorithm as it can only detect inconsistency of some instances: when it does not detect inconsistency, the instance may either be consistent or not. As a counterpart of this incompleteness, it is very fast: its time complexity is ${\cal O}(n_p(n_t+e_t))$.
 
 The second variant of LAD is called pathLAD and it combines the LAD constraints introduced in \cite{Solnon:2010} with the exploitation of path length properties, as proposed in \cite{Audemard:2014}. The idea is to label each edge $(u,v)$ with the number of paths of length 2 between $u$ and $v$, and each node $u$ with the number of cycles of length 3 passing through $u$, and to add the constraint that the label of a pattern node (resp. edge) must be smaller than or equal to the label of its associated target node (resp. edge). 
 
-\subsection{Results from Individual Algorithms} \label{expComp}
+\subsection{Results for Individual Algorithms} \label{expComp}
 
 \begin{figure}[t]
 \includegraphics[width=\textwidth]{courbe.pdf}
@@ -244,28 +222,31 @@ algorithm that is able to solve an instance in 100 ms instead of 1000 ms makes a
 Therefore, it is important to select the best algorithm for each instance, even if the instance is
 an easy one.
 
-Table \ref{expClass} shows us that we cannot reasonably split things up based upon which class instances are coming from, unlike SAT. For all classes, there are always at least 2 algorithms which are the best for at least one instance of the class. In particular, for classes 2 and 3, each algorithm is the best for at least one instance (except Glasgow 4 for Class 3).
+Table \ref{expClass} shows us that we cannot reasonably split things up based upon which class instances are coming from, unlike SAT. For all classes, there are always at least 2 algorithms which are the best for at least one instance of the class. In particular, for classes 2 and 3, each algorithm is the best for at least one instance (except Glasgow 4 for class 3).
 
 \begin{table}[t]
 \begin{center}
-\begin{tabular}{|c||r||r|r|r||r|r|r|r|}
-\hline
-Class & VF2 & \multicolumn{3}{c||}{LAD} & \multicolumn{4}{c|}{Glasgow}\\
-&&incomplete&default&path&1&2&3&4\\\hline\hline
-1 &        0 &       20 &        0 &        0 &       80 &        0 &        0 &        0 \\\hline
-2 &      201 &       92 &      189 &      270 &      520 &      180 &       53 &       15 \\\hline
-3 &      112 &     1608 &      617 &      959 &      396 &      195 &       21 &        0 \\\hline
-4 &      270 &        0 &        0 &        0 &        5 &        0 &        0 &        0 \\\hline
-5 &      266 &        0 &        1 &        3 &       31 &        0 &        0 &        0 \\\hline
-6 &       71 &        0 &        0 &        0 &        7 &       14 &        1 &        0 \\\hline
-7 &      270 &        0 &        0 &        0 &        5 &        0 &        0 &        0 \\\hline
-8 &        0 &        0 &        0 &        1 &      195 &       69 &        6 &        0 \\\hline
-9 &       77 &        3 &        0 &       19 &      103 &        1 &        0 &        0 \\\hline
-10 &       13 &        0 &        2 &        2 &        7 &        0 &        0 &        0 \\\hline
-11 &        2 &      142 &       71 &       17 &       23 &        0 &        0 &        0 \\\hline
-12 &        0 &        0 &        1 &        2 &      158 &        6 &        1 &        0 \\\hline\hline
-Total & 1282 & 1865 & 881 & 1273 & 1530 & 465 & 82& 15\\\hline
-\end{tabular}
+\begin{tabularx}{.8\textwidth}{XXrXrrrXrrrr}
+\toprule
+Class && VF2 && \multicolumn{3}{c}{LAD} && \multicolumn{4}{c}{\hspace*{2em}Glasgow}\\
+&&&&incomplete&default&path&&1&2&3&4\\
+\midrule
+1 &&        0 &&       20 &        0 &        0 &&       80 &        0 &        0 &        0 \\
+2 &&      201 &&       92 &      189 &      270 &&      520 &      180 &       53 &       15 \\
+3 &&      112 &&     1608 &      617 &      959 &&      396 &      195 &       21 &        0 \\
+4 &&      270 &&        0 &        0 &        0 &&        5 &        0 &        0 &        0 \\
+5 &&      266 &&        0 &        1 &        3 &&       31 &        0 &        0 &        0 \\
+6 &&       71 &&        0 &        0 &        0 &&        7 &       14 &        1 &        0 \\
+7 &&      270 &&        0 &        0 &        0 &&        5 &        0 &        0 &        0 \\
+8 &&        0 &&        0 &        0 &        1 &&      195 &       69 &        6 &        0 \\
+9 &&       77 &&        3 &        0 &       19 &&      103 &        1 &        0 &        0 \\
+10 &&       13 &&        0 &        2 &        2 &&        7 &        0 &        0 &        0 \\
+11 &&        2 &&      142 &       71 &       17 &&       23 &        0 &        0 &        0 \\
+12 &&        0 &&        0 &        1 &        2 &&      158 &        6 &        1 &        0 \\
+\midrule
+Total && 1282 && 1865 & 881 & 1273 && 1530 & 465 & 82& 15\\
+\bottomrule
+\end{tabularx}
 \end{center}
 \caption{Number of times each algorithm is best, for each class.\label{expClass}}
 \end{table}
@@ -311,7 +292,7 @@ the target graph, we consider some basic graph properties, which may be computed
         proportion of vertex pairs which are distance at least 2, 3 and 4 apart.
 \end{itemize}
 
-\subsection{Solver Selection}
+\subsection{Selection Model}
 
 To decide which solver to run on the remaining instances, we use
 LLAMA~\cite{kotthoff_llama_2013}. LLAMA supports the most common algorithm
@@ -442,7 +423,7 @@ Even though Figures~\ref{fig:portfolio-ecdf} and~\ref{fig:portfolio-ecdf-full}
 show that on easy instances, the portfolio does not perform well, it does over
 the entire set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
 
-\subsection{Portfolios for different timeouts}
+\subsection{Portfolios for Different Timeouts}
 
 The question arises of whether the success of our approach is limited to the
 particular timeout we have chosen. Table~\ref{tab:resTimeouts} shows the
