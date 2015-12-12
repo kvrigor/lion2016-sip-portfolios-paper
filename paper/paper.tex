@@ -472,9 +472,13 @@ $10^8$ & virtual best & 0 & 2219 & 5822809\\
 
 The results show that while for the misclassification penalty, LLAMA is always
 better than the single best algorithm, for timeouts $10^2$ to $10^4$ it is worse
-in terms of the number of solved instances and mean performance. An explanation
-for this is that empirical runtime measurements are inherently noisy, which
-affects the accuracy of the measurements particularly in this range.
+in terms of the number of solved instances and mean performance. The
+misclassification penalty does not take the cost of computing features into
+account, while the mean performance does -- for these small timeouts, the cost
+of computing the features dominates any improvement through algorithm selection.
+Another explanation for this is that empirical runtime measurements are
+inherently noisy, which affects the accuracy of the measurements and hence the
+performance of the algorithm selection models particularly in this range.
 
 \begin{table}[t]
 \begin{center}
