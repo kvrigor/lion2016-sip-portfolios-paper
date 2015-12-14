@@ -12,6 +12,8 @@
 \usepackage{xcolor,colortbl}
 \usepackage{tabularx}
 \usepackage{siunitx}
+\usepackage{xspace}
+\usepackage{scalefnt}
 
 \usepackage{todonotes}
 \usepackage{booktabs}
@@ -25,6 +27,17 @@
 \Crefname{table}{Table}{Tables}
 \crefname{proposition}{Proposition}{Propositions}
 \Crefname{proposition}{Proposition}{Propositions}
+
+\newcommand{\VFtwo}{$\textsc{Vf{\scalefont{0.8}2}}$\xspace}
+\newcommand{\Glasgow}{$\textsc{Glasgow}$\xspace}
+\newcommand{\LAD}{$\textsc{Lad}$\xspace}
+\newcommand{\IncompleteLAD}{$\textsc{IncompleteLad}$\xspace}
+\newcommand{\PathLAD}{$\textsc{PathLad}$\xspace}
+\newcommand{\GlasgowOne}{$\textsc{Glasgow{\scalefont{0.8}1}}$\xspace}
+\newcommand{\GlasgowTwo}{$\textsc{Glasgow{\scalefont{0.8}2}}$\xspace}
+\newcommand{\GlasgowThree}{$\textsc{Glasgow{\scalefont{0.8}3}}$\xspace}
+\newcommand{\GlasgowFour}{$\textsc{Glasgow{\scalefont{0.8}4}}$\xspace}
+\newcommand{\LLAMA}{$\textsc{Llama}$\xspace}
 
 \title{Portfolios of Subgraph Isomorphism Algorithms}
 
@@ -63,8 +76,8 @@ problem has many important practical applications, for example in computer visio
 \cite{cviu11,pr15}, biochemistry \cite{Giugno:2013}, and model checking \cite{Sevegnani:2015}. There
 exist various exact algorithms, which have been compared on a large suite of problem instances by
 McCreesh and Prosser \cite{McCreesh:2015}. These experiments indicated that the single best
-algorithm depends on the CPU time limit considered: for very small CPU time limits, VF2
-\cite{Cordella:2004} is the best choice, whereas the Glasgow algorithm \cite{McCreesh:2015} has
+algorithm depends on the CPU time limit considered: for very small CPU time limits, \VFtwo
+\cite{Cordella:2004} is the best choice, whereas the \Glasgow algorithm \cite{McCreesh:2015} has
 better success rates for larger time limits.  They also showed that on an instance by instance
 basis, other algorithms are often better.
 
@@ -119,11 +132,11 @@ every candidate pair $(u',v')\in N_p\times N_t$ such that either $v'=v$ (differe
 $(u,u')$ is a pattern edge but $(v,v')$ is not a target edge (edge constraint). This simple
 filtering (called \emph{Forward-Checking}) is very fast to achieve: in ${\cal O}(n_p)$ for
 difference constraints, and in ${\cal O}(d_p\cdot n_t)$ for edge constraints. It is used, for
-example, in McGregor's algorithm \cite{mcgregor79} and in VF2 \cite{Cordella:2004}.
+example, in McGregor's algorithm \cite{mcgregor79} and in \VFtwo \cite{Cordella:2004}.
 
 R\'egin \cite{regin} introduced a stronger filtering for difference constraints, which ensures that
 all pattern nodes can be matched with different target nodes, all together. This filtering (called
-\emph{AllDifferent Generalized Arc Consistency}) removes more candidate pairs than when each
+\emph{All-Different Generalized Arc Consistency}) removes more candidate pairs than when each
 difference constraint is propagated separately which Forward-Checking. However, it is also more time
 consuming as it is done in ${\cal O}(n_p^2\cdot n_t^2)$ time.
 
@@ -140,8 +153,8 @@ by Larrosa and Valiente \cite{LV02}. The idea is to check for each candidate pai
 N_p\times N_t$ that the number of pattern nodes adjacent to $u$ is smaller than or equal to the
 number of target nodes that are both adjacent to $v$ and that may be matched with nodes adjacent to
 $u$. This is done in ${\cal O}(n_p^2\cdot n_t^2)$. This idea was generalised by Solnon
-\cite{Solnon:2010} where, for each candidate pair $(u,v)\in N_p\times N_t$, a redundant Local
-AllDifferent (LAD) constraint ensures that each neighbour of $u$ may be matched with a different
+\cite{Solnon:2010}'s \LAD algorithm, where, for each candidate pair $(u,v)\in N_p\times N_t$, a redundant Local
+All-Different constraint ensures that each neighbour of $u$ may be matched with a different
 neighbour of $v$. This is done in ${\cal O}(n_p\cdot n_t\cdot d_p^2\cdot d_t^2)$.
 
 \subsection{Propagation of Invariant Properties}
@@ -163,10 +176,10 @@ These invariant properties are used, for example:
 \item  By Battiti and Mascia \cite{battiti-mascia07}, to remove candidate pairs $(u,v)\in N_p\times
     N_t$ such that the number of paths starting from  pattern node $u$ is greater than the number of
     paths starting from  target node $v$;
-\item By Audemard et al.\ \cite{Audemard:2014} to generalise the LAD constraint proposed by Solnon
-    \cite{Solnon:2010} so that it ensures that a subset of pattern nodes can be matched with all
-    different compatible target nodes, where compatibility is defined with respect to invariant
-    properties;
+\item By Audemard et al.\ \cite{Audemard:2014} to generalise the locally all-different constraint
+    proposed by Solnon \cite{Solnon:2010} so that it ensures that a subset of pattern nodes can be
+    matched with all different compatible target nodes, where compatibility is defined with respect
+    to invariant properties;
 \item by McCreesh and Prosser \cite{McCreesh:2015} to filter the set of candidate couples before
     starting the search, and to generate additional implied adjacency-like constraints which are
     processed during search.
@@ -233,8 +246,8 @@ satisfiable instances, which is where this style of approach has most success.
 \subsection{Experimental Setup}
 
 We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
-Scientific Linux 6.5. We used the C++ implementation of the Glasgow algorithm \cite{McCreesh:2015},
-the C implementation of LAD \cite{Solnon:2010}, and the VFLib C implementation of VF2
+Scientific Linux 6.5. We used the C++ implementation of the \Glasgow algorithm \cite{McCreesh:2015},
+the C implementation of \LAD \cite{Solnon:2010}, and the VFLib C implementation of \VFtwo
 \cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
 timeout of $10^8$ milliseconds (a little over a day).
 
@@ -242,39 +255,40 @@ timeout of $10^8$ milliseconds (a little over a day).
 
 We have selected a set of algorithms with complementary performance:
 \begin{itemize}
-\item VF2 \cite{Cordella:2004}, which performs a weak filtering that it is especially fast on
+\item \VFtwo \cite{Cordella:2004}, which performs a weak filtering that it is especially fast on
     trivially satisfiable instances;
-\item LAD \cite{Solnon:2010}, which combines two strong but expensive filtering techniques
-    (AllDifferent Generalized Arc Consistency and LAD);
-\item Glasgow \cite{McCreesh:2015}, which does expensive preprocessing based on path length
+\item \LAD \cite{Solnon:2010}, which combines two strong but expensive filtering techniques
+    (All-Different Generalized Arc Consistency and Locally All-Different);
+\item \Glasgow \cite{McCreesh:2015}, which does expensive preprocessing based on path length
     invariant properties to generate additional constraints, followed by weaker filtering
-    (forward-checking, and a heuristic AllDifferent propagator which can miss deletions) and
+    (forward-checking, and a heuristic All-Different propagator which can miss deletions) and
     conflict-directed backjumping during search.
 \end{itemize}
 
-\noindent The Glasgow algorithm has a parameter, which controls the lengths of paths used when
+\noindent The \Glasgow algorithm has a parameter, which controls the lengths of paths used when
 reasoning about non-adjacent vertices.  In experiments reported by McCreesh and Prosser
 \cite{McCreesh:2015}, the choice of paths of length 3 was used as a reasonable compromise---longer
 paths lead to prohibitively expensive preprocessing on larger, denser instances. This is often not
 the best choice on an instance by instance basis: sometimes path-based reasoning gives no benefit at
 all, sometimes considering only paths of length 2 suffices, occasionally paths of length 4 are
-helpful, and even looking at paths of length 3 is relatively expensive on some graphs.
+helpful, and even looking at paths of length 3 is relatively expensive on some graphs. We thus all
+four choices, naming these variants \GlasgowOne through \GlasgowFour.
 
-We also introduce two new variants of LAD. The first variant is a weaker LAD filtering (called
-incompleteLAD) which is applied once, without performing a backtracking search, and very quickly
+We also introduce two new variants of \LAD. The first, called \IncompleteLAD, is a weaker
+filtering which is applied once, without performing a backtracking search, and very quickly
 detects inconsistencies on many instances: for each pattern node $u$, we check that there exists at
 least one target node $v$ such that for each neighbor $u'$ of $u$ there exists a different neighbor
 $v'$ of $v$ such that the degree of $u'$ is smaller than or equal to the degree of $v'$.
-IncompleteLAD is an incomplete algorithm as it can only detect inconsistency of some instances: when
+\IncompleteLAD is an incomplete algorithm as it can only detect inconsistency of some instances: when
 it does not detect inconsistency, the instance may either be satisfiable or not. As a counterpart of
 this incompleteness, it is very fast: its time complexity is ${\cal O}(n_p(n_t+e_t))$.
 
-The second variant of LAD is called pathLAD, which combines the LAD constraints introduced by Solnon
-\cite{Solnon:2010} with the exploitation of path length properties proposed by Audemard et
-al.\ \cite{Audemard:2014}. The idea is to label each edge $(u,v)$ with the number of paths of length 2
-between $u$ and $v$, and each node $u$ with the number of cycles of length 3 passing through $u$,
-and to add the constraint that the label of a pattern node (resp.\ edge) must be smaller than or
-equal to the label of its associated target node (resp.\ edge).
+The second variant of \LAD is called \PathLAD, which combines the locally all-different constraints
+introduced by Solnon \cite{Solnon:2010} with the exploitation of path length properties proposed by
+Audemard et al.\ \cite{Audemard:2014}. The idea is to label each edge $(u,v)$ with the number of
+paths of length 2 between $u$ and $v$, and each node $u$ with the number of cycles of length 3
+passing through $u$, and to add the constraint that the label of a pattern node (resp.\ edge) must
+be smaller than or equal to the label of its associated target node (resp.\ edge).
 
 \subsection{Results for Individual Algorithms} \label{expComp}
 
@@ -285,22 +299,22 @@ of the portfolio, and a Virtual Best Solver (VBS).\label{expTimeGraph}}
 \end{figure}
 
 Figure \ref{expTimeGraph} displays the evolution of the number of instances solved with respect to
-CPU time. It shows us that the best solver depends on the time limit considered. IncompleteLAD is
-able to solve easy unsastisfiable instances very quickly, in a few milliseconds. Hence, for time
-limits lower than \SI{5}{\ms}, the best solver is incompleteLAD. However, it is not able to solve harder
-unsatisfiable instances, nor can it solve satsifiable instances.
+CPU time. It shows us that the best solver depends on the time limit considered. \IncompleteLAD is
+able to solve easy unsatisfiable instances very quickly, in a few milliseconds. Hence, for time
+limits lower than \SI{5}{\ms}, the best solver is \IncompleteLAD. However, it is not able to solve harder
+unsatisfiable instances, nor can it solve satisfiable instances.
 
-PathLAD and Glasgow(1) outperform incompleteLAD when considering longer time limits: PathLAD is the
-best solver for time limits larger than \SI{5}{\ms} and lower than \SI{40}{\ms}, and Glasgow(1) is the best solver
+\PathLAD and \GlasgowOne outperform \IncompleteLAD when considering longer time limits: \PathLAD is the
+best solver for time limits larger than \SI{5}{\ms} and lower than \SI{40}{\ms}, and \GlasgowOne is the best solver
 for time limits larger than \SI{40}{\ms} and lower than \SI{3000}{\ms}.
 
-For CPU time limits larger than \SI{3000}{\ms}, the best solver becomes Glasgow(2).  As we
-increase the CPU time limit, variants of Glasgow with longer paths (Glasgow(3) and Glasgow(4))
+For CPU time limits larger than \SI{3000}{\ms}, the best solver becomes \GlasgowTwo.  As we
+increase the CPU time limit, variants of \Glasgow with longer paths (\GlasgowThree and \GlasgowFour)
 become better. This is what we expect, as more reasoning is expensive, but potentially increases the
 reduction of the search space. In particular, the relative performance of Glasgow variants is
-monotone in the time it takes to solve the instance---Glasgow(1) is best at first, but gets worse as
-the time to solve the instance increases until Glasgow(2) is better. After that point, Glasgow(1) is
-never better than Glasgow(2) again. The same is true for path lengths 3 and 4.
+monotone in the time it takes to solve the instance---\GlasgowOne is best at first, but gets worse as
+the time to solve the instance increases until \GlasgowTwo is better. After that point, \GlasgowOne is
+never better than \GlasgowTwo again. The same is true for path lengths 3 and 4.
 
 The figure illustrates the potential for portfolios and algorithm selection we have. There is
 clearly no single solver that dominates throughout.
@@ -320,13 +334,13 @@ Table~\ref{expClass} shows us that we cannot simply select algorithms based upon
 which instances are coming (unlike in SAT, where this kind of approach can be reasonable). For all
 classes, there are always at least two algorithms which are the best for at least one instance of
 the class. In particular, for classes 2 and 3, each algorithm is the best for at least one instance
-(except Glasgow(4) for class 3).
+(except \GlasgowFour for class 3).
 
 \begin{table}[t]
 \begin{center}
 \begin{tabularx}{.8\textwidth}{XXrXrrrXrrrr}
 \toprule
-Class && VF2 && \multicolumn{3}{c}{LAD} && \multicolumn{4}{c}{\hspace*{2em}Glasgow}\\
+Class && \VFtwo && \multicolumn{3}{c}{\LAD} && \multicolumn{4}{c}{\hspace*{2em}\Glasgow}\\
 &&&&incomplete&default&path&&1&2&3&4\\
 \midrule
 1 &&        0 &&       20 &        0 &        0 &&       80 &        0 &        0 &        0 \\
@@ -357,17 +371,17 @@ step; and third, we select an algorithm and run it.
 
 \subsection{Presolving}
 
-Experimental results reported in Section~\ref{expComp} have shown us that incompleteLAD is very fast
+Experimental results reported in Section~\ref{expComp} have shown us that \IncompleteLAD is very fast
 (\SI{7}{\ms} on average) and is able to solve 1919 instances very quickly. Therefore, we first run
-incompleteLAD: if the instance is detected to be unsatisfiable, then we do not process it further.
-Otherwise, we record as features the number of candidate couples removed by incompleteLAD in absolute
+\IncompleteLAD: if the instance is detected to be unsatisfiable, then we do not process it further.
+Otherwise, we record as features the number of candidate couples removed by \IncompleteLAD in absolute
 terms, as a percentage, and the minimum and maximum on a per-variable basis.
 
-VF2 is also able to solve many easy instances very quickly: among the 3806 instances which are not
-solved by incompleteLAD, 1470 are solved by VF2 in less than 50 milliseconds. Therefore, after
-running incompleteLAD, we run the VF2 solver for \SI{50}{\ms}. This solves easy instances without
+\VFtwo is also able to solve many easy instances very quickly: among the 3806 instances which are not
+solved by \IncompleteLAD, 1470 are solved by \VFtwo in less than 50 milliseconds. Therefore, after
+running \IncompleteLAD, we run the \VFtwo solver for \SI{50}{\ms}. This solves easy instances without
 the overhead of running algorithm selection and avoids potentially making incorrect solver choices.
-After running incompleteLAD and VF2 for \SI{50}{\ms}, we are left with 2336 hard instances that we
+After running \IncompleteLAD and \VFtwo for \SI{50}{\ms}, we are left with 2336 hard instances that we
 consider for algorithm selection.
 
 \subsection{Feature Extraction}
@@ -382,7 +396,7 @@ the target graph, we consider some basic graph properties, which may be computed
     \item How many loops (self-adjacent vertices) the graph contains---since loops must be mapped to
         loops, this could have a strong effect on how easy an instance is.
     \item The mean and maximum degrees, and whether or not every vertex has the same degree. (The
-        degree-based invariants used by LAD and Glasgow do nothing at the top of search if every
+        degree-based invariants used by \LAD and \Glasgow do nothing at the top of search if every
         vertex has the same degree.)
     \item Whether or not the graph is connected.
     \item The mean and maximum distances between all pairs of vertices (if nearly all vertices are
@@ -392,18 +406,18 @@ the target graph, we consider some basic graph properties, which may be computed
 
 \subsection{Selection Model}
 
-To decide which solver to run on the remaining instances, we use LLAMA~\cite{kotthoff_llama_2013}.
-LLAMA supports the most common algorithm selection approaches used in the literature. We performed a
+To decide which solver to run on the remaining instances, we use \LLAMA~\cite{kotthoff_llama_2013}.
+\LLAMA supports the most common algorithm selection approaches used in the literature. We performed a
 set of preliminary experiments to determine the approach that works best in this case.
 
-We use 10-fold cross-validation to determine the performance of the LLAMA models. The entire set of
+We use 10-fold cross-validation to determine the performance of the \LLAMA models. The entire set of
 instances was randomly partitioned into 10 subsets of approximately equal size. Of the 10 subsets, 9
 were combined to form the training set for the algorithm selection models, which were evaluated on
 the remaining subset. This process was repeated 10 times for all possible combinations of training
 and test sets. At the end of this process, each problem instance in the original set was used
 exactly once to evaluate the performance of the algorithm selection models.
 
-LLAMA's pairwise regression approach with random forest regression gave the best performance. The
+\LLAMA's pairwise regression approach with random forest regression gave the best performance. The
 idea is very similar to the pairwise classification used by Xu et al.\ \cite{xu_satzilla_2008}. For
 each pair of algorithms in our portfolio, we train a model that predicts the performance difference
 between them. That is, if the first algorithm is better than the second, the difference is positive,
@@ -424,7 +438,7 @@ baselines. The virtual best solver is the oracle predictor that, for each instan
 solver from our portfolio. This is the upper bound of what an algorithm selection approach can
 achieve. The single best solver is the one solver from the portfolio that has the overall best
 performance across the entire set of instances, at the CPU time limit of \SI{10e8}{\ms},
-i.e.\ Glasgow(2). We consider it a lower bound on performance.
+i.e.\ GlasgowTwo. We consider it a lower bound on performance.
 We are able to solve 34 more instances than the single best solver within the timeout, with only an
 additional 13 to the virtual best. In terms of average performance, we are able to close almost
 \SI{70}{\percent} of the gap between the single best and the virtual best solver.
@@ -437,7 +451,7 @@ model & mean MCP & solved instances & mean performance\\
   \midrule
 virtual best & 0 & 2219 & 5822809\\
 single best & 1965158 & 2172 & 7787967\\
-LLAMA & 610835 & 2206 & 6435301\\
+\LLAMA & 610835 & 2206 & 6435301\\
    \bottomrule \\
 \end{tabular}
 \caption{Algorithm selection performance on the reduced set of 2336
@@ -447,7 +461,7 @@ worse than the best.}\label{tab:res} \end{table}
 
 Table~\ref{tab:res} shows the performance of the selection model. The performance of the entire
 system we propose here is shown in Table~\ref{tab:resfull}. The additional instances are solved
-either by incompleteLAD or VF2 presolving, as explained above. Our system is able to close more than
+either by \IncompleteLAD or \VFtwo presolving, as explained above. Our system is able to close more than
 \SI{50}{\percent} of the gap between single and virtual best.
 
 \begin{table}[ht]
@@ -458,7 +472,7 @@ model & mean MCP & solved instances & mean performance\\
   \midrule
 virtual best & 0 & 5608 & 2375913\\
 single best & 798660 & 5562 & 3174573\\
-LLAMA & 249242 & 5595 & 2625831\\
+\LLAMA & 249242 & 5595 & 2625831\\
    \bottomrule \\
 \end{tabular}
 \caption{Algorithm selection system performance on the full set of 5725
@@ -466,9 +480,9 @@ instances.}\label{tab:resfull}
 \end{table}
 
 Figure~\ref{fig:portfolio-ecdf} shows the cumulative distribution function for
-the individual solvers, the virtual best solver, and the LLAMA portfolio. The
+the individual solvers, the virtual best solver, and the \LLAMA portfolio. The
 virtual best solver clearly dominates with a significant margin to the next
-best. VF2 is far below all other solvers. The portfolio does not perform well
+best. \VFtwo is far below all other solvers. The portfolio does not perform well
 for instances that can be solved quickly because of the overhead incurred
 through feature computation. As the instances become more difficult to solve,
 its performance improves.
@@ -476,16 +490,16 @@ its performance improves.
 \begin{figure}[!ht]
 \includegraphics[width=\textwidth]{figures/portfolio-ecdf}
 \caption{Empirical cumulative distribution function of solvers, virtual best
-solvers, and the LLAMA portfolio on the reduced set of 2336 instances. The
+solvers, and the \LLAMA portfolio on the reduced set of 2336 instances. The
 actual solvers are shown as dashed lines.}
 \label{fig:portfolio-ecdf}
 \end{figure}
 
 Figure~\ref{fig:portfolio-ecdf-full} shows the ECDF of the system including
-incompleteLAD and VF2 presolving on the full set of instances. Note that for
+\IncompleteLAD and \VFtwo presolving on the full set of instances. Note that for
 very easy instances, we are better than the virtual best solver because
-incompleteLAD is not included in our portfolio. The performance on small
-instances is much better than the LLAMA selector alone (cf.\
+\IncompleteLAD is not included in our portfolio. The performance on small
+instances is much better than the \LLAMA selector alone (cf.\
 Figure~\ref{fig:portfolio-ecdf}) and the region where the portfolio performs
 worse than the individual solvers is now limited to approximately $10^2$ to
 $10^4$ milliseconds.
@@ -515,7 +529,7 @@ the entire set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
 The question arises of whether the success of our approach is limited to the
 particular timeout we have chosen. Table~\ref{tab:resTimeouts} shows the
 performance of our portfolio for timeouts ranging from $10^2$ to $10^8$. We
-do not include incompleteLAD and VF2 presolving here, as these components do not
+do not include \IncompleteLAD and \VFtwo presolving here, as these components do not
 change for different timeouts.
 
 \begin{table}[ht]
@@ -525,39 +539,39 @@ change for different timeouts.
 timeout & solver & mean MCP & solved instances & mean performance\\
   \midrule
 $10^2$ & virtual best & 0 & 1253 & 59\\
- & LLAMA & 3 & 685 & 78\\
- & glasgow1 & 11 & 903 & 71\\
+ & \LLAMA & 3 & 685 & 78\\
+ & \Glasgow1 & 11 & 903 & 71\\
   \midrule
 $10^3$ & virtual best & 0 & 1781 & 322\\
- & LLAMA & 22 & 1284 & 569\\
- & glasgow1 & 126 & 1539 & 449\\
+ & \LLAMA & 22 & 1284 & 569\\
+ & \Glasgow1 & 126 & 1539 & 449\\
   \midrule
 $10^4$ & virtual best & 0 & 1943 & 2018\\
- & LLAMA & 186 & 1771 & 3342\\
- & glasgow2 & 683 & 1855 & 2701\\
+ & \LLAMA & 186 & 1771 & 3342\\
+ & \Glasgow2 & 683 & 1855 & 2701\\
   \midrule
 $10^5$ & virtual best & 0 & 2045 & 14348\\
- & LLAMA & 1346 & 2022 & 17231\\
- & glasgow2 & 3019 & 1988 & 17368\\
+ & \LLAMA & 1346 & 2022 & 17231\\
+ & \Glasgow2 & 3019 & 1988 & 17368\\
   \midrule
 $10^6$ & virtual best & 0 & 2111 & 108060\\
- & LLAMA & 10826 & 2087 & 120459\\
- & glasgow2 & 22729 & 2063 & 130789\\
+ & \LLAMA & 10826 & 2087 & 120459\\
+ & Glasgow2 & 22729 & 2063 & 130789\\
   \midrule
 $10^7$ & virtual best & 0 & 2178 & 815577\\
- & LLAMA & 91012 & 2156 & 908200\\
- & glasgow2 & 198944 & 2129 & 1014522\\
+ & \LLAMA & 91012 & 2156 & 908200\\
+ & Glasgow2 & 198944 & 2129 & 1014522\\
   \midrule
 $10^8$ & virtual best & 0 & 2219 & 5822809\\
- & LLAMA & 740765 & 2204 & 6565232\\
- & glasgow2 & 1969418 & 2172 & 7792227\\
+ & \LLAMA & 740765 & 2204 & 6565232\\
+ & Glasgow2 & 1969418 & 2172 & 7792227\\
 \bottomrule
 \end{tabular}
 \vspace{1ex}
 \caption{Algorithm selection performance for different timeouts.}\label{tab:resTimeouts}
 \end{table}
 
-The results show that while for the misclassification penalty, LLAMA is always
+The results show that while for the misclassification penalty, \LLAMA is always
 better than the single best algorithm, for timeouts $10^2$ to $10^4$ it is worse
 in terms of the number of solved instances and mean performance. The
 misclassification penalty does not take the cost of computing features into
@@ -571,8 +585,8 @@ performance of the algorithm selection models particularly in this range.
 \begin{center}
 \begin{tabular}{|c||r||r|r|r||r|r|r|r||r|r|}
 \hline
-$t$ & VF2 & \multicolumn{3}{c||}{LAD} & \multicolumn{4}{c||}{Glasgow}& VBS & $\delta$\\
-&&pre&def&new&1&2&3&4&&\\\hline
+$t$ & \VFtwo & \multicolumn{3}{c||}{LAD} & \multicolumn{4}{c||}{\Glasgow}& VBS & $\delta$\\
+&&incomplete&classic&path&1&2&3&4&&\\\hline
 $10^0$ & 300 &  \cellcolor{blue!25}1126 & 661 & 599 & 386 & 95 & 39 & 12 & 1132 & 6\\\hline
 $10^1$ & 1699 & 1858 & 2101 &  \cellcolor{blue!25}2287 & 2061 & 1215 & 455 & 208 & 3388 & 101\\\hline
 $10^2$ & 2834 & 1912 & 3376 & 3708 &  \cellcolor{blue!25}3943 & 3344 & 2295 & 1329 & 4636 & 693\\\hline
@@ -585,26 +599,26 @@ $10^8$ & 4191 & 1919 & 5423 & 5479 & 5508 &  \cellcolor{blue!25}5561 & 5560 & 55
 \end{tabular}
 \end{center}
 \caption{Number of solved instances at different CPU time limits: Each line displays a time limit
-$t$ (in milliseconds) followed by the number of instances solved within this time limit by VF2, LAD
-preprocessing, default LAD, and new LAD, Glasgow with the lengths of paths limited to 1, 2, 3 and
+$t$ (in milliseconds) followed by the number of instances solved within this time limit by \VFtwo,
+\IncompleteLAD, classical \LAD, and \PathLAD, \Glasgow with the lengths of paths limited to 1, 2, 3 and
 4, and the VBS. The best single algorithm is highlighted in blue, and the difference between VBS and
 single best if displayed in the last column ($\delta$).\label{expTimeTable}}
 \end{table}
 
 Table~\ref{expTimeTable} displays the number of instances solved at different CPU time limits,
 ranging from 1 to $10^8$ milliseconds. It shows us that the best single solver depends on the time
-limit considered. Simple approaches like LAD preprocessing and VF2 are able to solve easy instances
-very quickly, in a few milliseconds. However, they are not able to solve harder instances: LAD
-preprocessing is an incomplete approach which can only detect rather trivial inconsistencies; VF2
+limit considered. Simple approaches like \IncompleteLAD and \VFtwo are able to solve easy instances
+very quickly, in a few milliseconds. However, they are not able to solve harder instances:
+\IncompleteLAD is an incomplete approach which can only detect rather trivial inconsistencies; \VFtwo
 performs a basic backtracking search and is very fast on easy instances, because it does not compute
-expensive invariants. Default LAD, new LAD, and the Glasgow algorithms solve more instances than VF2
-and LAD preprocessing when considering longer time limits: \SI{10}{\ms} for default and new LAD and
-Glasgow 1, and \SI{100}{\ms} (resp. \SI{1000}{\ms} and \SI{10000}{\ms}) for Glasgow(2) (resp.\ 3 and
+expensive invariants. Classical \LAD, \PathLAD, and the \Glasgow algorithms solve more instances than \VFtwo
+and \IncompleteLAD when considering longer time limits: \SI{10}{\ms} for \LAD and \PathLAD and
+\GlasgowOne, and \SI{100}{\ms} (resp. \SI{1000}{\ms} and \SI{10000}{\ms}) for \GlasgowTwo (resp.\ 3 and
 4). The Virtual Best Solver (VBS), which considers the best algorithm for each instance separately,
 obtains much better results, showing us that the algorithms have complementary performance. The
 difference between VBS and single best (column $\delta$ of Table \ref{expTimeTable}) is more
 particularly important for rather small CPU time limits. In particular, VBS solves 693 more
-instances than the single best (Glasgow(1)) when the limit is \SI{100}{\ms}. In many applications,
+instances than the single best (\GlasgowOne) when the limit is \SI{100}{\ms}. In many applications,
 it is important to have the fastest possible algorithm. For example, in pattern recognition
 applications, we often have to solve subgraph isomorphism problems for a very large number of graphs
 (in order to find a pattern image in a large database of target images, for example), so that having
@@ -615,7 +629,7 @@ Table~\ref{selectionvsvbs} shows the performance of our algorithm selection appr
 the VBS (which is the upper bound of what an algorithm selection approach can achieve), and the
 single best solver, at different CPU time limits (the single best corresponds to results highlighted
 in blue in Table 1).  Comment Table 3: Mean runtime but also number of solved instances at different
-CPU time limits.  Logically, LLAMA may solve less instances than single best for small time limits
+CPU time limits.  Logically, \LLAMA may solve less instances than single best for small time limits
 because it spends time to compute features and choose a solver, but it should be better for larger
 time limits...
 
@@ -625,12 +639,12 @@ time limits...
 &runtime & $10^0$ &  $10^1$ &  $10^2$ &  $10^3$ &  $10^4$ &  $10^5$ &  $10^6$ &  $10^7$ &  $10^8$\\\hline
 VBS & 2375.9 & 1132 & 3388 & 4636 & 5170 & 5332 & 5434 & 5500 & 5567 & 5608\\\hline
 Single best & 3177.6 & 1126 & 2287 & 3943 & 4908 & 5253 & 5377 & 5452 & 5518 & 5561\\\hline
-LLAMA & 2706.3\\\hline
+\LLAMA & 2706.3\\\hline
 \end{tabular}
 \caption{}\label{selectionvsvbs}
 \end{table}
 
-Add Figure 1 which compares single best at \SI{10e8}{\ms}(Glasgow(2)) with LLAMA ?
+Add Figure 1 which compares single best at \SI{10e8}{\ms}(\GlasgowTwo) with \LLAMA ?
 
 \section{Conclusion and Future Work}
 
