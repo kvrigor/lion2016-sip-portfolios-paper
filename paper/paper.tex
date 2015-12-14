@@ -425,8 +425,8 @@ Table~\ref{tab:res} shows the performance of our algorithm selection approach, c
 baselines. The virtual best solver is the oracle predictor that, for each instance, chooses the best
 solver from our portfolio. This is the upper bound of what an algorithm selection approach can
 achieve. The single best solver is the one solver from the portfolio that has the overall best
-performance across the entire set of instances, at the CPU time limit of \SI{10e8}{\ms},
-i.e.\ GlasgowTwo. We consider it a lower bound on performance.
+performance across the entire set of instances, at the CPU time limit of \SI{e8}{\ms},
+i.e.\ \GlasgowTwo. We consider it a lower bound on performance.
 We are able to solve 34 more instances than the single best solver within the timeout, with only an
 additional 13 to the virtual best. In terms of average performance, we are able to close almost
 \SI{70}{\percent} of the gap between the single best and the virtual best solver.
@@ -632,7 +632,7 @@ Single best & 3177.6 & 1126 & 2287 & 3943 & 4908 & 5253 & 5377 & 5452 & 5518 & 5
 \caption{}\label{selectionvsvbs}
 \end{table}
 
-Add Figure 1 which compares single best at \SI{10e8}{\ms}(\GlasgowTwo) with \LLAMA ?
+Add Figure 1 which compares single best at \SI{e8}{\ms}(\GlasgowTwo) with \LLAMA ?
 
 \section{Conclusion and Future Work}
 
