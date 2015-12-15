@@ -14,6 +14,8 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage[sort]{cite}
+\usepackage{enumitem}
+\setlist{nosep}
 
 \newcommand{\VFtwo}{$\textsc{Vf{\scalefont{0.8}2}}$\xspace}
 \newcommand{\Glasgow}{$\textsc{Glasgow}$\xspace}
@@ -60,12 +62,12 @@ gain new insights into what affects the performance of an algorithm.
 
 The subgraph isomorphism problem is to find an adjacency-preserving injective mapping from vertices
 of a small \emph{pattern} graph to vertices of a large \emph{target} graph. This \NP-complete
-problem has many important practical applications, for example in computer vision
-\cite{cviu11,pr15}, biochemistry \cite{Giugno:2013}, and model checking \cite{Sevegnani:2015}. There
+problem has many important practical applications, for example in computer
+vision~\cite{cviu11,pr15}, biochemistry~\cite{Giugno:2013}, and model checking~\cite{Sevegnani:2015}. There
 exist various exact algorithms, which have been compared on a large suite of problem instances by
-McCreesh and Prosser \cite{McCreesh:2015}. These experiments indicated that the single best
-algorithm depends on the CPU time limit considered: for very small CPU time limits, \VFtwo
-\cite{Cordella:2004} is the best choice, whereas the \Glasgow algorithm \cite{McCreesh:2015} has
+McCreesh and Prosser~\cite{McCreesh:2015}. These experiments indicated that the single best
+algorithm depends on the CPU time limit considered: for very small CPU time
+limits, \VFtwo{}~\cite{Cordella:2004} is the best choice, whereas the \Glasgow algorithm~\cite{McCreesh:2015} has
 better success rates for larger time limits.  They also showed that on an instance by instance
 basis, other algorithms are often better.
 
@@ -88,7 +90,7 @@ information on algorithm selection.
 
 \paragraph{Overview of the paper.}
 We formally define the subgraph isomorphism problem in Section~\ref{sec:defs}. 
-In Section~\ref{sec:algs}, we describe the main existing algorithms for solving this problem, and we also introduce two new algorithms which are derived from the LAD algorithm of \cite{Solnon:2010}. 
+In Section~\ref{sec:algs}, we describe the main existing algorithms for solving this problem, and we also introduce two new algorithms which are derived from the LAD algorithm of~\cite{Solnon:2010}. 
 
 In Section~\ref{sec:algs}, we experimentally compare eight state-of-the-art
 algorithms. We introduce a large benchmark set composed of 5725 instances
@@ -120,10 +122,10 @@ graphs as well.
 
 Given a pattern graph $G_p=(N_p,E_p)$ and a target graph $G_t=(N_t,E_t)$, the \emph{subgraph
 isomorphism problem} consists of deciding whether $G_p$ is isomorphic to some subgraph of $G_t$.
-More precisely, the goal is to find an injective matching $f: N_p\rightarrow N_t$, that associates a
-different target node to each pattern node, and that preserves pattern edges, i.e.\ $\forall (u,u')
+More formally, the goal is to find an injective matching $f: N_p\rightarrow N_t$, that associates a
+different target node to each pattern node, and preserves pattern edges, i.e.\ $\forall (u,u')
 \in E_p, (f(u),f(u')) \in E_t$.
-Note that the subgraph is not necessarily induced, so that two pattern nodes that are not linked by
+Note that the subgraph is not necessarily induced, so that two pattern nodes not linked by
 an edge may be mapped to two target nodes which are linked by an edge. This problem is also called
 \emph{subgraph monomorphism} or \emph{subgraph matching} in the literature.
 
@@ -153,28 +155,29 @@ every candidate pair $(u',v')\in N_p\times N_t$ such that either $v'=v$ (differe
 $(u,u')$ is a pattern edge but $(v,v')$ is not a target edge (edge constraint). This simple
 filtering (called \emph{Forward-Checking}) is very fast to achieve: in ${\cal O}(n_p)$ for
 difference constraints, and in ${\cal O}(d_p\cdot n_t)$ for edge constraints. It is used, for
-example, in McGregor's algorithm \cite{mcgregor79} and in \VFtwo \cite{Cordella:2004}.
+example, in McGregor's algorithm~\cite{mcgregor79} and in \VFtwo{}~\cite{Cordella:2004}.
 
-R\'egin \cite{regin} introduced a stronger filtering for difference constraints, which ensures that
+R\'egin~\cite{regin} introduced a stronger filtering for difference constraints, which ensures that
 all pattern nodes can be matched with different target nodes, all together. This filtering (called
 \emph{All-Different Generalized Arc Consistency}) removes more candidate pairs than when each
 difference constraint is propagated separately which Forward-Checking. However, it is also more time
-consuming as it is done in ${\cal O}(n_p^2\cdot n_t^2)$ time.
+consuming as requires ${\cal O}(n_p^2\cdot n_t^2)$ time.
 
-Various filtering techniques have been tried for edge constraints. Ullman \cite{ullman} introduced a
+Various filtering techniques have been tried for edge constraints. Ullman~\cite{ullman} introduced a
 filtering which ensures that for each pattern edge $(u,u')\in E_p$ and each candidate pair $(u,v)\in
 N_p\times N_t$, there exists a candidate couple $(u',v')\in N_p\times N_t$ such that $(v,v')$ is a
 target edge. Candidate couples $(u,v)$ that do not satisfy this property are iteratively removed
 until a fixed point is reached. This filtering (called \emph{Arc Consistency}) removes more
-candidate pairs than Forward-Checking, but it is also more time consuming as it is done in ${\cal
-O}(e_p\cdot n_t^2)$ when using the algorithm AC4  \cite{MH86}.
+candidate pairs than Forward-Checking, but it is also more time consuming as it
+runs in ${\cal
+O}(e_p\cdot n_t^2)$ when using AC4~\cite{MH86}.
 
 Stronger filtering may be obtained by propagating edge constraints in a more global way, as proposed
-by Larrosa and Valiente \cite{LV02}. The idea is to check for each candidate pair $(u,v)\in
+by Larrosa and Valiente~\cite{LV02}. The idea is to check for each candidate pair $(u,v)\in
 N_p\times N_t$ that the number of pattern nodes adjacent to $u$ is smaller than or equal to the
 number of target nodes that are both adjacent to $v$ and that may be matched with nodes adjacent to
-$u$. This is done in ${\cal O}(n_p^2\cdot n_t^2)$. This idea was generalised by Solnon
-\cite{Solnon:2010}'s \LAD algorithm, where, for each candidate pair $(u,v)\in N_p\times N_t$, a redundant Local
+$u$. This is done in ${\cal O}(n_p^2\cdot n_t^2)$. This idea was generalised by
+Solnon's \LAD algorithm~\cite{Solnon:2010}, where, for each candidate pair $(u,v)\in N_p\times N_t$, a redundant Local
 All-Different constraint ensures that each neighbour of $u$ may be matched with a different
 neighbour of $v$. This is done in ${\cal O}(n_p\cdot n_t\cdot d_p^2\cdot d_t^2)$.
 
@@ -191,30 +194,28 @@ than for its matched target node.  Invariant properties may also be associated w
 For example, the number of paths of length $k$ between two pattern nodes is smaller than or equal to
 the number of paths of length $k$ between the target nodes with which they may be matched.
 
-These invariant properties are used, for example:
-
+These invariant properties are used, for example,
 \begin{itemize}
-\item  By Battiti and Mascia \cite{battiti-mascia07}, to remove candidate pairs $(u,v)\in N_p\times
+\item by Battiti and Mascia~\cite{battiti-mascia07}, to remove candidate pairs $(u,v)\in N_p\times
     N_t$ such that the number of paths starting from  pattern node $u$ is greater than the number of
     paths starting from  target node $v$;
-\item By Audemard et al.\ \cite{Audemard:2014} to generalise the locally all-different constraint
-    proposed by Solnon \cite{Solnon:2010} so that it ensures that a subset of pattern nodes can be
+\item by Audemard et al.~\cite{Audemard:2014} to generalise the locally all-different constraint
+    proposed by Solnon~\cite{Solnon:2010} so that it ensures that a subset of pattern nodes can be
     matched with all different compatible target nodes, where compatibility is defined with respect
     to invariant properties;
-\item by McCreesh and Prosser \cite{McCreesh:2015} to filter the set of candidate couples before
+\item by McCreesh and Prosser~\cite{McCreesh:2015} to filter the set of candidate couples before
     starting the search, and to generate additional implied adjacency-like constraints which are
     processed during search.
 \end{itemize}
 
-\noindent Audemard et al.\ \cite{Audemard:2014} do not limit the length of paths considered, and
-iteratively increment the length until no more pairs are removed. Battiti and Mascia
-\cite{battiti-mascia07}, and McCreesh and Prosser \cite{McCreesh:2015} parameterise their algorithms
+Audemard et al.~\cite{Audemard:2014} do not limit the length of paths considered, and
+iteratively increment the length until no more pairs are removed. Battiti and Mascia~\cite{battiti-mascia07}, and McCreesh and Prosser~\cite{McCreesh:2015} parameterise their algorithms
 by the maximum path length considered when counting paths: larger values for this parameter remove
 more candidate pairs, but are also more time consuming. Battiti and Mascia's experiments show that
 the best setting depends on the instance considered, and that a portfolio running several randomised
 versions in time-sharing decreases the total CPU time needed to find a solution for feasible
-instances. McCreesh and Prosser simply set the parameter to 3, as this setting seemed to be a
-reasonable compromise.
+instances. McCreesh and Prosser simply set the parameter to 3, as this setting
+presented the best overall performance in their case.
 
 \section{Experimental Comparison of Individual Algorithms}\label{sec:exps}
 
@@ -222,19 +223,19 @@ reasonable compromise.
 
 We have selected a set of algorithms with complementary performance. These algorithms will compose our portfolio in the per-instance selection approach described in Section 5. 
 \begin{itemize}
-\item \VFtwo \cite{Cordella:2004} performs a weak filtering that it is especially fast on
+\item \VFtwo{}~\cite{Cordella:2004} performs a weak filtering that it is especially fast on
     trivially satisfiable instances;
-\item \LAD \cite{Solnon:2010} combines two strong but expensive filtering techniques
+\item \LAD{}~\cite{Solnon:2010} combines two strong but expensive filtering techniques
     (All-Different Generalized Arc Consistency and Locally All-Different);
-\item \Glasgow \cite{McCreesh:2015} does expensive preprocessing based on path length
+\item \Glasgow{}~\cite{McCreesh:2015} does expensive preprocessing based on path length
     invariant properties to generate additional constraints, followed by weaker filtering
     (forward-checking, and a heuristic All-Different propagator which can miss deletions) and
     conflict-directed backjumping during search.
 \end{itemize}
 
 \noindent The \Glasgow algorithm has a parameter, which controls the lengths of paths used when
-reasoning about non-adjacent vertices.  In experiments reported by McCreesh and Prosser
-\cite{McCreesh:2015}, the choice of paths of length 3 was used as a reasonable compromise---longer
+reasoning about non-adjacent vertices.  In experiments reported by McCreesh and
+Prosser~\cite{McCreesh:2015}, the choice of paths of length 3 was used as a reasonable compromise---longer
 paths lead to prohibitively expensive preprocessing on larger, denser instances. This is often not
 the best choice on an instance by instance basis: sometimes path-based reasoning gives no benefit at
 all, sometimes considering only paths of length 2 suffices, occasionally paths of length 4 are
@@ -253,8 +254,8 @@ it does not detect inconsistency, the instance may either be satisfiable or not.
 this incompleteness, it is very fast: its time complexity is ${\cal O}(n_p(n_t+e_t))$.
 
 The second variant of \LAD is called \PathLAD. It combines the locally all-different constraints
-introduced by Solnon \cite{Solnon:2010} with the exploitation of path length properties proposed by
-Audemard et al.\ \cite{Audemard:2014}. The idea is to label each edge $(u,v)$ with the number of
+introduced by Solnon~\cite{Solnon:2010} with the exploitation of path length properties proposed by
+Audemard et al.~\cite{Audemard:2014}. The idea is to label each edge $(u,v)$ with the number of
 paths of length 2 between $u$ and $v$, and each node $u$ with the number of cycles of length 3
 passing through $u$, and to add the constraint that the label of a pattern node (resp.\ edge) must
 be smaller than or equal to the label of its associated target node (resp.\ edge).
@@ -267,25 +268,24 @@ format\footnote{\url{http://liris.cnrs.fr/csolnon/SIP.html}}. These instances ar
 classes.
 
 \begin{itemize}
-\item Class 1 contains randomly generated scale-free graphs \cite{constraints10}.
-\item Classes 2 and 3 contain various kinds of graphs selected by Larrosa and Valiente \cite{LV02}:
+\item Class 1 contains randomly generated scale-free graphs~\cite{constraints10}.
+\item Classes 2 and 3 contain various kinds of graphs selected by Larrosa and Valiente~\cite{LV02}:
     class 2 contains small instances generated from the 50 first graphs, and class 3 contains
     larger instances where pattern graphs are coming from class 2, and target graphs are coming from
     the next 50 graphs.
 \item Classes 4 to 8 contain randomly generated graphs coming from a database of graphs commonly
-    used for benchmarking subgraph isomorphism algorithms
-    \cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for classes 3 and 4, regular meshes
+    used for benchmarking subgraph isomorphism algorithms~\cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for classes 3 and 4, regular meshes
     for classes 5 and 6, and random graphs with uniform edge probabilities for class 7. All of these
     instances are satisfiable.
-\item Classes 9 and 10 contain instances coming from segmented images \cite{pr15,cviu11}.
-\item Class 11 contains instances coming from meshes modeling 3D objects \cite{cviu11}.
+\item Classes 9 and 10 contain instances coming from segmented images~\cite{pr15,cviu11}.
+\item Class 11 contains instances coming from meshes modeling 3D objects~\cite{cviu11}.
 \item Class 12 contains random graph instances chosen to be close to the satisfiable-unsatisfiable
     phase transition---these instances are expected to be particularly challenging, despite their
     small size.
 \end{itemize}
 
 Note that Classes 3 and 12 were not considered in the previous experimental study by McCreesh and
-Prosser \cite{McCreesh:2015}.  This set of instances is also much larger than that of Battiti and
+Prosser~\cite{McCreesh:2015}.  This set of instances is also much larger than that of Battiti and
 Mascia~\cite{battiti-mascia07}, who were the first to propose algorithm portfolios for subgraph
 isomorphism problems.  Battiti and Mascia only considered a pure parallel portfolio consisting of
 two solvers, and without a selection mechanism. Their problem set consisted entirely of easy
@@ -294,9 +294,9 @@ satisfiable instances, which is where this style of approach has most success.
 \subsection{Experimental Setup}
 
 We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
-Scientific Linux 6.5. We used the C++ implementation of the \Glasgow algorithm \cite{McCreesh:2015},
-the C implementation of \LAD \cite{Solnon:2010}, and the VFLib C implementation of \VFtwo
-\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
+Scientific Linux 6.5. We used the C++ implementation of the \Glasgow algorithm~\cite{McCreesh:2015},
+the C implementation of \LAD{}~\cite{Solnon:2010}, and the VFLib C
+implementation of \VFtwo{}~\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
 timeout of $10^8$ milliseconds (a little over a day).
 
 
@@ -333,8 +333,8 @@ Furthermore, the Virtual Best Solver (VBS), which considers the best algorithm f
 separately, obtains much better results, showing us that the algorithms have complementary
 performance. The difference between VBS and single best is more particularly important for rather
 small CPU time limits (smaller than \SI{1000}{\ms}). In many applications, it is important to have the
-fastest possible algorithm. For example, in pattern recognition \cite{pr15,cviu11} and chemical
-\cite{Giugno:2013} applications, we often have to solve the subgraph isomorphism problem repeatedly
+fastest possible algorithm. For example, in pattern
+recognition~\cite{pr15,cviu11} and chemical~\cite{Giugno:2013} applications, we often have to solve the subgraph isomorphism problem repeatedly
 for a very large number of graphs (in order to find a pattern image or molecule in a large database
 of target images or compounds, for example), so having an algorithm that is able to solve an
 instance in \SI{100}{\ms} instead of \SI{1000}{\ms} makes a big difference.  Therefore, it is important to select
@@ -428,7 +428,7 @@ and test sets. At the end of this process, each problem instance in the original
 exactly once to evaluate the performance of the algorithm selection models.
 
 \LLAMA's pairwise regression approach with random forest regression gave the best performance. The
-idea is very similar to the pairwise classification used by Xu et al.\ \cite{xu_satzilla_2008}. For
+idea is very similar to the pairwise classification used by Xu et al.~\cite{xu_satzilla_2008}. For
 each pair of algorithms in our portfolio, we train a model that predicts the performance difference
 between them. That is, if the first algorithm is better than the second, the difference is positive,
 otherwise negative. The algorithm with the highest cumulative performance difference, i.e.\ the most
