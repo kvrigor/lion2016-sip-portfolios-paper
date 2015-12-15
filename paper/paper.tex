@@ -13,6 +13,7 @@
 \usepackage{scalefnt}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage[sort]{cite}
 
 \newcommand{\VFtwo}{$\textsc{Vf{\scalefont{0.8}2}}$\xspace}
 \newcommand{\Glasgow}{$\textsc{Glasgow}$\xspace}
@@ -50,7 +51,7 @@ of state-of-the-art algorithms for solving the problem, each of which has its ow
 characteristics. As with many other hard problems, the single best choice of algorithm overall is
 rarely the best algorithm on an instance-by-instance. We develop a portfolio approach which leverages
 novel features to characterise subgraph isomorphism problems to dynamically decide which algorithm
-to use on a per-instance basis. We demonstrate significant performance improvements on a large set
+to use on a per-instance basis. We demonstrate substantial performance improvements on a large set
 of hard benchmark problems. In addition, we show how algorithm selection models can be leveraged to
 gain new insights into what affects the performance of an algorithm.
 \end{abstract}
@@ -66,15 +67,16 @@ McCreesh and Prosser \cite{McCreesh:2015}. These experiments indicated that the 
 algorithm depends on the CPU time limit considered: for very small CPU time limits, \VFtwo
 \cite{Cordella:2004} is the best choice, whereas the \Glasgow algorithm \cite{McCreesh:2015} has
 better success rates for larger time limits.  They also showed that on an instance by instance
-basis, other algorithms are often better. This motivates us for introducing and evaluating a per-instance algorithm selection  approach for this problem.
+basis, other algorithms are often better.
 
 
 The per-instance algorithm selection problem~\cite{rice_algorithm_1976} is to select from an
-algorithm portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} the one expected to perform
+algorithm portfolio~\cite{huberman_economics_1997,gomes_algorithm_2001} the
+algorithm expected to perform
 best on a given problem instance. Algorithm selection systems usually build machine learning models
-of the algorithms or the in which portfolio they are contained to forecast which algorithm to use in a
-particular context. Using the model predictions, one or more algorithms from the portfolio are
-selected to be run sequentially or in parallel.
+of the algorithms or the portfolio which they are contained in to forecast which algorithm to use in a
+particular context. Using the predictions, one or more algorithms from the
+portfolio can be selected to be run sequentially or in parallel.
 
 Here, we consider the case where exactly one algorithm is selected for solving the problem. One of
 the most prominent and successful systems that employs this approach is
@@ -85,18 +87,29 @@ The interested reader is referred to a recent survey~\cite{kotthoff_algorithm_20
 information on algorithm selection.
 
 \paragraph{Overview of the paper.}
-We formally define the subgraph isomorphism problem in Section 2. 
-In Section 3, we describe the main existing algorithms for solving this problem, and we also introduce two new algorithms which are derived from the LAD algorithm of \cite{Solnon:2010}. 
+We formally define the subgraph isomorphism problem in Section~\ref{sec:defs}. 
+In Section~\ref{sec:algs}, we describe the main existing algorithms for solving this problem, and we also introduce two new algorithms which are derived from the LAD algorithm of \cite{Solnon:2010}. 
 
-In Section 4, we experimentally compare some algorithms. We describe a large benchmark composed of 5725 instances grouped into 12 classes: 10 of these classes have already been used in the experimental study reported in  \cite{McCreesh:2015}, and 2 are new ones. We evaluate 8 algorithms on this benchmark (6 existing algorithms, and our 2 new algorithms), and we show that they have very compementary performance. In particular, we show that 4 of these algorithms are single best algorithms, depending on the CPU time limit considered. 
+In Section~\ref{sec:algs}, we experimentally compare eight state-of-the-art
+algorithms. We introduce a large benchmark set composed of 5725 instances
+composed of twelve classes. Ten of these classes have been introduced in the
+experimental study reported in~\cite{McCreesh:2015}. We evaluate the algorithms,
+of which two are novel, on this benchmark set, and show that they have very
+complementary performance. In particular, we show that depending on the CPU time
+limit, different algorithms achieve the best performance on the entire benchmark
+set.
 
-In Section 5, we describe the features that are used to describe instances, and we describe our algorithm selection approach. It combines a presolving step, which allows us to very quickly solve easy instances, with the algorithm selection approach \LLAMA~\cite{kotthoff_llama_2013}. 
+In Section~\ref{sec:algsel}, we describe the features that are used to describe instances, and we describe our algorithm selection approach. It combines a presolving step, which allows us to very quickly solve easy instances, with the algorithm selection approach \LLAMA~\cite{kotthoff_llama_2013}. 
 
-In Section 6, we experimentally evaluate our selection approach, and show that it is able to close almost 70\% of the gap between the single best and the virtual best solver.
+In Section~\ref{sec:algsel-exps}, we experimentally evaluate our selection
+approach, and show that it is able to close almost 70\% of the gap between the
+single best and the virtual best solver.
+
+We conclude and give directions for future work in Section~\ref{sec:concs}.
 
 
 
-\section{Definitions and Notations}
+\section{Definitions and Notations}\label{sec:defs}
 
 A \emph{graph} $G=(N,E)$ consists of a \emph{node set} $N$ and an \emph{edge set} $E \subseteq N
 \times N$, where an edge $(u,u')$ is a pair of nodes. The number of neighbors of a node $u$ is
@@ -118,7 +131,7 @@ In the following, we assume $G_p=(N_p,E_p)$ and $G_t=(N_t,E_t)$ to be the underl
 subgraph isomorphism.  We  define $n_p = \# N_p$, $n_t = \# N_t$,  $e_p=\# E_p$, $e_t=\#
 E_t$, and $d_p$ and $d_t$ to be the maximum degrees of the graphs $G_p$ and $G_t$.
 
-\section{Subgraph Isomorphism Algorithms}
+\section{Subgraph Isomorphism Algorithms}\label{sec:algs}
 
 Subgraph isomorphism problems may be solved by a systematic exploration of the search space composed
 of all possible injective matchings from $N_p$ to $N_t$: starting from an empty matching, one
@@ -203,7 +216,7 @@ versions in time-sharing decreases the total CPU time needed to find a solution 
 instances. McCreesh and Prosser simply set the parameter to 3, as this setting seemed to be a
 reasonable compromise.
 
-\section{Experimental Comparison of Individual Algorithms}
+\section{Experimental Comparison of Individual Algorithms}\label{sec:exps}
 
 \subsection{Considered Existing Algorithms}
 
@@ -360,7 +373,7 @@ Total && 1282 && 1865 & 881 & 1273 && 1530 & 465 & 82& 15\\
 \caption{Number of times each algorithm is best, for each class.\label{expClass}}
 \end{table}
 
-\section{Algorithm Selection Approach}
+\section{Algorithm Selection Approach}\label{sec:algsel}
 
 Our approach is composed of three steps. First, we run two presolvers in a static way to quickly
 solve easy instances; second, we extract features from instances which are not solved by the first
@@ -428,7 +441,7 @@ cannot be improved.
 
 The data we use in this paper is available as ASlib~\cite{aslib} scenario GRAPHS-2015.
 
-\section{Experimental Evaluation of Algorithm Selection}
+\section{Experimental Evaluation of Algorithm Selection}\label{sec:algsel-exps}
 
 Table~\ref{tab:res} shows the performance of our algorithm selection approach, compared to two
 baselines. The virtual best solver is the oracle predictor that, for each instance, chooses the best
@@ -643,7 +656,7 @@ Single best & 3177.6 & 1126 & 2287 & 3943 & 4908 & 5253 & 5377 & 5452 & 5518 & 5
 
 Add Figure 1 which compares single best at \SI{e8}{\ms}(\GlasgowTwo) with \LLAMA ?
 
-\section{Conclusion and Future Work}
+\section{Conclusion and Future Work}\label{sec:concs}
 
 The problem of identifying subgraph isomorphisms is a hard computation problem
 that has many applications in diverse areas. In this paper, we presented a
