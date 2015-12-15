@@ -463,7 +463,8 @@ baselines. The virtual best solver is the oracle predictor that, for each instan
 solver from our portfolio. This is the upper bound of what an algorithm selection approach can
 achieve. The single best solver is the one solver from the portfolio that has the overall best
 performance across the entire set of instances, at the CPU time limit of \SI{e8}{\ms},
-i.e.\ \GlasgowTwo. We consider it a lower bound on performance.
+i.e.\ \GlasgowTwo. We consider it a lower bound on the performance of the
+algorithm selection approach.
 We are able to solve 34 more instances than the single best solver within the timeout, with only an
 additional 13 to the virtual best. In terms of average performance, we are able to close almost
 \SI{70}{\percent} of the gap between the single best and the virtual best solver.
@@ -475,19 +476,21 @@ additional 13 to the virtual best. In terms of average performance, we are able 
 model & mean MCP & solved instances & mean performance\\
   \midrule
 virtual best & 0 & 2219 & 5822809\\
-single best & 1965158 & 2172 & 7787967\\
 \LLAMA & 610835 & 2206 & 6435301\\
+\GlasgowTwo & 1965158 & 2172 & 7787967\\
    \bottomrule \\
 \end{tabular}
 \caption{Algorithm selection performance on the reduced set of 2336
 instances. MCP is the misclassification penalty; that is, the additional time
-required to solve a set of instances because of choosing solvers that perform
-worse than the best.}\label{tab:res} \end{table}
+required to solve an instance because of choosing solvers that perform
+worse than the best.}\label{tab:res}
+\end{table}
 
-Table~\ref{tab:res} shows the performance of the selection model. The performance of the entire
-system we propose here is shown in Table~\ref{tab:resfull}. The additional instances are solved
-either by \IncompleteLAD or \VFtwo presolving, as explained above. Our system is able to close more than
-\SI{50}{\percent} of the gap between single and virtual best.
+Table~\ref{tab:res} shows the performance of the selection model on its own. The performance of the entire
+algorithm selection system including the preprocessing is shown in
+Table~\ref{tab:resfull}.
+Our system is able to close more than \SI{50}{\percent} of the gap between
+single and virtual best.
 
 \begin{table}[ht]
     \centering\setlength{\tabcolsep}{1em}
@@ -496,43 +499,43 @@ either by \IncompleteLAD or \VFtwo presolving, as explained above. Our system is
 model & mean MCP & solved instances & mean performance\\
   \midrule
 virtual best & 0 & 5608 & 2375913\\
-single best & 798660 & 5562 & 3174573\\
 \LLAMA & 249242 & 5595 & 2625831\\
+\GlasgowTwo & 798660 & 5562 & 3174573\\
    \bottomrule \\
 \end{tabular}
 \caption{Algorithm selection system performance on the full set of 5725
 instances.}\label{tab:resfull}
 \end{table}
 
-Figure~\ref{fig:portfolio-ecdf} shows the cumulative distribution function for
-the individual solvers, the virtual best solver, and the \LLAMA portfolio. The
-virtual best solver clearly dominates with a significant margin to the next
-best. \VFtwo is far below all other solvers. The portfolio does not perform well
-for instances that can be solved quickly because of the overhead incurred
-through feature computation. As the instances become more difficult to solve,
-its performance improves.
+Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
+for the individual solvers, the virtual best solver, and the \LLAMA algorithm
+selection approach. The performance of \VFtwo is far behind all other solvers.
+The portfolio does not perform well for instances that can be solved quickly
+because of the overhead incurred through feature computation. As the instances
+become more difficult to solve, its performance improves.
 
 \begin{figure}[!ht]
 \includegraphics[width=\textwidth]{figures/portfolio-ecdf}
-\caption{Empirical cumulative distribution function of solvers, virtual best
-solvers, and the \LLAMA portfolio on the reduced set of 2336 instances. The
+\caption{Number of solved instances over time for solvers, virtual best
+solvers, and \LLAMA on the reduced set of 2336 instances. The
 actual solvers are shown as dashed lines.}
 \label{fig:portfolio-ecdf}
 \end{figure}
 
-Figure~\ref{fig:portfolio-ecdf-full} shows the ECDF of the system including
+Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over
+time for the algorithm selection system including
 \IncompleteLAD and \VFtwo presolving on the full set of instances. Note that for
 very easy instances, we are better than the virtual best solver because
 \IncompleteLAD is not included in our portfolio. The performance on small
 instances is much better than the \LLAMA selector alone (cf.\
 Figure~\ref{fig:portfolio-ecdf}) and the region where the portfolio performs
 worse than the individual solvers is now limited to approximately $10^2$ to
-$10^4$ milliseconds.
+$10^5$ milliseconds.
 
 \begin{figure}[!ht]
 \includegraphics[width=\textwidth]{figures/portfolio-ecdf-full}
-\caption{Empirical cumulative distribution function of solvers, virtual best
-solvers, and the portfolio system on the full set of 5725 instances. The
+\caption{Number of solved instances over time for solvers, virtual best
+solvers, and \LLAMA on the full set of 5725 instances. The
 actual solvers are shown as dashed lines.}
 \label{fig:portfolio-ecdf-full}
 \end{figure}
@@ -546,16 +549,16 @@ a hard instances is much worse than choosing the wrong solver for an easy
 instance.
 
 Even though Figures~\ref{fig:portfolio-ecdf} and~\ref{fig:portfolio-ecdf-full}
-show that on easy instances, the portfolio does not perform well, it does over
+show that on easy instances, the model does not perform well, it does over
 the entire set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
 
 \subsection{Portfolios for Different Timeouts}
 
 The question arises of whether the success of our approach is limited to the
 particular timeout we have chosen. Table~\ref{tab:resTimeouts} shows the
-performance of our portfolio for timeouts ranging from $10^2$ to $10^8$. We
-do not include \IncompleteLAD and \VFtwo presolving here, as these components do not
-change for different timeouts.
+performance of our algorithm selection approach for timeouts ranging from $10^2$
+to $10^8$. We do not include the instances solved by \IncompleteLAD and \VFtwo
+presolving here, as these components do not change for different timeouts.
 
 \begin{table}[ht]
 \centering
@@ -565,31 +568,31 @@ timeout & solver & mean MCP & solved instances & mean performance\\
   \midrule
 $10^2$ & virtual best & 0 & 1253 & 59\\
  & \LLAMA & 3 & 685 & 78\\
- & \Glasgow1 & 11 & 903 & 71\\
+ & \GlasgowOne & 11 & 903 & 71\\
   \midrule
 $10^3$ & virtual best & 0 & 1781 & 322\\
  & \LLAMA & 22 & 1284 & 569\\
- & \Glasgow1 & 126 & 1539 & 449\\
+ & \GlasgowOne & 126 & 1539 & 449\\
   \midrule
 $10^4$ & virtual best & 0 & 1943 & 2018\\
  & \LLAMA & 186 & 1771 & 3342\\
- & \Glasgow2 & 683 & 1855 & 2701\\
+ & \GlasgowTwo & 683 & 1855 & 2701\\
   \midrule
 $10^5$ & virtual best & 0 & 2045 & 14348\\
  & \LLAMA & 1346 & 2022 & 17231\\
- & \Glasgow2 & 3019 & 1988 & 17368\\
+ & \GlasgowTwo & 3019 & 1988 & 17368\\
   \midrule
 $10^6$ & virtual best & 0 & 2111 & 108060\\
  & \LLAMA & 10826 & 2087 & 120459\\
- & Glasgow2 & 22729 & 2063 & 130789\\
+ & \GlasgowTwo & 22729 & 2063 & 130789\\
   \midrule
 $10^7$ & virtual best & 0 & 2178 & 815577\\
  & \LLAMA & 91012 & 2156 & 908200\\
- & Glasgow2 & 198944 & 2129 & 1014522\\
+ & \GlasgowTwo & 198944 & 2129 & 1014522\\
   \midrule
 $10^8$ & virtual best & 0 & 2219 & 5822809\\
  & \LLAMA & 740765 & 2204 & 6565232\\
- & Glasgow2 & 1969418 & 2172 & 7792227\\
+ & \GlasgowTwo & 1969418 & 2172 & 7792227\\
 \bottomrule
 \end{tabular}
 \vspace{1ex}
