@@ -407,6 +407,9 @@ solved by \IncompleteLAD, 1470 are solved by \VFtwo in less than 50 milliseconds
 running \IncompleteLAD, we run the \VFtwo solver for \SI{50}{\ms}. This solves easy instances without
 the overhead of running algorithm selection and avoids potentially making incorrect solver choices.
 
+We include \VFtwo in the portfolio, as it may solve an instance given more time,
+but not \IncompleteLAD.
+
 After the presolving step, we are left with 2336 hard instances that we consider
 for algorithm selection.
 
