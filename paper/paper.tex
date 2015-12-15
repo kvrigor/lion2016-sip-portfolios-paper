@@ -51,7 +51,8 @@ Subgraph isomorphism is a computationally challenging problem with important pra
 applications, for example in computer vision, biochemistry, and model checking. There are a number
 of state-of-the-art algorithms for solving the problem, each of which has its own performance
 characteristics. As with many other hard problems, the single best choice of algorithm overall is
-rarely the best algorithm on an instance-by-instance. We develop a portfolio approach which leverages
+rarely the best algorithm on an instance-by-instance. We develop an algorithm
+selection approach which leverages
 novel features to characterise subgraph isomorphism problems to dynamically decide which algorithm
 to use on a per-instance basis. We demonstrate substantial performance improvements on a large set
 of hard benchmark problems. In addition, we show how algorithm selection models can be leveraged to
@@ -510,9 +511,9 @@ instances.}\label{tab:resfull}
 Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
 for the individual solvers, the virtual best solver, and the \LLAMA algorithm
 selection approach. The performance of \VFtwo is far behind all other solvers.
-The portfolio does not perform well for instances that can be solved quickly
-because of the overhead incurred through feature computation. As the instances
-become more difficult to solve, its performance improves.
+The algorithm selection model does not perform well for instances that can be
+solved quickly because of the overhead incurred through feature computation. As
+the instances become more difficult to solve, its performance improves.
 
 \begin{figure}[!ht]
 \includegraphics[width=\textwidth]{figures/portfolio-ecdf}
@@ -528,7 +529,7 @@ time for the algorithm selection system including
 very easy instances, we are better than the virtual best solver because
 \IncompleteLAD is not included in our portfolio. The performance on small
 instances is much better than the \LLAMA selector alone (cf.\
-Figure~\ref{fig:portfolio-ecdf}) and the region where the portfolio performs
+Figure~\ref{fig:portfolio-ecdf}) and the region where \LLAMA performs
 worse than the individual solvers is now limited to approximately $10^2$ to
 $10^5$ milliseconds.
 
@@ -678,15 +679,16 @@ Add Figure 1 which compares single best at \SI{e8}{\ms}(\GlasgowTwo) with \LLAMA
 The problem of identifying subgraph isomorphisms is a hard computation problem
 that has many applications in diverse areas. In this paper, we presented a
 portfolio of six algorithms from the literature and a novel variant of the \LAD
-algorithm. We introduced a set of novel features to characterise subgraph
-isomorphism problems and leveraged them to select the most appropriate algorithm
-from the portfolio for each instance.
+algorithm. We introduced a
+set of novel features to characterise subgraph isomorphism problems and
+leveraged them to select the most appropriate algorithm from the portfolio for
+each instance.
 
-We demonstrated that our portfolio achieves substantial performance improvements
-over the single algorithm that has the best performance on our benchmark set. We
-showed that combining a portfolio approach with a novel incomplete variant of
-\LAD that is able to detect inconsistencies and a presolver boosts performance
-even further.
+We demonstrated that our algorithm selection approach achieves substantial
+performance improvements over the single algorithm that has the best performance
+on our benchmark set. We showed that combining an algorithm selection approach
+with a novel incomplete variant of \LAD that is able to detect inconsistencies
+and a presolver boosts performance even further.
 
 Mention parallel, directed, labelled in here briefly.
 
