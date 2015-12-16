@@ -103,19 +103,24 @@ The interested reader is referred to a recent survey~\cite{kotthoff_algorithm_20
 information on algorithm selection.
 
 \paragraph{Overview of the paper.}
-We formally define the subgraph isomorphism problem in Section~\ref{sec:defs}. 
-In Section~\ref{sec:algs}, we describe the main existing algorithms for solving this problem, and we also introduce two new algorithms which are derived from the LAD algorithm of~\cite{Solnon:2010}. 
+We formally define the subgraph isomorphism problem in Section~\ref{sec:defs}.
+In Section~\ref{sec:algs}, we describe the main existing algorithms for solving
+this problem, and we also introduce two new algorithms which are derived from
+Solnon's \LAD algorithm \cite{Solnon:2010}.
 
 In Section~\ref{sec:algs}, we experimentally compare eight state-of-the-art
 algorithms. We introduce a large benchmark set composed of 5725 instances
 composed of twelve classes. Ten of these classes have been introduced in the
-experimental study reported in~\cite{McCreesh:2015}. We evaluate the algorithms,
-of which two are novel, on this benchmark set, and show that they have very
-complementary performance. In particular, we show that depending on the CPU time
-limit, different algorithms achieve the best performance on the entire benchmark
-set.
+experimental study reported by McCreesh and Prosser~\cite{McCreesh:2015}. We
+evaluate the algorithms, of which two are novel, on this benchmark set, and
+show that they have very complementary performance. In particular, we show that
+depending on the CPU time limit, different algorithms achieve the best
+performance on the entire benchmark set.
 
-In Section~\ref{sec:algsel}, we describe the features that are used to describe instances, and we describe our algorithm selection approach. It combines a presolving step, which allows us to very quickly solve easy instances, with the algorithm selection approach \LLAMA~\cite{kotthoff_llama_2013}. 
+In Section~\ref{sec:algsel}, we describe the features that are used to describe
+instances, and we describe our algorithm selection approach. It combines a
+presolving step, which allows us to very quickly solve easy instances, with the
+algorithm selection approach \LLAMA~\cite{kotthoff_llama_2013}.
 
 In Section~\ref{sec:algsel-exps}, we experimentally evaluate our selection
 approach, and show that it is able to close almost 70\% of the gap between the
