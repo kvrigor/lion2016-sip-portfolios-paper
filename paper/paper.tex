@@ -17,7 +17,6 @@
 \usepackage{enumitem}
 \usepackage{tikz}
 \usepackage{gnuplot-lua-tikz}
-\setlist{nosep}
 
 \newcommand{\VFtwoNS}{$\textsc{Vf{\scalefont{0.8}2}}$}
 \newcommand{\GlasgowNS}{$\textsc{Glasgow}$}
@@ -226,7 +225,7 @@ These invariant properties are used, for example,
     processed during search.
 \end{itemize}
 
-Audemard et al.~\cite{Audemard:2014} do not limit the length of paths considered, and
+\noindent Audemard et al.~\cite{Audemard:2014} do not limit the length of paths considered, and
 iteratively increment the length until no more pairs are removed. Battiti and Mascia~\cite{battiti-mascia07}, and McCreesh and Prosser~\cite{McCreesh:2015} parameterise their algorithms
 by the maximum path length considered when counting paths: larger values for this parameter remove
 more candidate pairs, but are also more time consuming. Battiti and Mascia's experiments show that
@@ -311,7 +310,7 @@ classes.
     small size.
 \end{itemize}
 
-Note that Classes 3 and 12 were not considered in the previous experimental study by McCreesh and
+\noindent Note that Classes 3 and 12 were not considered in the previous experimental study by McCreesh and
 Prosser~\cite{McCreesh:2015}.  This set of instances is also much larger than that of Battiti and
 Mascia~\cite{battiti-mascia07}, who were the first to propose algorithm portfolios for subgraph
 isomorphism problems.  Battiti and Mascia only considered a pure parallel portfolio consisting of
@@ -455,7 +454,7 @@ very quickly:
         the proportion of vertex pairs which are at least 2, 3 and 4 apart.
 \end{itemize}
 
-Alongside these basic features, we include information computed by \IncompleteLAD. To (try to) prove
+\noindent Alongside these basic features, we include information computed by \IncompleteLAD. To (try to) prove
 inconsistency, \IncompleteLAD removes candidate pairs. The number of successfully removed pairs
 gives information on the distribution of edges (the fewer removed pairs, the more uniform the
 distribution). As well as the number of removed pairs, we also record the percentage with respect to
