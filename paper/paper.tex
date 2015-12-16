@@ -487,7 +487,14 @@ We are able to solve 34 more instances than the single best solver within the ti
 additional 13 to the virtual best. In terms of average performance, we are able to close almost
 \SI{70}{\percent} of the gap between the single best and the virtual best solver.
 
-\begin{table}[ht]
+Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
+for the individual solvers, the virtual best solver, and the \LLAMA algorithm
+selection approach. The performance of \VFtwo is far behind all other solvers.
+The algorithm selection model does not perform well for instances that can be
+solved quickly because of the overhead incurred through feature computation. As
+the instances become more difficult to solve, its performance improves.
+
+\begin{table}[p]
     \centering\setlength{\tabcolsep}{1em}
 \begin{tabular}{lrrr}
   \toprule
@@ -504,13 +511,32 @@ required to solve an instance because of choosing solvers that perform
 worse than the best.}\label{tab:res}
 \end{table}
 
+\begin{figure}[p]
+\input{graph-reduced}
+
+\caption{Number of solved instances over time for the virtual best
+solver, \LLAMA, and individual solvers (shown as dotted lines, in the same
+colours as Figure~\ref{expTimeGraph}) on the reduced set of 2336 instances.}
+\label{fig:portfolio-ecdf}
+\end{figure}
+
 Table~\ref{tab:res} shows the performance of the selection model on its own. The performance of the entire
 algorithm selection system including the preprocessing is shown in
 Table~\ref{tab:resfull}.
 Our system is able to close more than \SI{50}{\percent} of the gap between
 single and virtual best.
 
-\begin{table}[ht]
+Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over
+time for the algorithm selection system including
+\IncompleteLAD and \VFtwo presolving on the full set of instances. Note that for
+very easy instances, we are better than the virtual best solver because
+\IncompleteLAD is not included in our portfolio. The performance on small
+instances is much better than the \LLAMA selector alone (cf.\
+Figure~\ref{fig:portfolio-ecdf}) and the region where \LLAMA performs
+worse than the individual solvers is now limited to approximately $10^2$ to
+$10^5$ milliseconds.
+
+\begin{table}[p]
     \centering\setlength{\tabcolsep}{1em}
 \begin{tabular}{lrrr}
   \toprule
@@ -525,33 +551,8 @@ virtual best & 0 & 5608 & 2375913\\
 instances.}\label{tab:resfull}
 \end{table}
 
-Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
-for the individual solvers, the virtual best solver, and the \LLAMA algorithm
-selection approach. The performance of \VFtwo is far behind all other solvers.
-The algorithm selection model does not perform well for instances that can be
-solved quickly because of the overhead incurred through feature computation. As
-the instances become more difficult to solve, its performance improves.
-
 \begin{figure}[p]
-\includegraphics[width=\textwidth]{figures/portfolio-ecdf}
-\caption{Number of solved instances over time for solvers, virtual best
-solvers, and \LLAMA on the reduced set of 2336 instances. The
-actual solvers are shown as dashed lines.}
-\label{fig:portfolio-ecdf}
-\end{figure}
-
-Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over
-time for the algorithm selection system including
-\IncompleteLAD and \VFtwo presolving on the full set of instances. Note that for
-very easy instances, we are better than the virtual best solver because
-\IncompleteLAD is not included in our portfolio. The performance on small
-instances is much better than the \LLAMA selector alone (cf.\
-Figure~\ref{fig:portfolio-ecdf}) and the region where \LLAMA performs
-worse than the individual solvers is now limited to approximately $10^2$ to
-$10^5$ milliseconds.
-
-\begin{figure}[p]
-\includegraphics[width=\textwidth]{figures/portfolio-ecdf-full}
+    \input{graph-full}
 \caption{Number of solved instances over time for solvers, virtual best
 solvers, and \LLAMA on the full set of 5725 instances. The
 actual solvers are shown as dashed lines.}

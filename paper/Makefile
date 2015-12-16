@@ -3,7 +3,7 @@ all : tables graphs
 
 TABLES =
 
-GRAPHS = graph-cumulative.tex
+GRAPHS = graph-cumulative.tex graph-reduced.tex graph-full.tex
 
 tables : $(TABLES)
 
