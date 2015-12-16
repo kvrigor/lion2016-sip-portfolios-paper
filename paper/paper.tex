@@ -110,12 +110,12 @@ Solnon's \LAD algorithm \cite{Solnon:2010}.
 
 In Section~\ref{sec:algs}, we experimentally compare eight state-of-the-art
 algorithms. We introduce a large benchmark set composed of 5725 instances
-composed of twelve classes. Ten of these classes have been introduced in the
+grouped into twelve classes. Ten of these classes have been introduced in the
 experimental study reported by McCreesh and Prosser~\cite{McCreesh:2015}. We
-evaluate the algorithms, of which two are novel, on this benchmark set, and
-show that they have very complementary performance. In particular, we show that
-depending on the CPU time limit, different algorithms achieve the best
-performance on the entire benchmark set.
+evaluate the algorithms on this benchmark set, and show that they have very
+complementary performance. In particular, we show that depending on the CPU
+time limit, different algorithms achieve the best performance on the entire
+benchmark set.
 
 In Section~\ref{sec:algsel}, we describe the features that are used to describe
 instances, and we describe our algorithm selection approach. It combines a
@@ -145,8 +145,7 @@ More formally, the goal is to find an injective matching $f: N_p\rightarrow N_t$
 different target node to each pattern node, and preserves pattern edges, i.e.\ $\forall (u,u')
 \in E_p, (f(u),f(u')) \in E_t$.
 Note that the subgraph is not necessarily induced, so that two pattern nodes not linked by
-an edge may be mapped to two target nodes which are linked by an edge. This problem is also called
-\emph{subgraph monomorphism} or \emph{subgraph matching} in the literature.
+an edge may be mapped to two target nodes which are linked by an edge.
 
 In the following, we assume $G_p=(N_p,E_p)$ and $G_t=(N_t,E_t)$ to be the underlying instance of 
 subgraph isomorphism.  We  define $n_p = \# N_p$, $n_t = \# N_t$,  $e_p=\# E_p$, $e_t=\#
@@ -167,7 +166,7 @@ complexities.
 
 \subsection{Filtering for Subgraph Isomorphism}
 
-The simplest form of filtering is simply to propagate difference constraints (which ensure that the
+The simplest form of filtering is to propagate difference constraints (which ensure that the
 matching is injective) and edge constraints (which ensure that the matching preserves pattern
 edges): each time a pattern node $u\in N_p$ is matched with a target node $v\in N_t$, one removes
 every candidate pair $(u',v')\in N_p\times N_t$ such that either $v'=v$ (difference constraint) or
@@ -180,7 +179,7 @@ R\'egin~\cite{regin} introduced a stronger filtering for difference constraints,
 all pattern nodes can be matched with different target nodes, all together. This filtering (called
 \emph{All-Different Generalized Arc Consistency}) removes more candidate pairs than when each
 difference constraint is propagated separately which Forward-Checking. However, it is also more time
-consuming as requires ${\cal O}(n_p^2\cdot n_t^2)$ time.
+consuming as it requires ${\cal O}(n_p^2\cdot n_t^2)$ time.
 
 Various filtering techniques have been tried for edge constraints. Ullman~\cite{ullman} introduced a
 filtering which ensures that for each pattern edge $(u,u')\in E_p$ and each candidate pair $(u,v)\in
@@ -246,7 +245,7 @@ We have selected a set of algorithms with complementary performance. These
 algorithms will compose our portfolio in the per-instance selection approach
 described in Section~\ref{sec:algsel}.
 \begin{itemize}
-\item \VFtwo{}~\cite{Cordella:2004} performs weak filtering that it is especially fast on
+\item \VFtwo{}~\cite{Cordella:2004} performs weak filtering that is especially fast on
     trivially satisfiable instances;
 \item \LAD{}~\cite{Solnon:2010} combines two strong but expensive filtering techniques
     (All-Different Generalized Arc Consistency and Locally All-Different);
@@ -293,15 +292,18 @@ classes.
 
 \begin{itemize}
 \item Class 1 contains randomly generated scale-free graphs~\cite{constraints10}.
-\item Classes 2 and 3 contain various kinds of graphs selected by Larrosa and Valiente~\cite{LV02}:
-    class 2 contains small instances generated from the 50 first graphs of class
-    1 and class 3 contains
-    larger instances with pattern graphs from class 2 and target graphs from
-    the next 50 graphs.
-\item Classes 4 to 8 contain randomly generated graphs from a database of graphs commonly
-    used for benchmarking subgraph isomorphism algorithms~\cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for classes 4 and 5, regular meshes
-    for classes 6 and 7, and random graphs with uniform edge probabilities for class 8. All of these
-    instances are satisfiable.
+\item Classes 2 and 3 contain instances built from a database containing
+    various kinds of graph gathered by Larrosa and Valiente~\cite{LV02}: class
+    2 contains small instances generated from the first 50 graphs of the
+    database, and class 3 contains larger instances with pattern graphs from
+    the first 50 graphs of the database and target graphs from the next 50
+    graphs.
+\item Classes 4 to 8 contain randomly generated graphs from a database of
+    graphs commonly used for benchmarking subgraph isomorphism
+    algorithms~\cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for
+    classes 4 and 5, regular meshes for classes 6 and 7, and random graphs with
+    uniform edge probabilities for class 8. All of these instances are
+    satisfiable.
 \item Classes 9 and 10 contain instances from segmented images~\cite{pr15,cviu11}.
 \item Class 11 contains instances from meshes modeling 3D objects~\cite{cviu11}.
 \item Class 12 contains random graph instances chosen to be close to the satisfiable-unsatisfiable
@@ -397,7 +399,9 @@ number of graphs (in order to find a pattern image or molecule in a large
 database of target images or compounds, for example), so having an algorithm
 that is able to solve an instance in \SI{100}{\ms} instead of \SI{1000}{\ms}
 makes a big difference.  Therefore, it is important to select the best algorithm
-for each instance, even if the instance is an easy one.
+for each instance, even if the instance is an easy one. Furthermore, this
+selection process should not penalise easy instances, i.e.\ it should not take more time than
+the solution process time for these instances.
 
 Table~\ref{expClass} shows us that we cannot simply select algorithms based on
 the instance class. For all
@@ -417,9 +421,6 @@ Experimental results reported in Section~\ref{expComp} have shown us that \Incom
 (\SI{7}{\ms} on average) and is able to solve 1919 instances from our benchmark
 set very quickly. Therefore, we first run
 \IncompleteLAD: if unsatisfiability is detected, we do not need to process it further.
-Otherwise, we record the number of candidate pairs removed and as a percentage
-of all pairs and the minimum and maximum values on a per-variable basis. The
-recorded values are then used as features for algorithm selection.
 
 \VFtwo is also able to solve many easy instances very quickly: among the 3806 instances which are not
 solved by \IncompleteLAD, 1470 are solved by \VFtwo in less than 50 milliseconds. Therefore, after
@@ -434,12 +435,14 @@ for algorithm selection.
 
 \subsection{Feature Extraction}
 
-If presolving does not give us a solution, we extract additional features. For both the pattern and
+If presolving does not give us a solution, we extract features. For both the pattern and
 the target graph, we consider some basic graph properties, which can be computed
-very quickly,
+very quickly:
+
 \begin{itemize}
     \item the number of vertices and edges;
-    \item the density---we expect that some kinds of filtering might be expensive and ineffective on
+    \item the density---we expect that some kinds of filtering (like those based upon locally
+        all-different constraints) might be expensive and ineffective on
         dense graphs;
     \item how many loops (self-adjacent vertices) the graph contains---since loops must be mapped to
         loops, this could have a strong effect on how easy an instance is;
@@ -451,6 +454,12 @@ very quickly,
         close together, path-based reasoning is likely to be ineffective) and
         the proportion of vertex pairs which are at least 2, 3 and 4 apart.
 \end{itemize}
+
+Alongside these basic features, we include information computed by \IncompleteLAD. To (try to) prove
+inconsistency, \IncompleteLAD removes candidate pairs. The number of successfully removed pairs
+gives information on the distribution of edges (the fewer removed pairs, the more uniform the
+distribution). As well as the number of removed pairs, we also record the percentage with respect to
+all possible pairs, and the minimum and maximum values on a per-variable basis.
 
 \subsection{Selection Model}
 
@@ -482,22 +491,21 @@ The data we use in this paper is available as ASlib~\cite{aslib} scenario GRAPHS
 \section{Experimental Evaluation of Algorithm Selection}\label{sec:algsel-exps}
 
 Table~\ref{tab:res} shows the performance of our algorithm selection approach, compared to two
-baselines. The virtual best solver is the oracle predictor that, for each instance, chooses the best
-solver from our portfolio. This is the upper bound of what an algorithm selection approach can
-achieve. The single best solver is the one solver from the portfolio that has the overall best
-performance across the entire set of instances, at the CPU time limit of \SI{e8}{\ms},
-i.e.\ \GlasgowTwo. We consider it a lower bound on the performance of the
-algorithm selection approach.
-We are able to solve 34 more instances than the single best solver within the timeout, with only an
-additional 13 to the virtual best. In terms of average performance, we are able to close almost
-\SI{70}{\percent} of the gap between the single best and the virtual best solver.
+baselines, on the reduced set of 2336 instances. The virtual best solver is the oracle predictor
+that, for each instance, chooses the best solver from our portfolio. This is the upper bound of what
+an algorithm selection approach can achieve. The single best solver is the one solver from the
+portfolio that has the overall best performance across the entire set of instances, at the CPU time
+limit of \SI{e8}{\ms}, i.e.\ \GlasgowTwo. We consider it a lower bound on the performance of the
+algorithm selection approach.  We are able to solve 34 more instances than the single best solver
+within the timeout, with only an additional 13 to the virtual best. In terms of average performance,
+we are able to close almost \SI{70}{\percent} of the gap between the single best and the virtual
+best solver.
 
-Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
-for the individual solvers, the virtual best solver, and the \LLAMA algorithm
-selection approach. The performance of \VFtwo is far behind all other solvers.
-The algorithm selection model does not perform well for instances that can be
-solved quickly because of the overhead incurred through feature computation. As
-the instances become more difficult to solve, its performance improves.
+Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time for the individual
+solvers, the virtual best solver, and the \LLAMA algorithm selection approach. The performance of
+\VFtwo is far behind all other solvers.  The algorithm selection model does not perform well for
+instances that can be solved quickly because of the overhead incurred through feature computation.
+As the instances become more difficult to solve, its performance improves.
 
 \begin{table}[p]
     \centering\setlength{\tabcolsep}{1em}
@@ -510,10 +518,11 @@ virtual best & 0 & 2219 & 5822809\\
 \GlasgowTwo & 1965158 & 2172 & 7787967\\
    \bottomrule \\
 \end{tabular}
-\caption{Algorithm selection performance on the reduced set of 2336
-instances. MCP is the misclassification penalty; that is, the additional time
-required to solve an instance because of choosing solvers that perform
-worse than the best.}\label{tab:res}
+\caption{Algorithm selection performance on the reduced set of 2336 instances. MCP is the
+misclassification penalty; that is, the additional time required to solve an instance because of
+choosing solvers that perform worse than the best. Mean performance is over all instances; when an
+instance is not solved, its performance is set to the time limit
+(\SI{e8}{\ms}).}\label{tab:res}
 \end{table}
 
 \begin{figure}[p]
@@ -525,21 +534,17 @@ colours as Figure~\ref{expTimeGraph}) on the reduced set of 2336 instances.}
 \label{fig:portfolio-ecdf}
 \end{figure}
 
-Table~\ref{tab:res} shows the performance of the selection model on its own. The performance of the entire
-algorithm selection system including the preprocessing is shown in
-Table~\ref{tab:resfull}.
-Our system is able to close more than \SI{50}{\percent} of the gap between
-single and virtual best.
+Table~\ref{tab:res} shows the performance of the selection model on its own. The performance of the
+entire algorithm selection system, including the preprocessing, is shown in Table~\ref{tab:resfull}.
+Our system is able to close more than \SI{50}{\percent} of the gap between single and virtual best.
 
-Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over
-time for the algorithm selection system including
-\IncompleteLAD and \VFtwo presolving on the full set of instances. Note that for
-very easy instances, we are better than the virtual best solver because
-\IncompleteLAD is not included in our portfolio. The performance on small
-instances is much better than the \LLAMA selector alone (cf.\
-Figure~\ref{fig:portfolio-ecdf}) and the region where \LLAMA performs
-worse than the individual solvers is now limited to approximately $10^2$ to
-$10^5$ milliseconds.
+Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over time for the
+algorithm selection system including \IncompleteLAD and \VFtwo presolving on the full set of
+instances. Note that for very easy instances, we are better than the virtual best solver because
+\IncompleteLAD is not included in our portfolio. The performance on small instances is much better
+than the \LLAMA selector alone (cf.\ Figure~\ref{fig:portfolio-ecdf}) and the region where \LLAMA
+performs worse than the individual solvers is now limited to approximately $10^2$ to $10^5$
+milliseconds.
 
 \begin{table}[p]
     \centering\setlength{\tabcolsep}{1em}
@@ -558,9 +563,9 @@ instances.}\label{tab:resfull}
 
 \begin{figure}[p]
     \input{graph-full}
-\caption{Number of solved instances over time for solvers, virtual best
-solvers, and \LLAMA on the full set of 5725 instances. The
-actual solvers are shown as dashed lines.}
+\caption{Number of solved instances over time for the virtual best
+solver, \LLAMA, and individual solvers (shown as dotted lines, in the same
+colours as Figure~\ref{expTimeGraph}) on the full set of 5725 instances.}
 \label{fig:portfolio-ecdf-full}
 \end{figure}
 
@@ -578,21 +583,17 @@ the entire set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
 
 \section{Conclusion and Future Work}\label{sec:concs}
 
-The problem of identifying subgraph isomorphisms is a hard computation problem
-that has many applications in diverse areas. In this paper, we presented a
-portfolio of six algorithms from the literature and a novel variant of the \LAD
-algorithm. We introduced a
-set of novel features to characterise subgraph isomorphism problems and
-leveraged them to select the most appropriate algorithm from the portfolio for
-each instance.
+The problem of identifying subgraph isomorphisms is a hard computation problem that has many
+applications in diverse areas. In this paper, we presented a portfolio of six algorithms from the
+literature and two new variants of the \LAD algorithm. We introduced a set of novel features to
+characterise subgraph isomorphism problems and leveraged them to select the most appropriate
+algorithm from the portfolio for each instance.
 
 We demonstrated that our algorithm selection approach achieves substantial
 performance improvements over the single algorithm that has the best performance
 on our benchmark set. We showed that combining an algorithm selection approach
-with a novel incomplete variant of \LAD that is able to detect inconsistencies
+with a new incomplete variant of \LAD that is able to detect inconsistencies
 and a presolver boosts performance even further.
-
-Mention parallel, directed, labelled in here briefly.
 
 \bibliographystyle{splncs}
 \bibliography{paper}
