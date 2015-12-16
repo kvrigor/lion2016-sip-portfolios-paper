@@ -322,7 +322,7 @@ timeout of $10^8$ milliseconds ($\approx$ 27.8 hours).
 
 \subsection{Results}\label{expComp}
 
-\begin{figure}[t]
+\begin{figure}[p]
     \centering
     \input{graph-cumulative}\vspace{-0.5cm}
 
@@ -330,6 +330,32 @@ timeout of $10^8$ milliseconds ($\approx$ 27.8 hours).
         consider in this paper, and the virtual best solver (VBS) that shows the best
     solver on an instance by instance basis.\label{expTimeGraph}}
 \end{figure}
+
+\begin{table}[p]
+\centering
+\begin{tabularx}{.8\textwidth}{XXrXrrrXrrrr}
+\toprule
+Class && \VFtwo && \multicolumn{3}{c}{\LAD} && \multicolumn{4}{c}{\hspace*{2em}\Glasgow}\\
+&&&&incomplete&default&path&&1&2&3&4\\
+\midrule
+1 &&        0 &&       20 &        0 &        0 &&       80 &        0 &        0 &        0 \\
+2 &&      201 &&       92 &      189 &      270 &&      520 &      180 &       53 &       15 \\
+3 &&      112 &&     1608 &      617 &      959 &&      396 &      195 &       21 &        0 \\
+4 &&      270 &&        0 &        0 &        0 &&        5 &        0 &        0 &        0 \\
+5 &&      266 &&        0 &        1 &        3 &&       31 &        0 &        0 &        0 \\
+6 &&       71 &&        0 &        0 &        0 &&        7 &       14 &        1 &        0 \\
+7 &&      270 &&        0 &        0 &        0 &&        5 &        0 &        0 &        0 \\
+8 &&        0 &&        0 &        0 &        1 &&      195 &       69 &        6 &        0 \\
+9 &&       77 &&        3 &        0 &       19 &&      103 &        1 &        0 &        0 \\
+10 &&       13 &&        0 &        2 &        2 &&        7 &        0 &        0 &        0 \\
+11 &&        2 &&      142 &       71 &       17 &&       23 &        0 &        0 &        0 \\
+12 &&        0 &&        0 &        1 &        2 &&      158 &        6 &        1 &        0 \\
+\midrule
+Total && 1282 && 1865 & 881 & 1273 && 1530 & 465 & 82& 15\\
+\bottomrule \\
+\end{tabularx}
+\caption{Number of times each algorithm is best, for each class.\label{expClass}}
+\end{table}
 
 Figure~\ref{expTimeGraph} displays the evolution of the number of instances solved with respect to
 CPU time. It shows us that the best solver depends on the time limit considered. \IncompleteLAD is
@@ -373,33 +399,6 @@ the instance class. For all
 classes, there are always at least two algorithms which are the best for at least one instance of
 the class. In particular, for classes 2 and 3, each algorithm is the best for at least one instance
 (except \GlasgowFour for class 3).
-
-\begin{table}[t]
-\begin{center}
-\begin{tabularx}{.8\textwidth}{XXrXrrrXrrrr}
-\toprule
-Class && \VFtwo && \multicolumn{3}{c}{\LAD} && \multicolumn{4}{c}{\hspace*{2em}\Glasgow}\\
-&&&&incomplete&default&path&&1&2&3&4\\
-\midrule
-1 &&        0 &&       20 &        0 &        0 &&       80 &        0 &        0 &        0 \\
-2 &&      201 &&       92 &      189 &      270 &&      520 &      180 &       53 &       15 \\
-3 &&      112 &&     1608 &      617 &      959 &&      396 &      195 &       21 &        0 \\
-4 &&      270 &&        0 &        0 &        0 &&        5 &        0 &        0 &        0 \\
-5 &&      266 &&        0 &        1 &        3 &&       31 &        0 &        0 &        0 \\
-6 &&       71 &&        0 &        0 &        0 &&        7 &       14 &        1 &        0 \\
-7 &&      270 &&        0 &        0 &        0 &&        5 &        0 &        0 &        0 \\
-8 &&        0 &&        0 &        0 &        1 &&      195 &       69 &        6 &        0 \\
-9 &&       77 &&        3 &        0 &       19 &&      103 &        1 &        0 &        0 \\
-10 &&       13 &&        0 &        2 &        2 &&        7 &        0 &        0 &        0 \\
-11 &&        2 &&      142 &       71 &       17 &&       23 &        0 &        0 &        0 \\
-12 &&        0 &&        0 &        1 &        2 &&      158 &        6 &        1 &        0 \\
-\midrule
-Total && 1282 && 1865 & 881 & 1273 && 1530 & 465 & 82& 15\\
-\bottomrule
-\end{tabularx}
-\end{center}
-\caption{Number of times each algorithm is best, for each class.\label{expClass}}
-\end{table}
 
 \section{Algorithm Selection Approach}\label{sec:algsel}
 
@@ -533,7 +532,7 @@ The algorithm selection model does not perform well for instances that can be
 solved quickly because of the overhead incurred through feature computation. As
 the instances become more difficult to solve, its performance improves.
 
-\begin{figure}[!ht]
+\begin{figure}[p]
 \includegraphics[width=\textwidth]{figures/portfolio-ecdf}
 \caption{Number of solved instances over time for solvers, virtual best
 solvers, and \LLAMA on the reduced set of 2336 instances. The
@@ -551,7 +550,7 @@ Figure~\ref{fig:portfolio-ecdf}) and the region where \LLAMA performs
 worse than the individual solvers is now limited to approximately $10^2$ to
 $10^5$ milliseconds.
 
-\begin{figure}[!ht]
+\begin{figure}[p]
 \includegraphics[width=\textwidth]{figures/portfolio-ecdf-full}
 \caption{Number of solved instances over time for solvers, virtual best
 solvers, and \LLAMA on the full set of 5725 instances. The
