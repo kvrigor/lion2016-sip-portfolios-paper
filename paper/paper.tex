@@ -15,7 +15,20 @@
 \usepackage{booktabs}
 \usepackage[sort]{cite}
 \usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{gnuplot-lua-tikz}
 \setlist{nosep}
+
+\newcommand{\VFtwoNS}{$\textsc{Vf{\scalefont{0.8}2}}$}
+\newcommand{\GlasgowNS}{$\textsc{Glasgow}$}
+\newcommand{\LADNS}{$\textsc{Lad}$}
+\newcommand{\IncompleteLADNS}{$\textsc{IncompleteLad}$}
+\newcommand{\PathLADNS}{$\textsc{PathLad}$}
+\newcommand{\GlasgowOneNS}{$\textsc{Glasgow{\scalefont{0.8}1}}$}
+\newcommand{\GlasgowTwoNS}{$\textsc{Glasgow{\scalefont{0.8}2}}$}
+\newcommand{\GlasgowThreeNS}{$\textsc{Glasgow{\scalefont{0.8}3}}$}
+\newcommand{\GlasgowFourNS}{$\textsc{Glasgow{\scalefont{0.8}4}}$}
+\newcommand{\LLAMANS}{$\textsc{Llama}$}
 
 \newcommand{\VFtwo}{$\textsc{Vf{\scalefont{0.8}2}}$\xspace}
 \newcommand{\Glasgow}{$\textsc{Glasgow}$\xspace}
@@ -310,10 +323,12 @@ timeout of $10^8$ milliseconds ($\approx$ 27.8 hours).
 \subsection{Results}\label{expComp}
 
 \begin{figure}[t]
-\includegraphics[width=\textwidth]{courbe.pdf}
-\caption{Number of solved instances over CPU time for the eight algorithms we
-consider in this paper, and the virtual best solver (VBS) that shows the best
-solver on an instance by instance basis.\label{expTimeGraph}}
+    \centering
+    \input{graph-cumulative}\vspace{-0.5cm}
+
+    \caption{Number of solved instances over CPU time for the eight algorithms we
+        consider in this paper, and the virtual best solver (VBS) that shows the best
+    solver on an instance by instance basis.\label{expTimeGraph}}
 \end{figure}
 
 Figure~\ref{expTimeGraph} displays the evolution of the number of instances solved with respect to

@@ -3,12 +3,12 @@ all : tables graphs
 
 TABLES =
 
-GRAPHS =
+GRAPHS = graph-cumulative.tex
 
 tables : $(TABLES)
 
 graphs : $(GRAPHS)
 
-gen-graph-%.tex : graph-%.gnuplot
+graph-%.tex : graph-%.gnuplot
 	gnuplot $<
 
