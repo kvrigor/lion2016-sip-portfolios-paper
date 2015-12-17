@@ -107,27 +107,23 @@ In Section~\ref{sec:algs}, we describe the main existing algorithms for solving
 this problem, and we also introduce two new algorithms which are derived from
 Solnon's \LAD algorithm \cite{Solnon:2010}.
 
-In Section~\ref{sec:algs}, we experimentally compare eight state-of-the-art
+In Section~\ref{sec:exps}, we experimentally compare eight state-of-the-art
 algorithms. We introduce a large benchmark set composed of 5725 instances
-grouped into twelve classes. Ten of these classes have been introduced in the
-experimental study reported by McCreesh and Prosser~\cite{McCreesh:2015}. We
-evaluate the algorithms on this benchmark set, and show that they have very
-complementary performance. In particular, we show that depending on the CPU
-time limit, different algorithms achieve the best performance on the entire
-benchmark set.
+grouped into twelve classes. Ten of these classes were considered in the
+experimental study reported by McCreesh and Prosser~\cite{McCreesh:2015}; two
+are new. We evaluate the algorithms on this benchmark set, and show that they
+have very complementary performance. In particular, we show that depending on
+the CPU time limit, different algorithms achieve the best performance on the
+entire benchmark set.
 
-In Section~\ref{sec:algsel}, we describe the features that are used to describe
+In Section~\ref{sec:algsel}, we discuss the features that are used to describe
 instances, and we describe our algorithm selection approach. It combines a
-presolving step, which allows us to very quickly solve easy instances, with the
+presolving step, which allows us to easy instances very quickly, with the
 algorithm selection approach \LLAMA~\cite{kotthoff_llama_2013}.
-
 In Section~\ref{sec:algsel-exps}, we experimentally evaluate our selection
-approach, and show that it is able to close more than 50\% of the gap between
-the single best and the virtual best solver.
-
+approach, and show that it is able to close more than 50\% of the gap between the
+single best and the virtual best solver.
 We conclude and give directions for future work in Section~\ref{sec:concs}.
-
-
 
 \section{Definitions and Notations}\label{sec:defs}
 
@@ -152,7 +148,7 @@ E_t$, and $d_p$ and $d_t$ to be the maximum degrees of the graphs $G_p$ and $G_t
 
 \section{Subgraph Isomorphism Algorithms}\label{sec:algs}
 
-Subgraph isomorphism problems may be solved by a systematic exploration of the search space composed
+Subgraph isomorphism problems may be solved by a systematic exploration of the search space consisting
 of all possible injective matchings from $N_p$ to $N_t$: starting from an empty matching, one
 incrementally extends a partial matching by matching a non-matched pattern node to a non-matched
 target node until either some edges are not matched by the current matching (so the search must
@@ -182,8 +178,8 @@ consuming as it requires ${\cal O}(n_p^2\cdot n_t^2)$ time.
 
 Various filtering techniques have been tried for edge constraints. Ullman~\cite{ullman} introduced a
 filtering which ensures that for each pattern edge $(u,u')\in E_p$ and each candidate pair $(u,v)\in
-N_p\times N_t$, there exists a candidate couple $(u',v')\in N_p\times N_t$ such that $(v,v')$ is a
-target edge. Candidate couples $(u,v)$ that do not satisfy this property are iteratively removed
+N_p\times N_t$, there exists a candidate pair $(u',v')\in N_p\times N_t$ such that $(v,v')$ is a
+target edge. Candidate pairs $(u,v)$ that do not satisfy this property are iteratively removed
 until a fixed point is reached. This filtering (called \emph{Arc Consistency}) removes more
 candidate pairs than Forward-Checking, but it is also more time consuming as it
 runs in ${\cal
@@ -220,7 +216,7 @@ These invariant properties are used, for example,
     proposed by Solnon~\cite{Solnon:2010} so that it ensures that a subset of pattern nodes can be
     matched with all different compatible target nodes, where compatibility is defined with respect
     to invariant properties;
-\item by McCreesh and Prosser~\cite{McCreesh:2015} to filter the set of candidate couples before
+\item by McCreesh and Prosser~\cite{McCreesh:2015} to filter the set of candidate pairs before
     starting the search, and to generate additional implied adjacency-like constraints which are
     processed during search.
 \end{itemize}
@@ -263,7 +259,7 @@ all, sometimes considering only paths of length 2 suffices, occasionally paths o
 helpful, and even looking at paths of length 3 is relatively expensive on some graphs. We thus consider all
 lengths up to 4, naming these variants \GlasgowOne through \GlasgowFour.
 
-\subsection{Novel Algorithms}
+\subsection{New Algorithms}
 
 We introduce two new variants of \LAD. The first, called \IncompleteLAD, does weaker
 filtering which is applied once, without performing a backtracking search, and very quickly
@@ -498,14 +494,15 @@ portfolio that has the overall best performance across the entire set of instanc
 limit of \SI{e8}{\ms}, i.e.\ \GlasgowTwo. We consider it a lower bound on the performance of the
 algorithm selection approach.  We are able to solve 28 more instances than the single best solver
 within the timeout, with only an additional 18 to the virtual best. In terms of average performance,
-we are able to more than \SI{50}{\percent} of the gap between the single best and the virtual
+we are able to close more than \SI{50}{\percent} of the gap between the single best and the virtual
 best solver.
 
-Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time for the individual
-solvers, the virtual best solver, and the \LLAMA algorithm selection approach. The performance of
-\VFtwo is far behind all other solvers.  The algorithm selection model does not perform well for
-instances that can be solved quickly because of the overhead incurred through feature computation.
-As the instances become more difficult to solve, its performance improves.
+Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
+for the individual solvers, the virtual best solver, and the \LLAMA algorithm
+selection approach. The algorithm selection model does not perform well for
+instances that can be solved quickly because of the overhead incurred through
+feature computation.  As the instances become more difficult to solve, its
+performance improves.
 
 \begin{table}[p]
     \centering\setlength{\tabcolsep}{1em}
