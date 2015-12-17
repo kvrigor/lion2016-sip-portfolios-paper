@@ -579,6 +579,71 @@ Even though Figures~\ref{fig:portfolio-ecdf} and~\ref{fig:portfolio-ecdf-full}
 show that on easy instances, the model does not perform well, it does over
 the entire set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
 
+\subsection{Analysis of Features Used by the Model}
+
+Analysing the final model, we saw that the most important features were, in order:
+
+\begin{itemize}
+    \item The proportion of target vertices which are at least distance 3
+        apart. We introduced this feature expecting it to be helpful in
+        distinguishing between \Glasgow variants: if few vertices are far
+        apart, longer paths are unlikely to be useful. However, in practice
+        this feature also gives a rough indication of how sparse the graph
+        is---locally all-different filtering is weak and expensive on dense
+        graphs, and the feature turned out to be helpful for selecting between
+        \Glasgow and \LAD variants too;
+
+    \item The mean degree of the target graph;
+    \item The maximum degree of the pattern graph;
+    \item The number of values removed during \IncompleteLAD presolving;
+    \item And the mean degree of the pattern graph, the number of vertices in
+        the pattern graph, and the number of vertices in the target graph,
+        which were used once each.
+\end{itemize}
+
+\noindent This confirms that our decision to consider both the pattern graph
+and the target graph for feature extraction was correct, and shows that basic
+graph properties do affect the performance of sophisticated filtering
+algorithms in reasonably simple ways.
+
+\subsection{Analysis of \PathLAD versus \GlasgowTwo}
+
+In an attempt to gain insight into the behaviour of the algorithms, we also
+investigated a simpler setting comparing just \PathLAD and \GlasgowTwo. This
+pair is of particular interest because they are the best ``medium-case''
+algorithms that use strong and weak filtering during search respectively. We
+used machine learning techniques to train a simple, human-understandable model
+which is able to distinguish these cases with reasonable accuracy. The model
+produced uses four rules:
+
+\begin{enumerate}
+    \item If \IncompleteLAD removes at least \SI{28}{\percent} of the pairs,
+        and at least \SI{94}{\percent} of the values from at least one domain,
+        then pick \PathLAD.
+    \item If the target has at least $610$ vertices, and if the maximum
+        distance between any two pattern vertices is at most $8$, and if the
+        pattern is not regular, and if the time taken to compute the
+        distance-based features on the target graph is no more than
+        \SI{1277}{\ms}, then pick \PathLAD.
+    \item If \IncompleteLAD filtering removed at least \SI{6}{\percent} of
+        possible pairs, and if less than \SI{85}{\percent} of the pattern
+        vertices are within distance 2 of each other, then pick \PathLAD.
+    \item Otherwise, pick \GlasgowTwo.
+\end{enumerate}
+
+\noindent
+The first and third rules here intuitively make sense: if \IncompleteLAD
+filtering does well, it is likely that continuing with this kind of filtering
+during search will be successful. The third rule also excludes using \PathLAD
+on very dense pattern graphs, where locally all-different filtering is
+expensive and weak. The second rule is less obvious: \PathLAD filtering is weak
+on regular graphs, so this part of the rule is unsurprising, but the remainder
+of the rule appears to be a round-about way of excluding large, dense target
+graphs. Still, this model suggests that it could be worth exploring
+\emph{dynamically} enabling or disabling locally all-different filtering during
+search, based upon very simple features which could be recomputed as search
+progresses and conditions change.
+
 \section{Conclusion and Future Work}\label{sec:concs}
 
 The problem of identifying subgraph isomorphisms is a hard computation problem that has many
@@ -591,7 +656,16 @@ We demonstrated that our algorithm selection approach achieves substantial
 performance improvements over the single algorithm that has the best performance
 on our benchmark set. We showed that combining an algorithm selection approach
 with a new incomplete variant of \LAD that is able to detect inconsistencies
-and a presolver boosts performance even further.
+and a presolver boosts performance even further. Finally, we discussed how
+insights from machine learning could feed back into algorithm development.
+
+We have yet to investigate parallel portfolios: as well as the possibility of
+running multiple single-threaded solvers simultaneously, the \Glasgow
+algorithms have a multi-core parallel implementation available, which can use a
+configurable number of threads. Nor have we investigated variants of the
+subgraph isomorphism problem---it would be interesting to see, for example,
+whether similar features are important when dealing with induced or directed
+isomorphisms.
 
 \bibliographystyle{splncs}
 \bibliography{paper}
