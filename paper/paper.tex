@@ -605,13 +605,13 @@ sophisticated algorithms' performance.
 
 \subsection{Analysis of \PathLAD versus \GlasgowTwo}
 
-In an attempt to gain insight into the behaviour of the algorithms, we also
-investigated a simpler setting comparing just \PathLAD and \GlasgowTwo. This
-pair is of particular interest because they are the best ``medium-case''
+To gain further insight into the behaviour of the algorithms, we
+investigated what affects the relative performance of \PathLAD and \GlasgowTwo.
+This pair is of particular interest because they are the best ``medium-case''
 algorithms that use strong and weak filtering during search respectively. We
 used machine learning techniques to train a simple, human-understandable model
-which is able to distinguish these cases with reasonable accuracy. The model
-produced uses four rules:
+which is able to distinguish these solvers and gives performance better than
+always choosing one of them. The model uses four rules:
 
 \begin{enumerate}
     \item If \IncompleteLAD removes at least \SI{28.014755}{\percent} of the pairs,
@@ -629,17 +629,19 @@ produced uses four rules:
 \end{enumerate}
 
 \noindent
-The first and third rules here intuitively make sense: if \IncompleteLAD
+The first and third rules intuitively make sense: if \IncompleteLAD
 filtering does well, it is likely that continuing with this kind of filtering
 during search will be successful. The third rule also excludes using \PathLAD
 on very dense pattern graphs, where locally all-different filtering is
-expensive and weak. The second rule is less obvious: \PathLAD filtering is weak
-on regular graphs, so this part of the rule is unsurprising, but the remainder
-of the rule appears to be a round-about way of excluding large, dense target
-graphs. Still, this model suggests that it could be worth exploring
-\emph{dynamically} enabling or disabling locally all-different filtering during
-search, based upon very simple features which could be recomputed as search
-progresses and conditions change.
+expensive and weak. The second rule is less obvious: while \PathLAD filtering is
+weak on regular graphs and it makes sense to exclude this case, the other
+components appear to exclude large and dense target graphs. The model suggests
+that it would be worth exploring \emph{dynamically} enabling or disabling
+locally all-different filtering during search, based upon very simple features
+which could be recomputed as search progresses and conditions change.
+
+This provides an interesting insight into the behaviour of our algorithms, as
+well as giving indications for future work.
 
 \section{Conclusion and Future Work}\label{sec:concs}
 
