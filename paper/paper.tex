@@ -489,16 +489,18 @@ The data we use in this paper is available as ASlib~\cite{aslib} scenario GRAPHS
 
 \section{Experimental Evaluation of Algorithm Selection}\label{sec:algsel-exps}
 
-Table~\ref{tab:res} shows the performance of our algorithm selection approach, compared to two
-baselines, on the reduced set of 2336 instances. The virtual best solver is the oracle predictor
-that, for each instance, chooses the best solver from our portfolio. This is the upper bound of what
-an algorithm selection approach can achieve. The single best solver is the one solver from the
-portfolio that has the overall best performance across the entire set of instances, at the CPU time
-limit of \SI{e8}{\ms}, i.e.\ \GlasgowTwo. We consider it a lower bound on the performance of the
-algorithm selection approach.  We are able to solve 30 more instances than the single best solver
-within the timeout, with only an additional 16 to the virtual best. In terms of average performance,
-we are able to close \SI{64}{\percent} of the gap between the single best and the virtual
-best solver.
+Table~\ref{tab:res} shows the performance of our algorithm selection approach,
+compared to two baselines, on the reduced set of 2336 instances. The virtual
+best solver is the oracle predictor that, for each instance, chooses the best
+solver from our portfolio. This is the upper bound of what an algorithm
+selection approach can achieve. The single best solver is the one solver from
+the portfolio that has the overall best performance across the entire set of
+instances, at the CPU time limit of \SI{e8}{\ms}, i.e.\ \GlasgowTwo. We consider
+it a lower bound on the performance of the algorithm selection approach.  We are
+able to solve 30 more instances than the single best solver within the timeout,
+with only an additional 16 to the virtual best. In terms of average performance,
+we are able to close \SI{64}{\percent} of the gap between the single best and
+the virtual best solver.
 
 Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
 for the individual solvers, the virtual best solver, and the \LLAMA algorithm
@@ -534,16 +536,18 @@ colours as Figure~\ref{expTimeGraph}) on the reduced set of 2336 instances.}
 \label{fig:portfolio-ecdf}
 \end{figure}
 
-Table~\ref{tab:res} shows the performance of the selection model on its own. The performance of the
-entire algorithm selection system, including the preprocessing, is shown in Table~\ref{tab:resfull}.
-Our system is able to close more than \SI{60}{\percent} of the gap between
-single and virtual best, similar to the results on the reduced set of instances.
+Table~\ref{tab:res} shows the performance of the selection model on its own. The
+performance of the entire algorithm selection system, including the
+preprocessing, is shown in Table~\ref{tab:resfull}. Our system is able to close
+more than \SI{60}{\percent} of the gap between single and virtual best, similar
+to the results on the reduced set of instances.
 
-Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over time for the
-algorithm selection system including \IncompleteLAD and \VFtwo presolving on the full set of
-instances. The performance on small instances is much better
-than the \LLAMA selector alone (cf.\ Figure~\ref{fig:portfolio-ecdf}) and the region where \LLAMA
-performs worse than the individual solvers is now limited to approximately $10^2$ to $10^5$
+Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over
+time for the algorithm selection system including \IncompleteLAD and \VFtwo
+presolving on the full set of instances. The performance on small instances is
+much better than the \LLAMA selector alone (cf.\
+Figure~\ref{fig:portfolio-ecdf}) and the region where \LLAMA performs worse than
+the individual solvers is now limited to approximately $10^2$ to $10^5$
 milliseconds.
 
 \begin{table}[p]
