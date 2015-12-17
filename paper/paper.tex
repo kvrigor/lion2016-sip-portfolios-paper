@@ -594,6 +594,7 @@ Analysing the final model, we saw that the most important features were, in orde
     \item the number of values removed during \IncompleteLAD presolving.
 \end{itemize}
 
+\noindent
 We introduced the proportion of target vertices that are at least 3 apart as a
 feature expecting it to be helpful in distinguishing between
 \Glasgow variants---if few vertices are far apart, longer paths are unlikely to
@@ -617,9 +618,10 @@ which is able to distinguish these solvers for the 2336 hard instances and gives
 performance better than always choosing one of them. The model uses four rules:
 
 \begin{enumerate}
-    \item If \IncompleteLAD removes at least \SI{28.014755}{\percent} of the pairs,
-        and at least \SI{94.117645}{\percent} of the values from at least one domain,
-        then pick \PathLAD.
+    \item If \IncompleteLAD presolving removes at least
+        \SI{28.014755}{\percent} of the pairs, and at least
+        \SI{94.117645}{\percent} of the values from at least one domain, then
+        pick \PathLAD.
     \item If the target has at least $610$ vertices, and if the maximum
         distance between any two pattern vertices is at most $8$, and if the
         pattern is not regular, and if the time taken to compute the
