@@ -31,12 +31,13 @@ set arrow from 1e8,5000 to 1e8,5725 front nohead
 plot \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "lad" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 1 dt ".", \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "supplementallad" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 2 dt ".", \
+    "lad-features.csv" u (strcol(8) eq "true" ? $7 : 1e8):(strcol(8) eq "true" ? 1 : 0) smooth cumulative with lines notitle lc 8 dt ".", \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "vf2" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 4 dt ".", \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow1" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 5 dt ".", \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow2" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 6 dt ".", \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow3" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 7 dt ".", \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow4" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 3 dt ".", \
-    "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "virtual.best" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 8 dt "-", \
+    "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "virtual.best.lad" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 8 dt "-", \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "portfolio" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 8 lw 2
 
 set size 0.38, 0.5
@@ -66,7 +67,7 @@ plot \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow2" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines ti '\raisebox{0mm}{\GlasgowTwoNS{}}' at end dt "." lc 6, \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow3" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines notitle dt "." lc 7, \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow4" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines notitle dt "." lc 3, \
-    "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "virtual.best" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines ti '\raisebox{1mm}{VBS}' at end lc 8 dt "-", \
+    "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "virtual.best.lad" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines ti '\raisebox{1mm}{VBS}' at end lc 8 dt "-", \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "portfolio" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines ti '\raisebox{0mm}{\LLAMANS}' at end lc 8 lw 2
 
 unset multiplot

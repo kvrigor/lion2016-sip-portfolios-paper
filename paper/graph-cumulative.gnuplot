@@ -37,7 +37,7 @@ plot \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow2" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 6, \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow3" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 7, \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow4" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 3, \
-    "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "virtual.best" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 8 dt "-"
+    "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "virtual.best.lad" ? $3 : NaN):($3 >= 1e8 ? 1e-10 : 1) smooth cumulative with lines notitle lc 8 dt "-"
 
 set size 0.38, 0.5
 set origin 0.53, 0.20
@@ -69,7 +69,7 @@ plot \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow2" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines ti '\raisebox{0mm}{\GlasgowTwoNS{}}' at beginning lc 6, \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow3" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines ti '\raisebox{1.5mm}{\GlasgowThreeNS{}}' at beginning lc 7, \
     "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "glasgow4" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines notitle lc 3, \
-    "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "virtual.best" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines ti '\raisebox{0mm}{VBS}' at beginning lc 8 dt "-"
+    "no-presolved-presolver-allinstances.csv" u (strcol(2) eq "virtual.best.lad" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with lines ti '\raisebox{0mm}{VBS}' at beginning lc 8 dt "-"
 
 unset multiplot
 
