@@ -584,26 +584,24 @@ the entire set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
 Analysing the final model, we saw that the most important features were, in order:
 
 \begin{itemize}
-    \item The maximum degree of the pattern graph;
-    \item The mean degree of the target graph;
-    \item The proportion of target vertices which are at least distance 3
-        apart. We introduced this feature expecting it to be helpful in
-        distinguishing between \Glasgow variants: if few vertices are far
-        apart, longer paths are unlikely to be useful. However, in practice
-        this feature also gives a rough indication of how sparse the graph
-        is---locally all-different filtering is weak and expensive on dense
-        graphs, and the feature turned out to be helpful for selecting between
-        \Glasgow and \LAD variants too;
-    \item The number of values removed during \IncompleteLAD presolving;
-    \item And the mean degree of the pattern graph, the number of vertices in
-        the pattern graph, and the number of vertices in the target graph,
-        which were used once each.
+    \item the maximum degree of the pattern graph;
+    \item the mean degree of the target graph;
+    \item the proportion of target vertices that are at least distance 3
+        apart;
+    \item the number of values removed during \IncompleteLAD presolving.
 \end{itemize}
 
-\noindent This confirms that our decision to consider both the pattern graph
-and the target graph for feature extraction was correct, and shows that basic
-graph properties do affect the performance of sophisticated filtering
-algorithms in reasonably simple ways.
+We introduced the proportion of target vertices that are at least 3 apart as a
+feature expecting it to be helpful in distinguishing between
+\Glasgow variants---if few vertices are far apart, longer paths are unlikely to
+be useful. However, in practice this feature also gives a rough indication of
+how sparse the graph is---locally all-different filtering is weak and expensive
+on dense graphs, and the feature turned out to be helpful for selecting between
+\Glasgow and \LAD variants too.
+
+As expected, both the pattern graph and the target graph provide important
+features. We also conclude that even basic graph properties are predictive of
+sophisticated algorithms' performance.
 
 \subsection{Analysis of \PathLAD versus \GlasgowTwo}
 
