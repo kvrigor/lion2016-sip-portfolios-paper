@@ -584,6 +584,8 @@ the entire set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
 Analysing the final model, we saw that the most important features were, in order:
 
 \begin{itemize}
+    \item The maximum degree of the pattern graph;
+    \item The mean degree of the target graph;
     \item The proportion of target vertices which are at least distance 3
         apart. We introduced this feature expecting it to be helpful in
         distinguishing between \Glasgow variants: if few vertices are far
@@ -592,9 +594,6 @@ Analysing the final model, we saw that the most important features were, in orde
         is---locally all-different filtering is weak and expensive on dense
         graphs, and the feature turned out to be helpful for selecting between
         \Glasgow and \LAD variants too;
-
-    \item The mean degree of the target graph;
-    \item The maximum degree of the pattern graph;
     \item The number of values removed during \IncompleteLAD presolving;
     \item And the mean degree of the pattern graph, the number of vertices in
         the pattern graph, and the number of vertices in the target graph,
