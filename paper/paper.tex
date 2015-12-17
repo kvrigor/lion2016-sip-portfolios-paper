@@ -121,9 +121,9 @@ instances, and we describe our algorithm selection approach. It combines a
 presolving step, which allows us to easy instances very quickly, with the
 algorithm selection approach \LLAMA~\cite{kotthoff_llama_2013}.
 In Section~\ref{sec:algsel-exps}, we experimentally evaluate our selection
-approach, and show that it is able to close more than 50\% of the gap between the
-single best and the virtual best solver.
-We conclude and give directions for future work in Section~\ref{sec:concs}.
+approach, and show that it is able to close more than \SI{60}{\percent} of the
+gap between the single best and the virtual best solver. We conclude and give
+directions for future work in Section~\ref{sec:concs}.
 
 \section{Definitions and Notations}\label{sec:defs}
 
@@ -492,9 +492,9 @@ that, for each instance, chooses the best solver from our portfolio. This is the
 an algorithm selection approach can achieve. The single best solver is the one solver from the
 portfolio that has the overall best performance across the entire set of instances, at the CPU time
 limit of \SI{e8}{\ms}, i.e.\ \GlasgowTwo. We consider it a lower bound on the performance of the
-algorithm selection approach.  We are able to solve 28 more instances than the single best solver
-within the timeout, with only an additional 18 to the virtual best. In terms of average performance,
-we are able to close more than \SI{50}{\percent} of the gap between the single best and the virtual
+algorithm selection approach.  We are able to solve 30 more instances than the single best solver
+within the timeout, with only an additional 16 to the virtual best. In terms of average performance,
+we are able to close \SI{64}{\percent} of the gap between the single best and the virtual
 best solver.
 
 Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
@@ -511,8 +511,8 @@ performance improves.
 model & mean MCP & solved instances & mean performance\\
   \midrule
 virtual best & 0 & 2219 & 5822809\\
-\LLAMA & 902316 & 2201 & 6726782\\
-\GlasgowTwo & 1960992 & 2173 & 7783801\\
+\LLAMA & 705097 & 2203 & 6529563\\
+\GlasgowTwo & 1960683 & 2173 & 7783492\\
    \bottomrule \\
 \end{tabular}
 \caption{Algorithm selection performance on the reduced set of 2336 instances. MCP is the
@@ -533,7 +533,7 @@ colours as Figure~\ref{expTimeGraph}) on the reduced set of 2336 instances.}
 
 Table~\ref{tab:res} shows the performance of the selection model on its own. The performance of the
 entire algorithm selection system, including the preprocessing, is shown in Table~\ref{tab:resfull}.
-Our system is able to close more than \SI{50}{\percent} of the gap between
+Our system is able to close more than \SI{60}{\percent} of the gap between
 single and virtual best, similar to the results on the reduced set of instances.
 
 Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over time for the
@@ -551,7 +551,7 @@ milliseconds.
 model & mean MCP & solved instances & mean performance\\
   \midrule
 virtual best & 0 & 5608 & 2375913\\
-\LLAMA & 368176 & 5590 & 2744765\\
+\LLAMA & 287704 & 5592 & 2664293\\
 \GlasgowTwo & 798660 & 5562 & 3174573\\
    \bottomrule \\
 \end{tabular}
