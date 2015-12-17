@@ -655,16 +655,14 @@ We demonstrated that our algorithm selection approach achieves substantial
 performance improvements over the single algorithm that has the best performance
 on our benchmark set. We showed that combining an algorithm selection approach
 with a new incomplete variant of \LAD that is able to detect inconsistencies
-and a presolver boosts performance even further. Finally, we discussed how
-insights from machine learning could feed back into algorithm development.
+and a presolver boosts performance even further. Finally, we showed how
+insights from machine learning can guide algorithm development.
 
-We have yet to investigate parallel portfolios: as well as the possibility of
-running multiple single-threaded solvers simultaneously, the \Glasgow
-algorithms have a multi-core parallel implementation available, which can use a
-configurable number of threads. Nor have we investigated variants of the
-subgraph isomorphism problem---it would be interesting to see, for example,
-whether similar features are important when dealing with induced or directed
-isomorphisms.
+Directions for future work include scheduling multiple solvers to run instead of
+a single one; in particular the \Glasgow algorithms provide a multi-core
+parallel implementation, which can use a configurable number of threads. It
+would also be interesting to investigate other variants of the subgraph
+isomorphism problem.
 
 \bibliographystyle{splncs}
 \bibliography{paper}
