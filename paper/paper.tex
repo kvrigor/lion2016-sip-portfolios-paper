@@ -295,7 +295,7 @@ classes.
     graphs.
 \item Classes 4 to 8 contain randomly generated graphs from a database of
     graphs commonly used for benchmarking subgraph isomorphism
-    algorithms~\cite{GraphDatabase1,GraphDatabase2}: bounded-degree graphs for
+    algorithms~\cite{GraphDatabase1}: bounded-degree graphs for
     classes 4 and 5, regular meshes for classes 6 and 7, and random graphs with
     uniform edge probabilities for class 8. All of these instances are
     satisfiable.
@@ -306,18 +306,20 @@ classes.
     small size.
 \end{itemize}
 
-\noindent Note that Classes 3 and 12 were not considered in the previous experimental study by McCreesh and
-Prosser~\cite{McCreesh:2015}.  This set of instances is also much larger than that of Battiti and
-Mascia~\cite{battiti-mascia07}, who were the first to propose algorithm portfolios for subgraph
-isomorphism problems.  Battiti and Mascia only considered a pure parallel portfolio consisting of
-two solvers, and without a selection mechanism. Their problem set consisted entirely of easy
+\noindent Note that Classes 3 and 12 were not considered in the previous
+experimental study by McCreesh and Prosser~\cite{McCreesh:2015}.  This set of
+instances is also much larger than that of Battiti and
+Mascia~\cite{battiti-mascia07}, who were the first to propose algorithm
+portfolios for subgraph isomorphism problems.  Battiti and Mascia only
+considered a pure parallel portfolio consisting of two randomised solvers, and
+without a selection mechanism. Their problem set consisted entirely of
 satisfiable instances.
 
 \subsection{Experimental Setup}
 
 We measured runtimes on machines with Intel Xeon E5-2640 v2 CPUs and 64GBytes RAM, running
 Scientific Linux 6.5. We used the C++ implementation of the \Glasgow algorithm~\cite{McCreesh:2015},
-the C implementation of \LAD{}~\cite{Solnon:2010}, and the VFLib C
+the C implementation of \LAD{}~\cite{Solnon:2010}, and the VFLib C++
 implementation of \VFtwo{}~\cite{Cordella:2004}. Software was compiled using GCC 4.9. Each problem instance was run with a
 timeout of $10^8$ milliseconds ($\approx$ 27.8 hours).
 
@@ -455,7 +457,8 @@ very quickly:
 inconsistency, \IncompleteLAD removes candidate pairs. The number of successfully removed pairs
 gives information on the distribution of edges (the fewer removed pairs, the more uniform the
 distribution). As well as the number of removed pairs, we also record the percentage with respect to
-all possible pairs, and the minimum and maximum values on a per-variable basis.
+all possible pairs, and the minimum and maximum percentages of removed values on
+a per-variable basis.
 
 \subsection{Selection Model}
 
@@ -517,7 +520,7 @@ virtual best & 0 & 2219 & 5822809\\
 \end{tabular}
 \caption{Algorithm selection performance on the reduced set of 2336 instances. MCP is the
 misclassification penalty; that is, the additional time required to solve an instance because of
-choosing solvers that perform worse than the best. Mean performance is over all instances; when an
+choosing solvers that perform worse than the best. Mean MCP and performance are over all 2336 instances; when an
 instance is not solved, its performance is set to the time limit
 (\SI{e8}{\ms}).}\label{tab:res}
 \end{table}
@@ -569,7 +572,7 @@ colours as Figure~\ref{expTimeGraph}) on the full set of 5725 instances.}
 
 We train the algorithm selection model specifically for the timeout of $10^8$
 milliseconds. In particular, we are interested in minimising the performance
-difference to the virtual best. Problem instances that take longer to solver
+difference to the virtual best. Problem instances that take longer to solve
 contribute more to this difference than easy instances and therefore carry more
 weight for the algorithm selection model. That is, choosing the wrong solver for
 a hard instances is much worse than choosing the wrong solver for an easy
@@ -610,8 +613,8 @@ investigated what affects the relative performance of \PathLAD and \GlasgowTwo.
 This pair is of particular interest because they are the best ``medium-case''
 algorithms that use strong and weak filtering during search respectively. We
 used machine learning techniques to train a simple, human-understandable model
-which is able to distinguish these solvers and gives performance better than
-always choosing one of them. The model uses four rules:
+which is able to distinguish these solvers for the 2336 hard instances and gives
+performance better than always choosing one of them. The model uses four rules:
 
 \begin{enumerate}
     \item If \IncompleteLAD removes at least \SI{28.014755}{\percent} of the pairs,
