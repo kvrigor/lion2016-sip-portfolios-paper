@@ -374,16 +374,17 @@ best solver for time limits larger than \SI{5}{\ms} and lower than \SI{40}{\ms},
 for time limits larger than \SI{40}{\ms} and lower than \SI{3000}{\ms}.
 
 \GlasgowTwo becomes the best solver for time limits larger than \SI{3000}{\ms}.
-As we
-increase the CPU time limit, variants of \Glasgow with longer paths (\GlasgowThree and \GlasgowFour)
-become better. This is what we expect, as more reasoning is expensive, but
-increases the potential
-reduction of the search space. In particular, the relative performance of \Glasgow variants is
-monotone in the time it takes to solve the instance---\GlasgowOne is best at first, but gets worse as
-the time to solve the instance increases until \GlasgowTwo is better. After that point, \GlasgowOne is
-never better than \GlasgowTwo again. The same is true for path lengths 3 and 4.
+As we increase the CPU time limit, the performance of variants of \Glasgow with
+longer paths (\GlasgowThree and \GlasgowFour) improves. This is what we expect,
+as more reasoning is expensive, but increases the potential reduction of the
+search space. Eventually, \GlasgowTwo and \GlasgowThree become very closely
+matched, and with runtimes very close to the limit, \GlasgowFour nearly catches
+up. (This behaviour is class-dependent: over class 2, for example, the behavior
+is roughly monotone, with \GlasgowOne dominating for low runtimes, then
+\GlasgowTwo, then \GlasgowThree, then \GlasgowFour each becoming best as the runtimes
+increase.)
 
-The figure illustrates the potential for portfolios and algorithm selection we have. There is
+The figure illustrates the potential for portfolios and algorithm selection we have: there is
 clearly no single solver that dominates throughout.
 
 Furthermore, the virtual best solver (VBS), which considers the best algorithm
