@@ -614,16 +614,16 @@ which is able to distinguish these cases with reasonable accuracy. The model
 produced uses four rules:
 
 \begin{enumerate}
-    \item If \IncompleteLAD removes at least \SI{28}{\percent} of the pairs,
-        and at least \SI{94}{\percent} of the values from at least one domain,
+    \item If \IncompleteLAD removes at least \SI{28.014755}{\percent} of the pairs,
+        and at least \SI{94.117645}{\percent} of the values from at least one domain,
         then pick \PathLAD.
     \item If the target has at least $610$ vertices, and if the maximum
         distance between any two pattern vertices is at most $8$, and if the
         pattern is not regular, and if the time taken to compute the
         distance-based features on the target graph is no more than
         \SI{1277}{\ms}, then pick \PathLAD.
-    \item If \IncompleteLAD filtering removed at least \SI{6}{\percent} of
-        possible pairs, and if less than \SI{85}{\percent} of the pattern
+    \item If \IncompleteLAD filtering removed at least \SI{5.904644}{\percent} of
+        possible pairs, and if less than \SI{84.6565}{\percent} of the pattern
         vertices are within distance 2 of each other, then pick \PathLAD.
     \item Otherwise, pick \GlasgowTwo.
 \end{enumerate}
