@@ -530,9 +530,10 @@ instance is not solved, its performance is set to the time limit
 \begin{figure}[p]
 \input{graph-reduced}
 
-\caption{Number of solved instances over time for the virtual best
-solver, \LLAMA, and individual solvers (shown as dotted lines, in the same
-colours as Figure~\ref{expTimeGraph}) on the reduced set of 2336 instances.}
+\caption{Number of solved instances over time for the virtual best solver,
+\LLAMA, and the single best solver \GlasgowTwo on the reduced set of 2336
+instances. Other individual solvers are shown as dotted lines, in the same
+colours as Figure~\ref{expTimeGraph}. }
 \label{fig:portfolio-ecdf}
 \end{figure}
 
@@ -567,10 +568,12 @@ instances.}\label{tab:resfull}
 
 \begin{figure}[p]
     \input{graph-full}
-\caption{Number of solved instances over time for the virtual best
-solver, \LLAMA, and individual solvers (shown as dotted lines, in the same
-colours as Figure~\ref{expTimeGraph}) on the full set of 5725 instances.}
+\caption{Number of solved instances over time for the virtual best solver,
+\LLAMA, and the single best solver \GlasgowTwo on the full set of 5725
+instances. Other individual solvers are shown as dotted lines, in the same
+colours as Figure~\ref{expTimeGraph}. }
 \label{fig:portfolio-ecdf-full}
+
 \end{figure}
 
 We train the algorithm selection model specifically for the timeout of $10^8$
