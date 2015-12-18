@@ -65,7 +65,8 @@ of state-of-the-art algorithms for solving the problem, each of which has its ow
 characteristics. As with many other hard problems, the single best choice of algorithm overall is
 rarely the best algorithm on an instance-by-instance. We develop an algorithm
 selection approach which leverages
-novel features to characterise subgraph isomorphism problems to dynamically decide which algorithm
+novel features to characterise subgraph isomorphism problems and dynamically
+decides which algorithm
 to use on a per-instance basis. We demonstrate substantial performance improvements on a large set
 of hard benchmark problems. In addition, we show how algorithm selection models can be leveraged to
 gain new insights into what affects the performance of an algorithm.
@@ -118,10 +119,10 @@ entire benchmark set.
 
 In Section~\ref{sec:algsel}, we discuss the features that are used to describe
 instances, and we describe our algorithm selection approach. It combines a
-presolving step, which allows us to easy instances very quickly, with the
-algorithm selection approach \LLAMA~\cite{kotthoff_llama_2013}.
+presolving step, which allows us to easy instances very quickly, with an
+algorithm selection step that uses \LLAMA~\cite{kotthoff_llama_2013}.
 In Section~\ref{sec:algsel-exps}, we experimentally evaluate our selection
-approach, and show that it is able to close more than \SI{60}{\percent} of the
+approach and show that it is able to close more than \SI{60}{\percent} of the
 gap between the single best and the virtual best solver. We conclude and give
 directions for future work in Section~\ref{sec:concs}.
 
@@ -142,9 +143,8 @@ different target node to each pattern node, and preserves pattern edges, i.e.\ $
 Note that the subgraph is not necessarily induced, so that two pattern nodes not linked by
 an edge may be mapped to two target nodes which are linked by an edge.
 
-In the following, we assume $G_p=(N_p,E_p)$ and $G_t=(N_t,E_t)$ to be the underlying instance of 
-subgraph isomorphism.  We  define $n_p = \# N_p$, $n_t = \# N_t$,  $e_p=\# E_p$, $e_t=\#
-E_t$, and $d_p$ and $d_t$ to be the maximum degrees of the graphs $G_p$ and $G_t$.
+We define $n_p = \# N_p$, $n_t = \# N_t$,  $e_p=\# E_p$, $e_t=\# E_t$, and $d_p$
+and $d_t$ to be the maximum degrees of the graphs $G_p$ and $G_t$.
 
 \section{Subgraph Isomorphism Algorithms}\label{sec:algs}
 
@@ -236,9 +236,8 @@ We consider six algorithms from the literature and propose two novel ones.
 
 \subsection{Algorithms from the Literature}
 
-We have selected a set of algorithms with complementary performance. These
-algorithms will compose our portfolio in the per-instance selection approach
-described in Section~\ref{sec:algsel}.
+We selected the following algorithms from the literature, based on their
+performance.
 \begin{itemize}
 \item \VFtwo{}~\cite{Cordella:2004} performs weak filtering that is especially fast on
     trivially satisfiable instances;
@@ -263,7 +262,8 @@ lengths up to 4, naming these variants \GlasgowOne through \GlasgowFour.
 
 We introduce two new variants of \LAD. The first, called \IncompleteLAD, does weaker
 filtering which is applied once, without performing a backtracking search, and very quickly
-detects inconsistencies on many instances: for each pattern node $u$, we check that there exists at
+detects inconsistencies on many instances: for each pattern node $u$, we check
+if there exists at
 least one target node $v$ such that for each neighbor $u'$ of $u$ there exists a different neighbor
 $v'$ of $v$ such that the degree of $u'$ is smaller than or equal to the degree of $v'$.
 \IncompleteLAD is an incomplete algorithm that checks a sufficient, but not
@@ -307,11 +307,11 @@ classes.
 \end{itemize}
 
 \noindent Note that Classes 3 and 12 were not considered in the previous
-experimental study by McCreesh and Prosser~\cite{McCreesh:2015}.  This set of
-instances is also much larger than that of Battiti and
+experimental study by McCreesh and Prosser~\cite{McCreesh:2015}.  Our set of
+instances is much larger than that of Battiti and
 Mascia~\cite{battiti-mascia07}, who were the first to propose algorithm
 portfolios for subgraph isomorphism problems.  Battiti and Mascia only
-considered a pure parallel portfolio consisting of two randomised solvers, and
+considered a pure parallel portfolio consisting of two randomised solvers
 without a selection mechanism. Their problem set consisted entirely of
 satisfiable instances.
 
@@ -363,24 +363,25 @@ Total && 1282 && 1865 & 881 & 1273 && 1530 & 465 & 82& 15\\
 
 Figure~\ref{expTimeGraph} displays the evolution of the cumulative number of instances solved with respect to
 CPU time. It shows us that the best solver depends on the time limit considered. \IncompleteLAD is
-able to solve easy unsatisfiable instances very quickly, in a few milliseconds. Hence, for time
-limits lower than \SI{5}{\ms}, the best solver is \IncompleteLAD. However, it is not able to solve harder
+able to solve easy unsatisfiable instances very quickly, in a few milliseconds.
+For time
+limits less than \SI{5}{\ms}, it is the best solver. However, it is not able to solve harder
 unsatisfiable instances, nor can it solve satisfiable instances.
 
 \PathLAD and \GlasgowOne outperform \IncompleteLAD for longer time limits: \PathLAD is the
-best solver for time limits larger than \SI{5}{\ms} and lower than \SI{40}{\ms}, and \GlasgowOne is the best solver
-for time limits larger than \SI{40}{\ms} and lower than \SI{3000}{\ms}.
+best solver for time limits greater than \SI{5}{\ms} and less than \SI{40}{\ms}, and \GlasgowOne is the best solver
+for time limits greater than \SI{40}{\ms} and less than \SI{3000}{\ms}.
 
-\GlasgowTwo becomes the best solver for time limits larger than \SI{3000}{\ms}.
+\GlasgowTwo becomes the best solver for time limits greater than \SI{3000}{\ms}.
 As we increase the CPU time limit, the performance of variants of \Glasgow with
 longer paths (\GlasgowThree and \GlasgowFour) improves. This is what we expect,
 as more reasoning is expensive, but increases the potential reduction of the
 search space. Eventually, \GlasgowTwo and \GlasgowThree become very closely
 matched, and with runtimes very close to the limit, \GlasgowFour nearly catches
-up. (This behaviour is class-dependent: over class 2, for example, the behavior
+up. This behavior is class-dependent: for class 2, for example, the behavior
 is roughly monotone, with \GlasgowOne dominating for low runtimes, then
 \GlasgowTwo, then \GlasgowThree, then \GlasgowFour each becoming best as the runtimes
-increase.)
+increase.
 
 The figure illustrates the potential for portfolios and algorithm selection we have: there is
 clearly no single solver that dominates throughout.
@@ -409,32 +410,38 @@ the class. In particular, for classes 2 and 3, each algorithm is the best for at
 
 \section{Algorithm Selection Approach}\label{sec:algsel}
 
-Our approach is composed of three steps. First, we run two presolvers in a static way to quickly
-solve easy instances; second, we extract features from instances which are not solved by the first
-step; and third, we select an algorithm and run it.
+Our approach is composed of three steps. First, we run two presolvers in a
+static way to quickly solve easy instances. This ensures that we achieve good
+performance on instances that can be solved in a small amount of time. Second,
+we extract features from instances which are not solved by the first step.
+Finally, we run algorithm selection to choose the algorithm to solve the
+instance with.
 
 \subsection{Presolving}
 
-Experimental results reported in Section~\ref{expComp} have shown us that \IncompleteLAD is very fast
-(\SI{7}{\ms} on average) and is able to solve 1919 instances from our benchmark
+Experimental results reported in Section~\ref{expComp} show that \IncompleteLAD is very fast
+(\SI{7}{\ms} on average) and able to solve 1919 instances from our benchmark
 set very quickly. Therefore, we first run
 \IncompleteLAD: if unsatisfiability is detected, we do not need to process it further.
 
-\VFtwo is also able to solve many easy instances very quickly: among the 3806 instances which are not
+\VFtwo is also able to solve many easy instances very quickly: from the 3806
+instances that are not
 solved by \IncompleteLAD, 1470 are solved by \VFtwo in less than 50 milliseconds. Therefore, after
 running \IncompleteLAD, we run the \VFtwo solver for \SI{50}{\ms}. This solves easy instances without
 the overhead of running algorithm selection and avoids potentially making incorrect solver choices.
 
-We include \VFtwo in the portfolio, as it may solve an instance given more time,
-but not \IncompleteLAD.
+We also include \VFtwo in the portfolio, as it may solve an instance given more
+time, but not \IncompleteLAD, as it is an incomplete solver that cannot solve
+satisfiable instances.
 
 After the presolving step, we are left with 2336 hard instances that we consider
 for algorithm selection.
 
 \subsection{Feature Extraction}
 
-If presolving does not give us a solution, we extract features. For both the pattern and
-the target graph, we consider some basic graph properties, which can be computed
+If presolving does not give us a solution, we extract features that characterize
+the instances. For both the pattern and
+the target graph, we consider some basic graph properties that can be computed
 very quickly:
 
 \begin{itemize}
@@ -442,7 +449,7 @@ very quickly:
     \item the density---we expect that some kinds of filtering (like those based upon locally
         all-different constraints) might be expensive and ineffective on
         dense graphs;
-    \item how many loops (self-adjacent vertices) the graph contains---since loops must be mapped to
+    \item how many loops (self-adjacent vertices) the graph contains---as loops must be mapped to
         loops, this could have a strong effect on how easy an instance is;
     \item the mean and maximum degrees, and whether or not every vertex has the same degree (the
         degree-based invariants used by \LAD and \Glasgow do nothing at the top of search if every
@@ -458,7 +465,8 @@ inconsistency, \IncompleteLAD removes candidate pairs. The number of successfull
 gives information on the distribution of edges (the fewer removed pairs, the more uniform the
 distribution). As well as the number of removed pairs, we also record the percentage with respect to
 all possible pairs, and the minimum and maximum percentages of removed values on
-a per-variable basis.
+a per-variable basis. Finally, we include the CPU time required to compute these
+features as features.
 
 \subsection{Selection Model}
 
@@ -490,7 +498,7 @@ The data we use in this paper is available as ASlib~\cite{aslib} scenario GRAPHS
 \section{Experimental Evaluation of Algorithm Selection}\label{sec:algsel-exps}
 
 Table~\ref{tab:res} shows the performance of our algorithm selection approach,
-compared to two baselines, on the reduced set of 2336 instances. The virtual
+compared to two baselines, on the set of 2336 hard instances. The virtual
 best solver is the oracle predictor that, for each instance, chooses the best
 solver from our portfolio. This is the upper bound of what an algorithm
 selection approach can achieve. The single best solver is the one solver from
@@ -520,7 +528,7 @@ virtual best & 0 & 2219 & 5822809\\
 \GlasgowTwo & 1960683 & 2173 & 7783492\\
    \bottomrule \\
 \end{tabular}
-\caption{Algorithm selection performance on the reduced set of 2336 instances. MCP is the
+\caption{Algorithm selection performance on the set of 2336 hard instances. MCP is the
 misclassification penalty; that is, the additional time required to solve an instance because of
 choosing solvers that perform worse than the best. Mean MCP and performance are over all 2336 instances; when an
 instance is not solved, its performance is set to the time limit
@@ -531,9 +539,9 @@ instance is not solved, its performance is set to the time limit
 \input{graph-reduced}
 
 \caption{Cumulative number of solved instances over time for the virtual best solver,
-\LLAMA, and the single best solver \GlasgowTwo on the reduced set of 2336
+\LLAMA, and the single best solver \GlasgowTwo on the set of 2336 hard
 instances. Other individual solvers are shown as dotted lines, in the same
-colours as Figure~\ref{expTimeGraph}. }
+colors as Figure~\ref{expTimeGraph}. }
 \label{fig:portfolio-ecdf}
 \end{figure}
 
@@ -541,7 +549,7 @@ Table~\ref{tab:res} shows the performance of the selection model on its own. The
 performance of the entire algorithm selection system, including the
 preprocessing, is shown in Table~\ref{tab:resfull}. Our system is able to close
 more than \SI{60}{\percent} of the gap between single and virtual best, similar
-to the results on the reduced set of instances.
+to the results on the set of hard instances.
 
 Figure~\ref{fig:portfolio-ecdf-full} shows the cumulative number of solved instances over
 time for the algorithm selection system including \IncompleteLAD and \VFtwo
@@ -571,7 +579,7 @@ instances.}\label{tab:resfull}
 \caption{Cumulative number of solved instances over time for the virtual best solver,
 \LLAMA, and the single best solver \GlasgowTwo on the full set of 5725
 instances. Other individual solvers are shown as dotted lines, in the same
-colours as Figure~\ref{expTimeGraph}. }
+colors as Figure~\ref{expTimeGraph}. }
 \label{fig:portfolio-ecdf-full}
 
 \end{figure}
@@ -584,9 +592,11 @@ weight for the algorithm selection model. That is, choosing the wrong solver for
 a hard instances is much worse than choosing the wrong solver for an easy
 instance.
 
-Even though Figures~\ref{fig:portfolio-ecdf} and~\ref{fig:portfolio-ecdf-full}
-show that on easy instances, the model does not perform well, it does over
-the entire set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
+Figures~\ref{fig:portfolio-ecdf} and~\ref{fig:portfolio-ecdf-full}
+show that for the easy instances from the set of hard instances, the performance
+improvement through algorithm selection is negated by the cost of computing the
+features. The presolving steps improve performance dramatically over the full
+set of instances (cf.\ Tables~\ref{tab:res} and~\ref{tab:resfull}).
 
 \subsection{Analysis of Features Used by the Model}
 
@@ -610,18 +620,19 @@ on dense graphs, and the feature turned out to be helpful for selecting between
 \Glasgow and \LAD variants too.
 
 As expected, both the pattern graph and the target graph provide important
-features. We also conclude that even basic graph properties are predictive of
+features. We conclude that even basic graph properties are predictive of
 sophisticated algorithms' performance.
 
 \subsection{Analysis of \PathLAD versus \GlasgowTwo}
 
-To gain further insight into the behaviour of the algorithms, we
+To gain further insight into the behavior of the algorithms, we
 investigated what affects the relative performance of \PathLAD and \GlasgowTwo.
 This pair is of particular interest because they are the best ``medium-case''
-algorithms that use strong and weak filtering during search respectively. We
-used machine learning techniques to train a simple, human-understandable model
-which is able to distinguish these solvers for the 2336 hard instances and gives
-performance better than always choosing one of them. The model uses four rules:
+algorithms that use strong and weak filtering during search, respectively. We
+used machine learning techniques (JRip~\cite{Cohen1995}) to train a simple,
+human-understandable model which is able to distinguish these solvers for the
+2336 hard instances and gives performance better than always choosing one of
+them. The model uses four rules:
 
 \begin{enumerate}
     \item If \IncompleteLAD presolving removes at least
@@ -651,12 +662,12 @@ that it would be worth exploring \emph{dynamically} enabling or disabling
 locally all-different filtering during search, based upon very simple features
 which could be recomputed as search progresses and conditions change.
 
-This provides an interesting insight into the behaviour of our algorithms, as
+This provides an interesting insight into the behavior of our algorithms, as
 well as giving indications for future work.
 
 \section{Conclusion and Future Work}\label{sec:concs}
 
-The problem of identifying subgraph isomorphisms is a hard computation problem that has many
+The problem of identifying subgraph isomorphisms is a hard computational problem that has many
 applications in diverse areas. In this paper, we presented a portfolio of six algorithms from the
 literature and two new variants of the \LAD algorithm. We introduced a set of novel features to
 characterise subgraph isomorphism problems and leveraged them to select the most appropriate
