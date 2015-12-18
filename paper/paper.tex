@@ -330,7 +330,7 @@ timeout of $10^8$ milliseconds ($\approx$ 27.8 hours).
     \centering
     \input{graph-cumulative}\vspace{-0.5cm}
 
-    \caption{Number of solved instances over CPU time for the eight algorithms we
+    \caption{Cumulative number of solved instances over CPU time for the eight algorithms we
         consider in this paper, and the virtual best solver (VBS) that shows the best
     solver on an instance by instance basis.\label{expTimeGraph}}
 \end{figure}
@@ -361,7 +361,7 @@ Total && 1282 && 1865 & 881 & 1273 && 1530 & 465 & 82& 15\\
 \caption{Number of times each algorithm is best, for each class.\label{expClass}}
 \end{table}
 
-Figure~\ref{expTimeGraph} displays the evolution of the number of instances solved with respect to
+Figure~\ref{expTimeGraph} displays the evolution of the cumulative number of instances solved with respect to
 CPU time. It shows us that the best solver depends on the time limit considered. \IncompleteLAD is
 able to solve easy unsatisfiable instances very quickly, in a few milliseconds. Hence, for time
 limits lower than \SI{5}{\ms}, the best solver is \IncompleteLAD. However, it is not able to solve harder
@@ -502,7 +502,7 @@ with only an additional 16 to the virtual best. In terms of average performance,
 we are able to close \SI{64}{\percent} of the gap between the single best and
 the virtual best solver.
 
-Figure~\ref{fig:portfolio-ecdf} shows the number of solved instances over time
+Figure~\ref{fig:portfolio-ecdf} shows the cumulative number of solved instances over time
 for the individual solvers, the virtual best solver, and the \LLAMA algorithm
 selection approach. The algorithm selection model does not perform well for
 instances that can be solved quickly because of the overhead incurred through
@@ -530,7 +530,7 @@ instance is not solved, its performance is set to the time limit
 \begin{figure}[p]
 \input{graph-reduced}
 
-\caption{Number of solved instances over time for the virtual best solver,
+\caption{Cumulative number of solved instances over time for the virtual best solver,
 \LLAMA, and the single best solver \GlasgowTwo on the reduced set of 2336
 instances. Other individual solvers are shown as dotted lines, in the same
 colours as Figure~\ref{expTimeGraph}. }
@@ -543,7 +543,7 @@ preprocessing, is shown in Table~\ref{tab:resfull}. Our system is able to close
 more than \SI{60}{\percent} of the gap between single and virtual best, similar
 to the results on the reduced set of instances.
 
-Figure~\ref{fig:portfolio-ecdf-full} shows the number of solved instances over
+Figure~\ref{fig:portfolio-ecdf-full} shows the cumulative number of solved instances over
 time for the algorithm selection system including \IncompleteLAD and \VFtwo
 presolving on the full set of instances. The performance on small instances is
 much better than the \LLAMA selector alone (cf.\
@@ -568,7 +568,7 @@ instances.}\label{tab:resfull}
 
 \begin{figure}[p]
     \input{graph-full}
-\caption{Number of solved instances over time for the virtual best solver,
+\caption{Cumulative number of solved instances over time for the virtual best solver,
 \LLAMA, and the single best solver \GlasgowTwo on the full set of 5725
 instances. Other individual solvers are shown as dotted lines, in the same
 colours as Figure~\ref{expTimeGraph}. }
