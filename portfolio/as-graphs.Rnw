@@ -677,6 +677,8 @@ resrp = data.frame(model = "regressionPairs",
 times = sapply(modelrp$models, function(x) row.names(sortByCol(as.data.frame(x$learner.model$importance), "IncNodePurity", asc = FALSE))[1])
 print(xtable(as.table(sort(table(times), decreasing = TRUE)), caption = "Most important features for regressionPairs."), booktabs = TRUE)
 
+print(xtable(table(singleBest(ldf2)$algorithm)))
+
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
 print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results with presolver."), booktabs = TRUE, include.rownames = FALSE)
 @
@@ -721,6 +723,8 @@ resrp = data.frame(model = "regressionPairs",
     solved = sum(c(successes(ldf2, modelrp), addsucc)),
     mean.performance = mean(c(parscores(ldf2, modelrp, factor = 1), addtime)),
     median.performance = median(c(parscores(ldf2, modelrp, factor = 1), addtime)))
+
+print(xtable(table(singleBest(ldf)$algorithm)))
 
 tab = rbind(resvbs, ressb, resc, resr, rescp, resrp)
 print(xtable(tab, digits = 0, caption = "Preliminary algorithm selection results with presolver (evaluated on all instances)."), booktabs = TRUE, include.rownames = FALSE)
@@ -798,6 +802,15 @@ perfs = merge(perfs, pmod, by = "instance_id")
 wide = gather_(perfs, "solver", "time", names(perfs)[-1])
 wide$type = ifelse(wide$solver %in% c("virtual.best", "portfolio"), "pf", "alg")
 write.csv(wide, file = "no-presolved-presolver-allinstances.csv", row.names = FALSE)
+
+#rs = asscenario$feature.runstatus[c("instance_id", "lad_features")]
+#fc = asscenario$feature.costs[c("instance_id", "lad_features")]
+#sc = merge(rs, fc, by = "instance_id")
+#sc$time = sc$lad_features.y
+#sc$time[sc$lad_features.x != "presolved"] = 10^8
+#foo = rbind.fill(lapply(unique(wide$instance_id), function(id) { data.frame(instance_id = id, solver = "virtual.best.lad", time = min(sc$time[sc$instance_id == id], wide$time[wide$solver == "virtual.best"&wide$instance_id == id]), type = "pf") }))
+#newwide = rbind(wide, foo)
+
 p.full = ggplot(wide, aes(x = time, col = solver, linetype = type)) +
     stat_ecdf() +
     scale_linetype_manual(values=c(3,1), guide = FALSE) +
