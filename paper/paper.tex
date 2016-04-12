@@ -78,9 +78,9 @@ The subgraph isomorphism problem is to find an adjacency-preserving injective ma
 of a small \emph{pattern} graph to vertices of a large \emph{target} graph. This \NP-complete
 problem has many important practical applications, for example in computer
 vision~\cite{cviu11,pr15}, biochemistry~\cite{Giugno:2013}, and model checking~\cite{Sevegnani:2015}. There
-exist various exact algorithms, which have been compared on a large suite of problem instances by
+exist various exact algorithms, which have been compared on a large suite of instances by
 McCreesh and Prosser~\cite{McCreesh:2015}. These experiments indicated that the single best
-algorithm depends on the CPU time limit considered: for very small CPU time
+algorithm depends on the CPU time limit considered: for very small time
 limits, \VFtwo{}~\cite{Cordella:2004} is the best choice, whereas the \Glasgow algorithm~\cite{McCreesh:2015} has
 better success rates for larger time limits.  They also showed that on an instance by instance
 basis, other algorithms are often better.
@@ -94,7 +94,11 @@ of the algorithms or the portfolio which they are contained in to forecast which
 particular context. Using the predictions, one or more algorithms from the
 portfolio can be selected to be run sequentially or in parallel.
 
-Here, we consider the case where exactly one algorithm is selected for solving the problem. One of
+% MODIFICATIONS
+In our subgraph isomorphism context, algorithm performance is highly constrained by memory bandwidth (as pointed out by Sabharwal and Samulowitz \cite{Sabharwal2014} for SAT solvers).
+Therefore, we cannot simply run different algorithms in parallel, and we consider the case where exactly one algorithm is selected for solving the problem. 
+%
+One of
 the most prominent and successful systems that employs this approach is
 SATzilla~\cite{xu_satzilla_2008}, which defined the state of the art in SAT solving for a number of
 years. Other application areas include constraint solving~\cite{omahony_using_2008}, the travelling
@@ -107,7 +111,6 @@ We formally define the subgraph isomorphism problem in Section~\ref{sec:defs}.
 In Section~\ref{sec:algs}, we describe the main existing algorithms for solving
 this problem, and we also introduce two new algorithms which are derived from
 Solnon's \LAD algorithm \cite{Solnon:2010}.
-
 In Section~\ref{sec:exps}, we experimentally compare eight state-of-the-art
 algorithms. We introduce a large benchmark set composed of 5725 instances
 grouped into twelve classes. Ten of these classes were considered in the
@@ -116,7 +119,6 @@ are new. We evaluate the algorithms on this benchmark set, and show that they
 have very complementary performance. In particular, we show that depending on
 the CPU time limit, different algorithms achieve the best performance on the
 entire benchmark set.
-
 In Section~\ref{sec:algsel}, we discuss the features that are used to describe
 instances, and we describe our algorithm selection approach. It combines a
 presolving step, which allows us to easy instances very quickly, with an
@@ -142,7 +144,6 @@ different target node to each pattern node, and preserves pattern edges, i.e.\ $
 \in E_p, (f(u),f(u')) \in E_t$.
 Note that the subgraph is not necessarily induced, so that two pattern nodes not linked by
 an edge may be mapped to two target nodes which are linked by an edge.
-
 We define $n_p = \# N_p$, $n_t = \# N_t$,  $e_p=\# E_p$, $e_t=\# E_t$, and $d_p$
 and $d_t$ to be the maximum degrees of the graphs $G_p$ and $G_t$.
 
@@ -248,6 +249,10 @@ performance.
     (forward-checking, and a heuristic All-Different propagator which can miss deletions) and
     conflict-directed backjumping during search.
 \end{itemize}
+% MODIFICATIONS
+We have not considered the algorithm introduced in \cite{constraints10} because it is outperformed by \LAD{}.
+Also, we have not considered MIP nor SAT solvers because they are not competitive with the selected algorithms \cite{UpcomingIJCAIPaper}.
+% 
 
 \noindent The \Glasgow algorithm has a parameter, which controls the lengths of paths used when
 reasoning about non-adjacent vertices.  In experiments reported by McCreesh and
@@ -634,18 +639,19 @@ human-understandable model which is able to distinguish these solvers for the
 2336 hard instances and gives performance better than always choosing one of
 them. The model uses four rules:
 
+% MODIFICATIONS: removed decimals (just keep to digits after the point)
 \begin{enumerate}
     \item If \IncompleteLAD presolving removes at least
-        \SI{28.014755}{\percent} of the pairs, and at least
-        \SI{94.117645}{\percent} of the values from at least one domain, then
+        \SI{28.01}{\percent} of the pairs, and at least
+        \SI{94.12}{\percent} of the values from at least one domain, then
         pick \PathLAD.
     \item If the target has at least $610$ vertices, and if the maximum
         distance between any two pattern vertices is at most $8$, and if the
         pattern is not regular, and if the time taken to compute the
         distance-based features on the target graph is no more than
         \SI{1277}{\ms}, then pick \PathLAD.
-    \item If \IncompleteLAD filtering removed at least \SI{5.904644}{\percent} of
-        possible pairs, and if less than \SI{84.6565}{\percent} of the pattern
+    \item If \IncompleteLAD filtering removed at least \SI{5.90}{\percent} of
+        possible pairs, and if less than \SI{84.66}{\percent} of the pattern
         vertices are within distance 2 of each other, then pick \PathLAD.
     \item Otherwise, pick \GlasgowTwo.
 \end{enumerate}
