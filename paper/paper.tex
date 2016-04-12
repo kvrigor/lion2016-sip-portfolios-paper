@@ -40,6 +40,9 @@
 \newcommand{\GlasgowFour}{$\textsc{Glasgow{\scalefont{0.8}4}}$\xspace}
 \newcommand{\LLAMA}{$\textsc{Llama}$\xspace}
 
+\usepackage{enumitem}
+\setlist{nolistsep}
+
 \title{Portfolios of Subgraph Isomorphism Algorithms}
 
 \author{
@@ -471,7 +474,8 @@ gives information on the distribution of edges (the fewer removed pairs, the mor
 distribution). As well as the number of removed pairs, we also record the percentage with respect to
 all possible pairs, and the minimum and maximum percentages of removed values on
 a per-variable basis. Finally, we include the CPU time required to compute these
-features as features.
+features as features. However, those features were not more informative than the
+other ones.
 
 \subsection{Selection Model}
 
