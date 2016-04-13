@@ -59,10 +59,16 @@ set xlabel ""
 set ylabel ""
 set grid xtics y2tics mytics my2tics
 
+set label 1 left at 4.0e3, second 1770 '\raisebox{0mm}{\GlasgowThreeNS{}}'
+set arrow from 23000, second 1780 to 23000, second 1800 back nohead lc 7 dt "."
+
+set label 2 left at 8.0e4, second 1770 '\raisebox{0mm}{\GlasgowFourNS{}}'
+set arrow from 180000, second 1780 to 185000, second 1800 back nohead lc 3 dt "."
+
 plot \
-    "no-presolved-presolver.csv" u (strcol(2) eq "lad" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps notitle lc 1 dt ".", \
-    "no-presolved-presolver.csv" u (strcol(2) eq "supplementallad" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps notitle dt "." lc 2, \
-    "no-presolved-presolver.csv" u (strcol(2) eq "glasgow1" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps notitle dt "." lc 5, \
+    "no-presolved-presolver.csv" u (strcol(2) eq "lad" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps ti '\LADNS{}' at end lc 1 dt ".", \
+    "no-presolved-presolver.csv" u (strcol(2) eq "supplementallad" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps ti '\PathLADNS{}' at end dt "." lc 2, \
+    "no-presolved-presolver.csv" u (strcol(2) eq "glasgow1" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps ti '\GlasgowOneNS{}' at end dt "." lc 5, \
     "no-presolved-presolver.csv" u (strcol(2) eq "glasgow2" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps ti '\raisebox{0mm}{\GlasgowTwoNS{}}' at end lc 6, \
     "no-presolved-presolver.csv" u (strcol(2) eq "glasgow3" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps notitle dt "." lc 7, \
     "no-presolved-presolver.csv" u (strcol(2) eq "glasgow4" ? ($3<1e4?1e4:$3) : NaN):($3 >= 1e8 ? 1e-10 : 1) axes x1y2 smooth cumulative with steps notitle dt "." lc 3, \
