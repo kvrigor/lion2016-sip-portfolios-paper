@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <numeric>
 
 namespace
 {
